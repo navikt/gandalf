@@ -1,0 +1,4 @@
+namespace: default
+ingresses:
+  - https://security-token-service.nais.adeo.no
+

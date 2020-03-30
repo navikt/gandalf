@@ -1,0 +1,40 @@
+kind: Application
+apiVersion: nais.io/v1alpha1
+metadata:
+  name: security-token-service
+  namespace: {{namespace}}
+  labels:
+    team: integrasjon
+spec:
+  image: {{image}}
+  ingresses:
+    {{#each ingresses}}
+     - "{{this}}"
+     {{/each}}
+  liveness:
+    path: /isAlive
+    initialDelay: 10
+    periodSeconds: 5
+    failureThreshold: 30
+  port: 8080
+  prometheus:
+    enabled: true
+    path: /prometheus
+  readiness:
+    path: /isReady
+    initialDelay: 10
+    periodSeconds: 5
+    failureThreshold: 30
+  replicas:
+    min: 2
+    max: 4
+  resources:
+    limits:
+      cpu: 800m
+      memory: 3Gi
+    requests:
+      cpu: 600m
+      memory: 3Gi
+  cpuThresholdPercentage: 80
+  vault:
+    enabled: true

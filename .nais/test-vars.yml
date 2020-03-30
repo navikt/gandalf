@@ -1,0 +1,5 @@
+namespace: t4
+ingresses:
+  - https://security-token-service-t4.nais.preprod.local
+
+
