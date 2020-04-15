@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "application.issuer",
+      "type": "java.lang.String",
+      "description": "Description for application.issuer."
+    },
+    {
+      "name": "application.issuerSrvUser",
+      "type": "java.lang.String",
+      "description": "Description for application.issuerSrvUser."
+    }
+  ] }
