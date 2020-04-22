@@ -1,13 +1,38 @@
 {
   "properties": [
     {
-      "name": "application.issuer",
+      "name": "application.local.issuer",
       "type": "java.lang.String",
-      "description": "Description for application.issuer."
+      "description": "Description for application.local.issuer."
     },
     {
-      "name": "application.issuerSrvUser",
+      "name": "application.local.issuerSrvUser",
       "type": "java.lang.String",
-      "description": "Description for application.issuerSrvUser."
+      "description": "Description for application.local.issuerSrvUser."
+    },
+    {
+      "name": "application.local.openamIssuerUrl",
+      "type": "java.lang.String",
+      "description": "Description for application.local.openamIssuerUrl."
+    },
+    {
+      "name": "application.local.openamJwksUrl",
+      "type": "java.lang.String",
+      "description": "Description for application.local.openamJwksUrl."
+    },
+    {
+      "name": "application.local.azureadIssuerUrl",
+      "type": "java.lang.String",
+      "description": "Description for application.local.azureadIssuerUrl."
+    },
+    {
+      "name": "application.local.azureadJwksUrl",
+      "type": "java.lang.String",
+      "description": "Description for application.local.azureadJwksUrl."
+    },
+    {
+      "name": "application.local.difiConfigurationUrl",
+      "type": "java.lang.String",
+      "description": "Description for application.local.difiConfigurationUrl."
     }
   ] }

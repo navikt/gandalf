@@ -2,12 +2,11 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
-import java.net.http.HttpClient
+import no.nav.gandalf.accesstoken.OidcIssuer
 
 class OidcIssuerImpl(
         override val issuer: String,
-        val jwksUrl: String,
-        private val httpClient: HttpClient
+        val jwksUrl: String
 ) : OidcIssuer {
     private lateinit var jwkSet: JWKSet
 

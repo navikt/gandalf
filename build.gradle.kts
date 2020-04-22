@@ -37,6 +37,7 @@ dependencies {
     // Spring
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // Jackson
@@ -60,6 +61,7 @@ dependencies {
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")
     testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude("com.vaadin.external.google", module = "android-json")
         exclude(module = "junit")
     }
     testImplementation("org.junit.jupiter:junit-jupiter-api")

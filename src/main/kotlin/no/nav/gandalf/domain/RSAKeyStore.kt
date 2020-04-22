@@ -9,30 +9,19 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.SequenceGenerator
 import javax.persistence.Table
+import javax.validation.constraints.NotNull
 
 @Entity
 @Table(name = "KEYSTORE")
-class RSAKeyStore {
-    @Id
-    @Column(name = "ID", updatable = false, nullable = false)
-    @SequenceGenerator(name = "keyStoreIdGenerator", sequenceName = "KEYSTORE_ID_SEQ", allocationSize = 1, initialValue = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "keyStoreIdGenerator")
-    private val id: Long? = null
+data class RSAKeyStore(
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "ID") var id: Long? = 0,
+        @get: NotNull @Column(name = "RSAKEY", length = 2000) var rsaKey: String = "",
+        @get: NotNull @Column(name = "EXPIRES") @Convert(converter = TimestampConverter::class) var expires: LocalDateTime = LocalDateTime.now()
+) {
 
-    @Column(name = "RSAKEY", nullable = false, length = 2000)
-    private var rsaKey: String? = null
-
-    @Column(name = "EXPIRES", nullable = false)
-    @Convert(converter = TimestampConverter::class)
-    var expires: LocalDateTime? = null
-
-    constructor() {
-        // brukes av JPA
-    }
-
-    constructor(rsaKey: RSAKey, keyRotationTime: Long) {
+    constructor(rsaKey: RSAKey, keyRotationTime: Long) : this() {
         this.rsaKey = rsaKey.toJSONString()
         expires = LocalDateTime.now().plusSeconds(keyRotationTime)
     }
@@ -40,7 +29,7 @@ class RSAKeyStore {
     // old format
     val rSAKey: RSAKey
         get() = try {
-            if (rsaKey!!.contains("SIGNATURE")) { // old format
+            if (rsaKey.contains("SIGNATURE")) { // old format
                 RSAKey.parse(getNewFormat(rsaKey))
             } else {
                 RSAKey.parse(rsaKey)

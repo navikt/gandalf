@@ -9,12 +9,11 @@ import com.nimbusds.oauth2.sdk.ParseException
 import mu.KotlinLogging
 import no.nav.gandalf.ApplicationGeneralEnvironment
 import no.nav.gandalf.keystore.KeyStoreReader
-import no.nav.gandalf.keystore.RSAKeyStoreRepository
+import no.nav.gandalf.service.RSAKeyStoreService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.xml.sax.SAXException
 import java.io.IOException
-import java.net.http.HttpClient
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
@@ -28,25 +27,20 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class AccessTokenIssuer(
-        applicationEnv: ApplicationGeneralEnvironment
+        private val applicationGeneralEnvironment: ApplicationGeneralEnvironment,
+        @Autowired private val keyStore: RSAKeyStoreService,
+        @Autowired private var keySelector: KeySelector?,
+        @Autowired private val keyStoreReader: KeyStoreReader
 ) : OidcIssuer {
 
-    final override val issuer = applicationEnv.issuer
-    // val issuerSrvUser = applicationEnv.issuerSrvUser
-    var domain = getDomainFromIssuerURL(issuer)
+    final override var issuer = applicationGeneralEnvironment.issuer
+    private val domain = getDomainFromIssuerURL(issuer)
     lateinit var knownIssuers: MutableList<OidcIssuer>
 
-    @Autowired
-    private val keyStore: RSAKeyStoreRepository? = null
-
-    @Autowired
-    val keySelector: KeySelector? = null
-
-    @Autowired
-    private val httpClient: HttpClient? = null
-
-    @Autowired
-    private val keyStoreReader: KeyStoreReader? = null
+    // TODO ny setup for httpClient
+    // @Autowired
+    // private lateinit var httpClient: HttpClient
+//
 
     enum class IdentType(val value: String) {
         SYSTEMRESSURS("Systemressurs"),
@@ -58,24 +52,25 @@ class AccessTokenIssuer(
     @PostConstruct
     @Throws(ParseException::class)
     fun setKnownIssuers() {
-        knownIssuers = ArrayList<OidcIssuer?>()
+        knownIssuers = mutableListOf()
         knownIssuers.add(this)
-        knownIssuers.add(OidcIssuerImpl(PropertyUtil.get(Environment.STS_OPENAM_ISSUERURL),
-                PropertyUtil.get(Environment.STS_OPENAM_JWKSURL),
-                httpClient))
-        knownIssuers.add(OidcIssuerImpl(PropertyUtil.get(Environment.STS_AZUREAD_ISSUERURL),
-                PropertyUtil.get(Environment.STS_AZUREAD_JWKSURL),
-                httpClient))
-        knownIssuers.add(OidcIssuerImplDifi(PropertyUtil.get(Environment.STS_DIFI_CONFIGURATIONURL),
-                PropertyUtil.get(Environment.STS_DIFI_CONFIGURATIONAPIKEY),
-                PropertyUtil.get(Environment.STS_DIFI_JWKSURL),
-                PropertyUtil.get(Environment.STS_DIFI_JWKSAPIKEY),
-                httpClient))
-        knownIssuers.add(OidcIssuerImplDifi(PropertyUtil.get(Environment.STS_MASKINPORTEN_CONFIGURATIONURL),
-                PropertyUtil.get(Environment.STS_MASKINPORTEN_CONFIGURATIONAPIKEY),
-                PropertyUtil.get(Environment.STS_MASKINPORTEN_JWKSURL),
-                PropertyUtil.get(Environment.STS_MASKINPORTEN_JWKSAPIKEY),
-                httpClient))
+        knownIssuers.add(OidcIssuerImpl(
+                applicationGeneralEnvironment.openamIssuerUrl,
+                applicationGeneralEnvironment.openamJwksUrl))
+        knownIssuers.add(OidcIssuerImpl(
+                applicationGeneralEnvironment.azureadIssuerUrl,
+                applicationGeneralEnvironment.azureadJwksUrl))
+        //  knownIssuers.add(OidcIssuerImplDifi(
+        //          applicationEnv.difiConfigurationUrl,
+        //          PropertyUtil.get(Environment.STS_DIFI_CONFIGURATIONAPIKEY),
+        //          PropertyUtil.get(Environment.STS_DIFI_JWKSURL),
+        //          PropertyUtil.get(Environment.STS_DIFI_JWKSAPIKEY),
+        //          httpClient))
+        //  knownIssuers.add(OidcIssuerImplDifi(PropertyUtil.get(Environment.STS_MASKINPORTEN_CONFIGURATIONURL),
+        //          PropertyUtil.get(Environment.STS_MASKINPORTEN_CONFIGURATIONAPIKEY),
+        //          PropertyUtil.get(Environment.STS_MASKINPORTEN_JWKSURL),
+        //          PropertyUtil.get(Environment.STS_MASKINPORTEN_JWKSAPIKEY),
+        //          httpClient))
     }
 
     @Throws(Exception::class)
@@ -89,7 +84,7 @@ class AccessTokenIssuer(
         oidcObj.setAudience(username, domain)
         oidcObj.azp = username
         oidcObj.resourceType = getIdentType(username)
-        return oidcObj.getSignedToken(keyStore!!.currentRSAKey, OIDC_SIGNINGALG)
+        return oidcObj.getSignedToken(keyStore.currentRSAKey, OIDC_SIGNINGALG)
     }
 
     @Throws(java.text.ParseException::class, JOSEException::class)
@@ -120,7 +115,7 @@ class AccessTokenIssuer(
         samlObj.authenticationLevel = authLevel
         samlObj.consumerId = consumerId
         samlObj.identType = getIdentType(username)
-        return samlObj.getSignedSaml(keyStoreReader!!)
+        return samlObj.getSignedSaml(keyStoreReader)
     }
 
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class, MarshalException::class, XMLSignatureException::class)
@@ -156,7 +151,7 @@ class AccessTokenIssuer(
         oidcObj.resourceType = samlObj.identType
         oidcObj.consumerId = samlObj.consumerId
         oidcObj.authLevel = samlObj.authenticationLevel
-        return oidcObj.getSignedTokenSpec2(keyStore!!.currentRSAKey, OIDC_SIGNINGALG)
+        return oidcObj.getSignedTokenSpec2(keyStore.currentRSAKey, OIDC_SIGNINGALG)
     }
 
     @JvmOverloads
@@ -182,7 +177,7 @@ class AccessTokenIssuer(
             oidcObj.auditTrackingId != null -> oidcObj.auditTrackingId
             else -> oidcObj.id
         })
-        return samlObj.getSignedSaml(keyStoreReader!!)
+        return samlObj.getSignedSaml(keyStoreReader)
     }
 
     @JvmOverloads
@@ -210,11 +205,11 @@ class AccessTokenIssuer(
         oidcObj.resourceType = getIdentType(subject)
         oidcObj.auditTrackingId = difiOidcObj.id
         val copyClaims = listOf("aud")
-        return oidcObj.getSignedTokenCopyAndAddClaimsFrom(difiOidcObj, copyClaims, keyStore!!.currentRSAKey, OIDC_SIGNINGALG)
+        return oidcObj.getSignedTokenCopyAndAddClaimsFrom(difiOidcObj, copyClaims, keyStore.currentRSAKey, OIDC_SIGNINGALG)
     }
 
     val publicJWKSet: JWKSet?
-        get() = keyStore!!.getPublicJWKSet()
+        get() = keyStore.getPublicJWKSet()
 
     override fun getKeyByKeyId(keyId: String?): RSAKey {
         requireNotNull(publicJWKSet) { "Failed to get keys from by issuer : $issuer" }
@@ -238,6 +233,7 @@ class AccessTokenIssuer(
         var EXCHANGE_TOKEN_EXTENDED_TIME: Long = 30 // seconds
         var DEFAULT_SAML_AUTHLEVEL = "0"
         fun getDomainFromIssuerURL(issuer: String?): String {
+            println("issuer: " + issuer)
             val domainPrefix = "nais."
             require(!(issuer == null || issuer.length < domainPrefix.length)) { "Failed to find domain from issuerUrl: $issuer" }
             return issuer.substring(issuer.indexOf(domainPrefix) + domainPrefix.length)

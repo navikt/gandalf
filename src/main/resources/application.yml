@@ -3,5 +3,11 @@ server:
   servlet:
     context-path: /rest
 application:
-  issuer: https://
-  issuerSrvUser: srvUser
+  local:
+    issuer: https://security-token-service.nais.preprod.local
+    issuerSrvUser: srvUser
+    openamIssuerUrl: https://
+    openamJwksUrl: https://
+    azureadIssuerUrl: https://
+    azureadJwksUrl: https://
+    difiConfigurationUrl: https://

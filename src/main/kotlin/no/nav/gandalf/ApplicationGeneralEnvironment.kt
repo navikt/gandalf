@@ -4,8 +4,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 
 @Component
-@ConfigurationProperties(prefix = "application")
+@ConfigurationProperties(prefix = "application.local")
 data class ApplicationGeneralEnvironment(
         var issuer: String = "",
-        var issuerSrvUser: String = ""
+        var issuerSrvUser: String = "",
+        var openamIssuerUrl: String = "",
+        var openamJwksUrl: String = "",
+        var azureadIssuerUrl: String = "",
+        var azureadJwksUrl: String = "",
+        var difiConfigurationUrl: String = ""
 )

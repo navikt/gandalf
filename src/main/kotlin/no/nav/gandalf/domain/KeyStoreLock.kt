@@ -2,20 +2,21 @@ package no.nav.gandalf.domain
 
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
+import javax.validation.constraints.NotNull
 
 @Entity
 @Table(name = "KEYSTORE_LOCK")
-class KeyStoreLock {
-    @Id
-    @Column(name = "ID", updatable = true, nullable = false)
-    var id: Long = 0
+data class KeyStoreLock(
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "ID") var id: Long = 0,
+        @get: NotNull @Column(name = "LOCKED") var locked: Long = 0
+) {
 
-    @Column(name = "LOCKED", updatable = true, nullable = false)
-    private var locked: Long = 0
-
-    fun KeyStoreLock(id: Long, locked: Boolean) {
+    constructor(id: Long, locked: Boolean) : this() {
         this.id = id
         setLocked(locked)
     }

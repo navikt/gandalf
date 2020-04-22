@@ -4,8 +4,11 @@ import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.domain.KeyStoreLock
 import no.nav.gandalf.domain.RSAKeyStore
+import no.nav.gandalf.repository.KeyStoreLockRepository
+import no.nav.gandalf.repository.RSAKeyStoreRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.jpa.repository.Lock
 import org.springframework.stereotype.Component
 import java.security.KeyPairGenerator
 import java.security.NoSuchAlgorithmException
@@ -13,54 +16,35 @@ import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.time.LocalDateTime
 import java.util.*
-import javax.persistence.EntityManager
 import javax.persistence.LockModeType
-import javax.persistence.PersistenceContext
-import javax.persistence.Query
 import javax.transaction.Transactional
 
 @Component
 @Transactional
-class RSAKeyStoreRepositoryInternal {
+class RSAKeyStoreRepositoryImpl(
+        @Autowired val rsaKeyStoreRepository: RSAKeyStoreRepository,
+        @Autowired val keyStoreLockRepository: KeyStoreLockRepository
+) {
 
-    @PersistenceContext
-    private val entityManager: EntityManager? = null
-    fun save(rsaKeyStore: RSAKeyStore): RSAKeyStore {
-        entityManager?.persist(rsaKeyStore)
-        return rsaKeyStore
-    }
+    fun findAllOrdered() =
+        rsaKeyStoreRepository.findAll().sortedByDescending { it.id }
 
-    fun delete(rsaKeyStore: RSAKeyStore?) {
-        entityManager?.remove(rsaKeyStore)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun findAllOrdered(): List<RSAKeyStore> {
-        val query: Query = entityManager!!.createQuery(
-                "FROM RSAKeyStore ORDER BY id DESC",
-                RSAKeyStore::class.java
-        )
-        return query.resultList as List<RSAKeyStore>
-    }
-
-    @Suppress("UNCHECKED_CAST")
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Throws(Exception::class)
-    fun lockKeyStore() {
-        val query: Query = entityManager!!.createQuery(
-                "FROM KeyStoreLock where id=1",
-                KeyStoreLock::class.java
-        )
-        query.lockMode = LockModeType.PESSIMISTIC_WRITE
-        val lockList: List<KeyStoreLock> = query.resultList as List<KeyStoreLock>
-        if (lockList.isEmpty()) {
+    fun lockKeyStore(){
+        val lockedList = keyStoreLockRepository.findAll().sortedBy { it.locked == 1L }
+        if(lockedList.isEmpty()){
             throw Exception("Failed to lock keystore. KeyStoreLock is empty.")
         }
-    }// evt slett bare oldest hvis man rensker db før prodsetting
+    }
+
+    // evt slett bare oldest hvis man rensker db før prodsetting
     // generate and add a new key
 
     // lock keystore before read, in case an update of keystore is needed
     // newest key has expired, update needed
     // delete outdated keys
+
     @get:Throws(Exception::class)
     val currentDBKeyUpdateIfNeeded: RSAKeyStore
         get() {
@@ -74,15 +58,15 @@ class RSAKeyStoreRepositoryInternal {
             // delete outdated keys
             if (keyList.size >= minNoofKeys) {
                 for (i in keyList.size - 1 downTo minNoofKeys - 1) { // evt slett bare oldest hvis man rensker db før prodsetting
-                    if (keyList[i].expires!!.plusSeconds(2 * keyRotationTime).isAfter(LocalDateTime.now())) {
+                    if (keyList[i].expires.plusSeconds(2 * keyRotationTime).isAfter(LocalDateTime.now())) {
                         break
                     }
-                    delete(keyList[i])
+                    rsaKeyStoreRepository.delete(keyList[i])
                 }
             }
             // generate and add a new key
             val rsaKey: RSAKeyStore = generateNewRSAKey()
-            save(rsaKey)
+            rsaKeyStoreRepository.save(rsaKey)
             return rsaKey
         }
 

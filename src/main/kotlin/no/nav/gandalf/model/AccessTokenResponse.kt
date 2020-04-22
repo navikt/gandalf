@@ -1,7 +1,7 @@
 package no.nav.gandalf.model
 
 data class AccessTokenResponse(
-        val access_token: String,
-        val token_type: String,
-        val expires_in: Long
+        var access_token: String = "",
+        var token_type: String = "",
+        var expires_in: Long = 0
 )

@@ -51,7 +51,7 @@ class AccessTokenController {
                     add("Cache-Control", "no-store")
                     add("Pragma", "no-cache")
                 }
-                return ResponseEntity.status(HttpStatus.OK).headers(headers).body(AccessTokenResponseService(oidcToken).tokenResponse)
+                return ResponseEntity.status(HttpStatus.OK).headers(headers).body(AccessTokenResponseService(oidcToken!!).tokenResponse)
             }
         }
 
