@@ -2,8 +2,6 @@ package no.nav.gandalf.domain
 
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
@@ -12,7 +10,7 @@ import javax.validation.constraints.NotNull
 @Table(name = "KEYSTORE_LOCK")
 data class KeyStoreLock(
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "ID") var id: Long = 0,
+        @get: NotNull @Column(name = "ID") var id: Long = 0,
         @get: NotNull @Column(name = "LOCKED") var locked: Long = 0
 ) {
 
@@ -26,6 +24,10 @@ data class KeyStoreLock(
     }
 
     private fun setLocked(locked: Boolean) {
-        this.locked = (if (locked) 1 else 0).toLong()
+        this.locked =
+                (when {
+                    locked -> 1
+                    else -> 0
+                }).toLong()
     }
 }

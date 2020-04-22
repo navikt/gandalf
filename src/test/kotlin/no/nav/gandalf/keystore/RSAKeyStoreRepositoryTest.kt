@@ -4,33 +4,37 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyType
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
-import no.nav.gandalf.RSAKeyStoreTestExtension
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.service.RSAKeyStoreService
+import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
+@DirtiesContext
 class RSAKeyStoreRepositoryTest {
 
     @Autowired
     private lateinit var rsaKeyStoreService: RSAKeyStoreService
 
-    @Autowired
-    private lateinit var keyStoreTestExt: RSAKeyStoreTestExtension
-
     @Before
     fun init() {
-        keyStoreTestExt.initKeyStoreLock()
+        rsaKeyStoreService.repositoryImpl.lockKeyStore(test = true)
         rsaKeyStoreService.resetCache()
+    }
+
+    @After
+    fun clear() {
+        rsaKeyStoreService.repositoryImpl.clear()
     }
 
     @Test
@@ -50,7 +54,7 @@ class RSAKeyStoreRepositoryTest {
     @Throws(Exception::class)
     fun `check Current RSAKey Caching With Expired Key`() {
         // db with one expired key, 0 outdated keys
-        rsaKeyStoreService.currRSAKeyStore = keyStoreTestExt.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdated
+        rsaKeyStoreService.currRSAKeyStore = rsaKeyStoreService.repositoryImpl.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdated
         assertTrue(rsaKeyStoreService.currRSAKeyStore != null)
         assertTrue(rsaKeyStoreService.currRSAKeyStore!!.hasExpired())
         val key: RSAKey = rsaKeyStoreService.currentRSAKey // should generate a new key and set new cache value
@@ -66,13 +70,13 @@ class RSAKeyStoreRepositoryTest {
     @Throws(Exception::class)
     fun `check Current RSAKey Caching With Key Added By Another Pod`() {
         // db with one expired key, 0 outdated keys
-        val dbKey = keyStoreTestExt.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdate
+        val dbKey = rsaKeyStoreService.repositoryImpl.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdate
         // set cache value
         rsaKeyStoreService.currRSAKeyStore = dbKey
         assertTrue(rsaKeyStoreService.currRSAKeyStore != null)
         assertTrue(rsaKeyStoreService.currRSAKeyStore!!.hasExpired())
         // add new valid key to DB (added by another pod)
-        val newDbKey = keyStoreTestExt.addNewRSAKey()
+        val newDbKey = rsaKeyStoreService.repositoryImpl.addNewRSAKey()
         val currKey: RSAKey = rsaKeyStoreService.currentRSAKey // should read new key from DB and set new cache value
         assertTrue(rsaKeyStoreService.currRSAKeyStore != null)
         assertTrue(!rsaKeyStoreService.currRSAKeyStore!!.hasExpired())
@@ -111,75 +115,76 @@ class RSAKeyStoreRepositoryTest {
         assertTrue(jwk.keyID == currentKey.keyID)
     }
 
-   @Test
-   @Throws(Exception::class)
-   fun `check JWKSet Caching With Empty DB And With ExpiredKey`() {
-       // db with one expired key, 0 outdated keys
-       rsaKeyStoreService.currRSAKeyStore = keyStoreTestExt.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdated
-       assertTrue(rsaKeyStoreService.currRSAKeyStore != null)
-       assertTrue(rsaKeyStoreService.currRSAKeyStore!!.hasExpired())
-       val key: RSAKey = rsaKeyStoreService.currentRSAKey // should generate a new key and set new cache value
-       assertTrue(rsaKeyStoreService.currRSAKeyStore != null)
-       assertTrue(!rsaKeyStoreService.currRSAKeyStore!!.hasExpired())
-       assertTrue(rsaKeyStoreService.currRSAKeyStore!!.rSAKey == key)
-       val key2: RSAKey = rsaKeyStoreService.currentRSAKey // should return same key
-       assertTrue(key2 == key)
-       assertTrue(rsaKeyStoreService.currRSAKeyStore!!.rSAKey == key)
-   }
+    @Test
+    @Throws(Exception::class)
+    fun `check JWKSet Caching With Empty DB And With ExpiredKey`() {
+        // db with one expired key, 0 outdated keys
+        rsaKeyStoreService.currRSAKeyStore = rsaKeyStoreService.repositoryImpl.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdated
+        assertTrue(rsaKeyStoreService.currRSAKeyStore != null)
+        assertTrue(rsaKeyStoreService.currRSAKeyStore!!.hasExpired())
+        val key: RSAKey = rsaKeyStoreService.currentRSAKey // should generate a new key and set new cache value
+        assertTrue(rsaKeyStoreService.currRSAKeyStore != null)
+        assertTrue(!rsaKeyStoreService.currRSAKeyStore!!.hasExpired())
+        assertTrue(rsaKeyStoreService.currRSAKeyStore!!.rSAKey == key)
+        val key2: RSAKey = rsaKeyStoreService.currentRSAKey // should return same key
+        assertTrue(key2 == key)
+        assertTrue(rsaKeyStoreService.currRSAKeyStore!!.rSAKey == key)
+    }
 
-   @Test
-   @Throws(Exception::class)
-   fun checkJWKSetCachingWithKeyAddedByAnotherPod() {
-       // db with one expired key, 0 outdated keys
-       val oldDbKey: RSAKeyStore? =  keyStoreTestExt.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdated
-       assertTrue(oldDbKey != null)
-       assertTrue(oldDbKey!!.hasExpired())
-       // set cache values
-       rsaKeyStoreService.currRSAKeyStore = oldDbKey
-       rsaKeyStoreService.currPublicJWKSet = null
-       // get public jwkset
-       var jwkSet: JWKSet? = rsaKeyStoreService.publicJWKSet // should read from DB
-       assertTrue(jwkSet != null)
-       assertTrue(jwkSet!!.keys.size == 1)
-       assertTrue(jwkSet.keys[0].keyID == oldDbKey.rSAKey.keyID)
-       // add new valid key to DB (added by another pod)
-       val newDbKey: RSAKeyStore = keyStoreTestExt.addNewRSAKey()
-       // get public jwkset
-       jwkSet = rsaKeyStoreService.publicJWKSet // should contain new key from DB
-       assertTrue(jwkSet != null)
-       assertTrue(jwkSet!!.keys.size == 2)
-       assertTrue(jwkSet.keys[0].keyID == newDbKey.rSAKey.keyID)
-       assertTrue(jwkSet.keys[1].keyID == oldDbKey.rSAKey.keyID)
-   }
-//   @Test
-//   @Throws(Exception::class)
-//   fun checkJWKSetCachingWithKeyAddedByAnotherPodAndGetCurrentKeyFirst() {
-//       // db with one expired key, 0 outdated keys
-//       val oldDbKey: RSAKeyStore = keyStoreTestExt.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryInternal.keyRotationTime + 10)) // expired, but not outdated
-//       assertTrue(oldDbKey != null)
-//       assertTrue(oldDbKey.hasExpired())
+    @Test
+    @Throws(Exception::class)
+    fun checkJWKSetCachingWithKeyAddedByAnotherPod() {
+        // db with one expired key, 0 outdated keys
+        val oldDbKey: RSAKeyStore? = rsaKeyStoreService.repositoryImpl.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdated
+        assertTrue(oldDbKey != null)
+        assertTrue(oldDbKey!!.hasExpired())
+        // set cache values
+        rsaKeyStoreService.currRSAKeyStore = oldDbKey
+        rsaKeyStoreService.currPublicJWKSet = null
+        // get public jwkset
+        var jwkSet: JWKSet? = rsaKeyStoreService.publicJWKSet // should read from DB
+        assertTrue(jwkSet != null)
+        assertTrue(jwkSet!!.keys.size == 1)
+        assertTrue(jwkSet.keys[0].keyID == oldDbKey.rSAKey.keyID)
+        // add new valid key to DB (added by another pod)
+        val newDbKey: RSAKeyStore = rsaKeyStoreService.repositoryImpl.addNewRSAKey()
+        // get public jwkset
+        jwkSet = rsaKeyStoreService.publicJWKSet // should contain new key from DB
+        assertTrue(jwkSet != null)
+        assertTrue(jwkSet!!.keys.size == 2)
+        assertTrue(jwkSet.keys[0].keyID == newDbKey.rSAKey.keyID)
+        assertTrue(jwkSet.keys[1].keyID == oldDbKey.rSAKey.keyID)
+    }
 
-//       // set cache values
-//       keyStore.currRSAKeyStore = oldDbKey
-//       keyStore.currPublicJWKSet = keyStore.getPublicJWKSet(listOf(oldDbKey))
+    @Test
+    @Throws(Exception::class)
+    fun `check JWKSet Caching With Key Added By Another Pod And Get Current Key First`() {
+        // db with one expired key, 0 outdated keys
+        val oldDbKey: RSAKeyStore? = rsaKeyStoreService.repositoryImpl.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdated
+        assertTrue(oldDbKey != null)
+        assertTrue(oldDbKey!!.hasExpired())
 
-//       // get public jwkset
-//       var jwkSet: JWKSet = keyStore.getPublicJWKSet() // should contain just one key
-//       assertTrue(jwkSet != null)
-//       assertTrue(jwkSet.keys.size == 1)
-//       assertTrue(jwkSet.keys[0].keyID == oldDbKey.getRSAKey().getKeyID())
+        // set cache values
+        rsaKeyStoreService.currRSAKeyStore = oldDbKey
+        rsaKeyStoreService.currPublicJWKSet = rsaKeyStoreService.getPublicJWKSet(listOf(oldDbKey))
 
-//       // add new valid key to DB (added by another pod)
-//       val newDbKey: RSAKeyStore = keyStoreTestExt.addNewRSAKey()
+        // get public jwkset
+        var jwkSet: JWKSet? = rsaKeyStoreService.publicJWKSet // should contain just one key
+        assertTrue(jwkSet != null)
+        assertTrue(jwkSet!!.keys.size == 1)
+        assertTrue(jwkSet.keys[0].keyID == oldDbKey.rSAKey.keyID)
 
-//       // call current key, test that this call does nothing wrong to the cached jwkset
-//       keyStore.getCurrentRSAKey()
+        // add new valid key to DB (added by another pod)
+        val newDbKey: RSAKeyStore = rsaKeyStoreService.repositoryImpl.addNewRSAKey()
 
-//       // get public jwkset
-//       jwkSet = keyStore.getPublicJWKSet() // should contain new key from DB
-//       assertTrue(jwkSet != null)
-//       assertTrue(jwkSet.keys.size == 2)
-//       assertTrue(jwkSet.keys[0].keyID == newDbKey.getRSAKey().getKeyID())
-//       assertTrue(jwkSet.keys[1].keyID == oldDbKey.getRSAKey().getKeyID())
-//   }
+        // call current key, test that this call does nothing wrong to the cached jwkset
+        rsaKeyStoreService.currentRSAKey
+
+        // get public jwkset
+        jwkSet = rsaKeyStoreService.publicJWKSet // should contain new key from DB
+        assertTrue(jwkSet != null)
+        assertTrue(jwkSet!!.keys.size == 2)
+        assertTrue(jwkSet.keys[0].keyID == newDbKey.rSAKey.keyID)
+        assertTrue(jwkSet.keys[1].keyID == oldDbKey.rSAKey.keyID)
+    }
 }

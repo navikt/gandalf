@@ -6,22 +6,24 @@ import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.keystore.RSAKeyStoreRepositoryImpl
 import no.nav.gandalf.repository.KeyStoreLockRepository
 import no.nav.gandalf.repository.RSAKeyStoreRepository
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.jpa.repository.Lock
 import org.springframework.stereotype.Component
 import java.security.NoSuchAlgorithmException
 import java.time.LocalDateTime
+import javax.persistence.LockModeType
 import javax.transaction.Transactional
 
 @Component
 @Transactional
 class RSAKeyStoreTestExtension(
-        @Autowired var rsaKeyStoreRepository: RSAKeyStoreRepository,
-        @Autowired var keyStoreLockRepository: KeyStoreLockRepository
+        var rsaKeyStoreRepository: RSAKeyStoreRepository,
+        var keyStoreLockRepository: KeyStoreLockRepository
 ) {
 
     // kun for testing
-    fun initKeyStoreLock() {
-        val lockedList = keyStoreLockRepository.findAll().sortedBy { it.locked == 1L }
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    fun lockKeyStore() {
+        val lockedList = keyStoreLockRepository.findAll().sortedBy { it.id == 1L }
         if (lockedList.isEmpty()) {
             val keyStoreLock = KeyStoreLock(1, false)
             keyStoreLockRepository.save(keyStoreLock)
@@ -43,5 +45,10 @@ class RSAKeyStoreTestExtension(
         val rsaKey: RSAKeyStore = RSAKeyStoreRepositoryImpl.generateNewRSAKey()
         rsaKeyStoreRepository.save(rsaKey)
         return rsaKey
+    }
+
+
+    fun clear() {
+        keyStoreLockRepository.deleteAllInBatch()
     }
 }
