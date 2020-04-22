@@ -10,11 +10,14 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import mu.KotlinLogging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.text.ParseException
 import java.time.ZonedDateTime
 import java.util.*
+
+private val log = KotlinLogging.logger { }
 
 class OidcObject {
     var issuer: String? = null
@@ -29,7 +32,7 @@ class OidcObject {
     var notBeforeTime: Date?
     var issueTime: Date
     var expirationTime: Date
-    private var authTime: Date
+    var authTime: Date
     var auditTrackingId: String? = null
     private var signedJWT: SignedJWT? = null
     private val log: Logger = LoggerFactory.getLogger(javaClass)
@@ -79,17 +82,19 @@ class OidcObject {
 
     @Throws(JOSEException::class)
     fun validate(issuer: OidcIssuer, now: Date) {
-        val rsaJwk: RSAKey = issuer.getKeyByKeyId(signedJWT!!.header.keyID)
+        println("HOHO")
+        println(issuer)
+        println(signedJWT!!.header.keyID)
+        val rsaJwk = issuer.getKeyByKeyId(signedJWT!!.header.keyID)
                 ?: throw IllegalArgumentException("Validation failed: failed to find key " + signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer)
         validate(issuer.issuer, now, rsaJwk)
     }
 
     @Throws(JOSEException::class)
     fun validate(issuer: String?, now: Date, rsaJwk: RSAKey) {
-        if (issuer == null || !(issuer == this.issuer)) {
+        if (issuer == null || issuer != this.issuer) {
             throw IllegalArgumentException("Validation failed: 'issuer' is null or unknown")
         }
-
         // check time
         if (notBeforeTime != null && now.before(notBeforeTime)) {
             throw IllegalArgumentException("Validation failed: notBeforeTime validation failed")
@@ -97,7 +102,7 @@ class OidcObject {
         if (now.after(expirationTime)) {
             throw IllegalArgumentException("Validation failed: token has expired")
         }
-        val verifier: RSASSAVerifier = RSASSAVerifier(rsaJwk.toRSAPublicKey())
+        val verifier = RSASSAVerifier(rsaJwk.toRSAPublicKey())
         if (!verifier.verify(signedJWT!!.header, signedJWT!!.signingInput, signedJWT!!.signature)) {
             throw IllegalArgumentException("Validation failed: Signature validation failed")
         }
@@ -159,7 +164,7 @@ class OidcObject {
             val header: JWSHeader.Builder = JWSHeader.Builder(alg)
                     .keyID(key.keyID)
                     .type(JOSEObjectType.JWT)
-            val signedJWT: SignedJWT = SignedJWT(header.build(), claimsSet)
+            val signedJWT = SignedJWT(header.build(), claimsSet)
             val signer: JWSSigner = RSASSASigner(key.toPrivateKey())
             signedJWT.sign(signer)
             return signedJWT

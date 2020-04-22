@@ -58,10 +58,10 @@ class AccessTokenIssuerTest {
         TestCase.assertTrue(jwt.getClaim(RESOURCETYPE_CLAIM) == AccessTokenIssuer.IdentType.INTERNBRUKER.value)
 
         // sjekk audience
-        val l = token.jwtClaimsSet.audience
-        TestCase.assertEquals(2, l.size)
-        TestCase.assertEquals(l[0], username)
-        TestCase.assertEquals("preprod.local", l[1])
+        val audience = token.jwtClaimsSet.audience
+        TestCase.assertEquals(2, audience.size)
+        TestCase.assertEquals(audience[0], username)
+        TestCase.assertEquals("preprod.local", audience[1])
 
         // sjekk time settings
         TestCase.assertEquals(0, jwt.notBeforeTime.compareTo(jwt.issueTime))

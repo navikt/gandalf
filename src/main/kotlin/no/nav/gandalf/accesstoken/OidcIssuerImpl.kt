@@ -2,11 +2,11 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
-import no.nav.gandalf.accesstoken.OidcIssuer
 
 class OidcIssuerImpl(
         override val issuer: String,
-        val jwksUrl: String
+        private val jwksUrl: String,
+        private val httpClient: HttpClient
 ) : OidcIssuer {
     private lateinit var jwkSet: JWKSet
 
@@ -14,8 +14,7 @@ class OidcIssuerImpl(
         when {
             jwkSet.getKeyByKeyId(keyId) == null -> {
                 // bruk og setup dette riktig
-                //  val jwks: String = httpClient.send(HttpRequest.newBuilder(URI(jwksUrl)))
-                val jwks: String = ""
+                val jwks: String = httpClient.get(jwksUrl)
                 jwkSet = try {
                     JWKSet.parse(jwks)
                 } catch (e: Exception) {

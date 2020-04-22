@@ -27,20 +27,16 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class AccessTokenIssuer(
-        private val applicationGeneralEnvironment: ApplicationGeneralEnvironment,
+        @Autowired private val applicationGeneralEnvironment: ApplicationGeneralEnvironment,
         @Autowired private val keyStore: RSAKeyStoreService,
-        @Autowired private var keySelector: KeySelector?,
-        @Autowired private val keyStoreReader: KeyStoreReader
+        @Autowired private val keySelector: KeySelector,
+        @Autowired private val keyStoreReader: KeyStoreReader,
+        @Autowired private val httpClient: HttpClient
 ) : OidcIssuer {
 
     final override var issuer = applicationGeneralEnvironment.issuer
     private val domain = getDomainFromIssuerURL(issuer)
     lateinit var knownIssuers: MutableList<OidcIssuer>
-
-    // TODO ny setup for httpClient
-    // @Autowired
-    // private lateinit var httpClient: HttpClient
-//
 
     enum class IdentType(val value: String) {
         SYSTEMRESSURS("Systemressurs"),
@@ -56,10 +52,14 @@ class AccessTokenIssuer(
         knownIssuers.add(this)
         knownIssuers.add(OidcIssuerImpl(
                 applicationGeneralEnvironment.openamIssuerUrl,
-                applicationGeneralEnvironment.openamJwksUrl))
+                applicationGeneralEnvironment.openamJwksUrl,
+                httpClient)
+        )
         knownIssuers.add(OidcIssuerImpl(
                 applicationGeneralEnvironment.azureadIssuerUrl,
-                applicationGeneralEnvironment.azureadJwksUrl))
+                applicationGeneralEnvironment.azureadJwksUrl,
+                httpClient)
+        )
         //  knownIssuers.add(OidcIssuerImplDifi(
         //          applicationEnv.difiConfigurationUrl,
         //          PropertyUtil.get(Environment.STS_DIFI_CONFIGURATIONAPIKEY),
@@ -77,29 +77,25 @@ class AccessTokenIssuer(
     fun issueToken(username: String?): SignedJWT? {
         log.info("issueToken for $username")
         require(!(username == null || username.isEmpty())) { "Failed to issue oidc token, username is null" }
-        val oidcObj = OidcObject(ZonedDateTime.now(), OIDC_DURATION_TIME)
-        oidcObj.subject = username
-        oidcObj.issuer = this.issuer
-        oidcObj.version = OIDC_VERSION
-        oidcObj.setAudience(username, domain)
-        oidcObj.azp = username
-        oidcObj.resourceType = getIdentType(username)
+        val oidcObj = OidcObject(ZonedDateTime.now(), OIDC_DURATION_TIME).apply {
+            subject = username
+            issuer = applicationGeneralEnvironment.issuer
+            version = OIDC_VERSION
+            setAudience(username, domain)
+            azp = username
+            resourceType = getIdentType(username)
+        }
         return oidcObj.getSignedToken(keyStore.currentRSAKey, OIDC_SIGNINGALG)
     }
 
     @Throws(java.text.ParseException::class, JOSEException::class)
-    fun validateOidcToken(oidcToken: String?): OidcObject {
-        return validateOidcToken(oidcToken, OidcObject.toDate(ZonedDateTime.now()))
-    }
+    fun validateOidcToken(oidcToken: String?) = validateOidcToken(oidcToken, OidcObject.toDate(ZonedDateTime.now()))
 
     @Throws(java.text.ParseException::class, JOSEException::class)
     fun validateOidcToken(oidcToken: String?, now: Date): OidcObject {
         require(!(oidcToken == null || oidcToken.isEmpty())) { "Validation failed: OidcToken is null or empty" }
         val oidcObj = OidcObject(oidcToken)
-        val knownIssuer: OidcIssuer = knownIssuers.stream()
-                .filter { issuer: OidcIssuer? -> issuer!!.issuer == oidcObj.issuer }
-                .findAny()
-                .orElse(null)
+        val knownIssuer = knownIssuers.map { it }.singleOrNull { it.issuer == oidcObj.issuer }
                 ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + oidcObj.issuer)
         oidcObj.validate(knownIssuer, now)
         return oidcObj

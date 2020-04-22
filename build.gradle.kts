@@ -10,6 +10,7 @@ object Version {
     const val snake = "1.26"
     const val hibernate = "5.4.14.Final"
     const val json = "20190722"
+    const val apacheHttp = "4.5.12"
 }
 
 val mainClass = "$group.no.nav.gandalf.GandalfApplication"
@@ -50,8 +51,16 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    // Apache Http
+    implementation("org.apache.httpcomponents:httpclient:${Version.apacheHttp}")
+
+    // Logging
     implementation("io.github.microutils:kotlin-logging:${Version.kotlinLoggin}")
+
+    // Oauth
     implementation("com.nimbusds:oauth2-oidc-sdk:${Version.nimbus}")
+
+    // Yaml
     implementation("org.yaml:snakeyaml:${Version.snake}")
 
     // Hibernate
