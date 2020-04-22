@@ -241,11 +241,11 @@ class AccessTokenIssuer(
 
         fun getIdentType(subject: String): String {
             if (subject.toLowerCase().startsWith("srv")) {
-                return IdentType.SYSTEMRESSURS.name
+                return IdentType.SYSTEMRESSURS.value
             }
             return if (subject.length == 9 && subject.matches("[0-9]+".toRegex())) {
-                IdentType.SAMHANDLER.name
-            } else IdentType.INTERNBRUKER.name
+                IdentType.SAMHANDLER.value
+            } else IdentType.INTERNBRUKER.value
         }
 
         fun toZonedDateTime(d: Date): ZonedDateTime {

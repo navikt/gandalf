@@ -11,7 +11,7 @@ import javax.xml.crypto.KeySelector
 class ApplicationConfiguration {
 
     @Autowired
-    var keySelector: KeySelector? = null
+    private lateinit var keySelector: KeySelector
 
     @Bean
     fun keySelector(): KeySelector? {

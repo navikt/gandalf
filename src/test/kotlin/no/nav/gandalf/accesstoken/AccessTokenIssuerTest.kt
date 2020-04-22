@@ -8,30 +8,40 @@ import no.nav.gandalf.accesstoken.OidcObject.Companion.AZP_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.RESOURCETYPE_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.VERSION_CLAIM
 import no.nav.gandalf.service.AccessTokenResponseService
+import no.nav.gandalf.service.RSAKeyStoreService
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
 
 @RunWith(SpringRunner::class)
-@DataJpaTest
+@SpringBootTest
 class AccessTokenIssuerTest {
 
     @Autowired
-    lateinit var issuer: AccessTokenIssuer
+    private lateinit var issuer: AccessTokenIssuer
+
+    @Autowired
+    private lateinit var rsaKeyStoreService: RSAKeyStoreService
 
     @Before
-    fun setUpTests() {
-        // fikk problemer med systemproperty med bindestrek. Disse blir ikke satt før etter bean creation ved nais bygg...? Må derfor sette denne eksplisitt for at testen skal kunne kjøres
-        // issuer!!.issuer = applicationEnv.issuer
-        // issuer.issuerSrvUser = PropertyUtil.get(SRVSTS_USERNAME);
-        // keyStoreTestExt!!.initKeyStoreLock()
-        // keyStore.resetCache()
+    fun init() {
+        rsaKeyStoreService.repositoryImpl.lockKeyStore(test = true)
+        rsaKeyStoreService.resetCache()
     }
+
+    // @Before
+    // fun setUpTests() {
+    //     // fikk problemer med systemproperty med bindestrek. Disse blir ikke satt før etter bean creation ved nais bygg...? Må derfor sette denne eksplisitt for at testen skal kunne kjøres
+    //     // issuer!!.issuer = applicationEnv.issuer
+    //     // issuer.issuerSrvUser = PropertyUtil.get(SRVSTS_USERNAME);
+    //     // keyStoreTestExt!!.initKeyStoreLock()
+    //     // keyStore.resetCache()
+    // }
 
     @Test
     @Throws(Exception::class)
