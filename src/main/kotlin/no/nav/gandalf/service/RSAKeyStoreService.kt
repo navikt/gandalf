@@ -22,9 +22,11 @@ class RSAKeyStoreService(
     @get:Throws(Exception::class)
     val currentRSAKey: RSAKey
         get() {
-            if (currRSAKeyStore == null || currRSAKeyStore!!.hasExpired()) {
-                currRSAKeyStore = repositoryImpl.currentDBKeyUpdateIfNeeded
-                currPublicJWKSet = null // currPublicJWKSet er utdatert, settes til null for å trigge lesing fra DB ved neste kall til getPublicJWKSet
+            when {
+                currRSAKeyStore == null || currRSAKeyStore!!.hasExpired() -> {
+                    currRSAKeyStore = repositoryImpl.currentDBKeyUpdateIfNeeded
+                    currPublicJWKSet = null // currPublicJWKSet er utdatert, settes til null for å trigge lesing fra DB ved neste kall til getPublicJWKSet
+                }
             }
             return currRSAKeyStore!!.rSAKey
         }
@@ -32,8 +34,10 @@ class RSAKeyStoreService(
     // les fra DB
     val publicJWKSet: JWKSet?
         get() {
-            if (currPublicJWKSet == null || currRSAKeyStore == null || currRSAKeyStore!!.hasExpired()) {
-                currPublicJWKSet = getPublicJWKSet(repositoryImpl.findAllOrdered()) // les fra DB
+            when {
+                currPublicJWKSet == null || currRSAKeyStore == null || currRSAKeyStore!!.hasExpired() -> {
+                    currPublicJWKSet = getPublicJWKSet(repositoryImpl.findAllOrdered()) // les fra DB
+                }
             }
             return currPublicJWKSet
         }

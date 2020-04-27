@@ -4,7 +4,8 @@ import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.utils.getAlteredSamlToken
 import no.nav.gandalf.utils.getSamlToken
-import org.junit.Assert
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,13 +36,13 @@ class SamlObjectTest {
         // read saml token
         val samlObj = SamlObject()
         samlObj.read(getSamlToken())
-        Assert.assertTrue(samlObj.issuer != null && samlObj.issuer.equals("IS02"))
-        Assert.assertTrue(samlObj.nameID != null && samlObj.nameID.equals("srvsecurity-token-"))
-        Assert.assertTrue(samlObj.dateNotBefore != null && samlObj.dateNotBefore!!.compareTo(ZonedDateTime.parse("2019-05-14T07:47:06.255Z")) == 0)
-        Assert.assertTrue(samlObj.notOnOrAfter != null && samlObj.notOnOrAfter!!.compareTo(ZonedDateTime.parse("2019-05-14T08:47:06.255Z")) == 0)
-        Assert.assertTrue(samlObj.consumerId != null && samlObj.consumerId.equals("srvsecurity-token-"))
-        Assert.assertTrue(samlObj.identType != null && samlObj.identType.equals("Systemressurs"))
-        Assert.assertTrue(samlObj.authenticationLevel != null && samlObj.authenticationLevel.equals("0"))
+        assertTrue(samlObj.issuer != null && samlObj.issuer.equals("IS02"))
+        assertTrue(samlObj.nameID != null && samlObj.nameID.equals("srvsecurity-token-"))
+        assertTrue(samlObj.dateNotBefore != null && samlObj.dateNotBefore!!.compareTo(ZonedDateTime.parse("2019-05-14T07:47:06.255Z")) == 0)
+        assertTrue(samlObj.notOnOrAfter != null && samlObj.notOnOrAfter!!.compareTo(ZonedDateTime.parse("2019-05-14T08:47:06.255Z")) == 0)
+        assertTrue(samlObj.consumerId != null && samlObj.consumerId.equals("srvsecurity-token-"))
+        assertTrue(samlObj.identType != null && samlObj.identType.equals("Systemressurs"))
+        assertTrue(samlObj.authenticationLevel != null && samlObj.authenticationLevel.equals("0"))
     }
 
     @Test
@@ -55,7 +56,7 @@ class SamlObjectTest {
             samlObj.read(getSamlToken())
             samlObj.validate(keySelector)
         } catch (e: Exception) {
-            Assert.assertTrue(false)
+            fail("Error: " + e.message)
         }
     }
 
@@ -68,11 +69,12 @@ class SamlObjectTest {
             // read and validate saml token with with now = notOnOrAfter - 2 seconds
             val samlObj = SamlObject(now)
             samlObj.read(getAlteredSamlToken())
-            Assert.assertTrue(samlObj.nameID != null && samlObj.nameID.equals("srvsecurity-token-tull"))
+            assertTrue(samlObj.nameID != null && samlObj.nameID.equals("srvsecurity-token-tull"))
             samlObj.validate(keySelector)
-            Assert.assertTrue(false)
+            fail()
         } catch (e: Exception) {
-            Assert.assertTrue(true) // signature validation har feilet som den skulle
+            // signature validation har feilet som den skulle
+            assertTrue(true)
         }
     }
 
@@ -84,9 +86,11 @@ class SamlObjectTest {
             val samlObj = SamlObject()
             samlObj.read(getSamlToken())
             samlObj.validate(keySelector)
-            Assert.assertTrue(false) // denne skal ikke validere uten feil
+            // denne skal ikke validere uten feil
+            fail()
         } catch (e: Exception) {
-            Assert.assertTrue(true) // validation har feilet slik den skulle
+            // validation har feilet slik den skulle
+            assertTrue(true)
         }
     }
 
@@ -103,18 +107,17 @@ class SamlObjectTest {
         val samlToken = samlIssued.getSignedSaml(keyStoreReader)
         val samlRead = SamlObject()
         samlRead.read(samlToken)
-        Assert.assertTrue(samlIssued.id.equals(samlRead.id))
-        Assert.assertTrue(samlIssued.issuer.equals(samlRead.issuer))
-        Assert.assertTrue(samlIssued.nameID.equals(samlRead.nameID))
-        Assert.assertTrue(samlIssued.dateNotBefore!!.compareTo(samlRead.dateNotBefore) == 0)
-        Assert.assertTrue(samlIssued.notOnOrAfter!!.compareTo(samlRead.notOnOrAfter) == 0)
-        Assert.assertTrue(samlIssued.issueInstant!!.compareTo(samlRead.issueInstant) == 0)
-        Assert.assertTrue(samlIssued.authenticationLevel.equals(samlRead.authenticationLevel))
-        Assert.assertTrue(samlIssued.consumerId.equals(samlRead.consumerId))
-        Assert.assertTrue(samlIssued.identType.equals(samlRead.identType))
-        Assert.assertTrue(samlIssued.id.equals(samlRead.id))
+        assertTrue(samlIssued.id.equals(samlRead.id))
+        assertTrue(samlIssued.issuer.equals(samlRead.issuer))
+        assertTrue(samlIssued.nameID.equals(samlRead.nameID))
+        assertTrue(samlIssued.dateNotBefore!!.compareTo(samlRead.dateNotBefore) == 0)
+        assertTrue(samlIssued.notOnOrAfter!!.compareTo(samlRead.notOnOrAfter) == 0)
+        assertTrue(samlIssued.issueInstant!!.compareTo(samlRead.issueInstant) == 0)
+        assertTrue(samlIssued.authenticationLevel.equals(samlRead.authenticationLevel))
+        assertTrue(samlIssued.consumerId.equals(samlRead.consumerId))
+        assertTrue(samlIssued.identType.equals(samlRead.identType))
+        assertTrue(samlIssued.id.equals(samlRead.id))
     }
-
 
     @Test
     @Throws(Exception::class)
@@ -132,9 +135,9 @@ class SamlObjectTest {
         val keySelector = TestKeySelector()
         try {
             samlObj.validate(keySelector)
-            Assert.assertTrue(true)
+            assertTrue(true)
         } catch (e: Exception) {
-            Assert.assertTrue(false)
+            fail("Error: " + e.message)
         }
     }
 }

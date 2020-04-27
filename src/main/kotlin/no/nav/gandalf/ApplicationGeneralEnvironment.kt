@@ -12,5 +12,6 @@ data class ApplicationGeneralEnvironment(
         var openamJwksUrl: String = "",
         var azureadIssuerUrl: String = "",
         var azureadJwksUrl: String = "",
-        var difiConfigurationUrl: String = ""
+        var baseUrl: String = "",
+        var difiOIDCIssuer: String = ""
 )

@@ -31,8 +31,13 @@
       "description": "Description for application.local.azureadJwksUrl."
     },
     {
-      "name": "application.local.difiConfigurationUrl",
+      "name": "application.local.baseUrl",
       "type": "java.lang.String",
-      "description": "Description for application.local.difiConfigurationUrl."
+      "description": "Description for application.local.baseUrl."
+    },
+    {
+      "name": "application.local.difiOIDCIssuer",
+      "type": "java.lang.String",
+      "description": "Description for application.local.difiOIDCIssuer."
     }
   ] }

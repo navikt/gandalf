@@ -29,10 +29,13 @@ data class RSAKeyStore(
     // old format
     val rSAKey: RSAKey
         get() = try {
-            if (rsaKey.contains("SIGNATURE")) { // old format
-                RSAKey.parse(getNewFormat(rsaKey))
-            } else {
-                RSAKey.parse(rsaKey)
+            when {
+                rsaKey.contains("SIGNATURE") -> { // old format
+                    RSAKey.parse(getNewFormat(rsaKey))
+                }
+                else -> {
+                    RSAKey.parse(rsaKey)
+                }
             }
         } catch (e: Exception) {
             throw IllegalArgumentException("Failed to parse key in db")

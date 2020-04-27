@@ -22,7 +22,7 @@ private val log = KotlinLogging.logger { }
 class OidcObject {
     var issuer: String? = null
     var version: String? = null
-    var id: String
+    var id: String? = null
     var subject: String? = null
     private var audience: MutableList<String>? = null
     var azp: String? = null
@@ -32,7 +32,7 @@ class OidcObject {
     var notBeforeTime: Date?
     var issueTime: Date
     var expirationTime: Date
-    var authTime: Date
+    var authTime: Date?
     var auditTrackingId: String? = null
     private var signedJWT: SignedJWT? = null
     private val log: Logger = LoggerFactory.getLogger(javaClass)
@@ -45,7 +45,7 @@ class OidcObject {
         expirationTime = toDate(issueTime.plusSeconds(duration))
     }
 
-    constructor(issueTime: ZonedDateTime, expirationTime: ZonedDateTime) {
+    constructor(issueTime: ZonedDateTime?, expirationTime: ZonedDateTime) {
         id = UUID.randomUUID().toString()
         this.issueTime = toDate(issueTime)
         authTime = this.issueTime
@@ -56,7 +56,8 @@ class OidcObject {
     constructor(oidcToken: String?) {
         // parse token
         signedJWT = SignedJWT.parse(oidcToken)
-        val claimSet: JWTClaimsSet = signedJWT!!.getJWTClaimsSet()
+        val claimSet: JWTClaimsSet = signedJWT!!.jwtClaimsSet
+        println(claimSet)
 
         // get claims
         issuer = claimSet.issuer
@@ -76,47 +77,47 @@ class OidcObject {
     }
 
     @Throws(JOSEException::class)
-    fun validate(issuer: OidcIssuer) {
-        validate(issuer, toDate(ZonedDateTime.now()))
+    fun validate(issuer: OidcIssuer, rsaJwk: RSAKey) {
+        validate(issuer.issuer, toDate(ZonedDateTime.now()), rsaJwk)
     }
 
     @Throws(JOSEException::class)
     fun validate(issuer: OidcIssuer, now: Date) {
-        println("HOHO")
-        println(issuer)
-        println(signedJWT!!.header.keyID)
-        val rsaJwk = issuer.getKeyByKeyId(signedJWT!!.header.keyID)
-                ?: throw IllegalArgumentException("Validation failed: failed to find key " + signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer)
-        validate(issuer.issuer, now, rsaJwk)
+        when (val rsaJwk = issuer.getKeyByKeyId(signedJWT!!.header.keyID)) {
+            null -> {
+                throw IllegalArgumentException("Validation failed: failed to find key " + signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer)
+            }
+            else -> {
+                validate(issuer.issuer, now, rsaJwk)
+            }
+        }
     }
 
     @Throws(JOSEException::class)
     fun validate(issuer: String?, now: Date, rsaJwk: RSAKey) {
-        if (issuer == null || issuer != this.issuer) {
-            throw IllegalArgumentException("Validation failed: 'issuer' is null or unknown")
-        }
-        // check time
-        if (notBeforeTime != null && now.before(notBeforeTime)) {
-            throw IllegalArgumentException("Validation failed: notBeforeTime validation failed")
-        }
-        if (now.after(expirationTime)) {
-            throw IllegalArgumentException("Validation failed: token has expired")
-        }
-        val verifier = RSASSAVerifier(rsaJwk.toRSAPublicKey())
-        if (!verifier.verify(signedJWT!!.header, signedJWT!!.signingInput, signedJWT!!.signature)) {
-            throw IllegalArgumentException("Validation failed: Signature validation failed")
+        when {
+            issuer == null || issuer != this.issuer -> {
+                throw IllegalArgumentException("Validation failed: 'issuer' is null or unknown")
+            }
+            // check time
+            notBeforeTime != null && now.before(notBeforeTime) -> {
+                throw IllegalArgumentException("Validation failed: notBeforeTime validation failed")
+            }
+            now.after(expirationTime) -> {
+                throw IllegalArgumentException("Validation failed: token has expired")
+            }
+            else -> {
+                val verifier = RSASSAVerifier(rsaJwk.toRSAPublicKey())
+                if (!verifier.verify(signedJWT!!.header, signedJWT!!.signingInput, signedJWT!!.signature)) {
+                    throw IllegalArgumentException("Validation failed: Signature validation failed")
+                }
+            }
         }
     }
 
-    fun getSignedToken(key: RSAKey, alg: JWSAlgorithm): SignedJWT? {
-        signedJWT = getSignedJWT(jWTClaimsSet, key, alg)
-        return signedJWT
-    }
+    fun getSignedToken(key: RSAKey, alg: JWSAlgorithm) = getSignedJWT(jWTClaimsSet, key, alg)
 
-    fun getSignedTokenSpec2(key: RSAKey, alg: JWSAlgorithm): SignedJWT? {
-        signedJWT = getSignedJWT(jWTClaimsSetSpec2, key, alg)
-        return signedJWT
-    }
+    fun getSignedTokenSpec2(key: RSAKey, alg: JWSAlgorithm) = getSignedJWT(jWTClaimsSetSpec2, key, alg)
 
     private val jWTClaimsSet: JWTClaimsSet
         get() = JWTClaimsSet.Builder()
@@ -131,9 +132,7 @@ class OidcObject {
                 .expirationTime(expirationTime)
                 .claim(AZP_CLAIM, azp)
                 .claim(RESOURCETYPE_CLAIM, resourceType)
-                .build()//				.audience(audience.get(0))	// spec2 spesifikk
-    // spec2 spesifikk
-    // spec2 spesifikk
+                .build()
 
     // kravene for saml til oidc, DISSE MÅ ENES
     private val jWTClaimsSetSpec2: JWTClaimsSet
@@ -235,8 +234,8 @@ class OidcObject {
         var AZP_CLAIM: String = "azp"
         var UTY_CLAIM: String = "uty"
         var TRACKING_CLAIM: String = "auditTrackingId"
-        fun toDate(d: ZonedDateTime): Date {
-            return Date.from(d.toInstant())
+        fun toDate(d: ZonedDateTime?): Date {
+            return Date.from(d!!.toInstant())
         }
     }
 }

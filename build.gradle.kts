@@ -11,6 +11,7 @@ object Version {
     const val hibernate = "5.4.14.Final"
     const val json = "20190722"
     const val apacheHttp = "4.5.12"
+    const val wiremock = "2.26.3"
 }
 
 val mainClass = "$group.no.nav.gandalf.GandalfApplication"
@@ -73,6 +74,7 @@ dependencies {
         exclude("com.vaadin.external.google", module = "android-json")
         exclude(module = "junit")
     }
+    testImplementation("com.github.tomakehurst:wiremock-jre8:${Version.wiremock}")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }

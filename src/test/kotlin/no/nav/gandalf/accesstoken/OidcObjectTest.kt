@@ -1,5 +1,6 @@
 package no.nav.gandalf.accesstoken
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
@@ -9,8 +10,10 @@ import no.nav.gandalf.utils.compare
 import no.nav.gandalf.utils.getAlteredOriginalToken
 import no.nav.gandalf.utils.getOriginalJwkSet
 import no.nav.gandalf.utils.getOriginalToken
-import org.junit.Assert
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +25,12 @@ import java.util.*
 @RunWith(SpringRunner::class)
 @SpringBootTest
 class OidcObjectTest {
+
+    companion object {
+        @ClassRule
+        @JvmField
+        val wireMockRule = WireMockRule(8888)
+    }
 
     @Autowired
     private lateinit var tokenIssuer: AccessTokenIssuer
@@ -57,22 +66,21 @@ class OidcObjectTest {
             oidcObj.azp = username
             oidcObj.resourceType = AccessTokenIssuer.getIdentType(username)
             val token = oidcObj.getSignedToken(getCurrentRSAKey()!!, AccessTokenIssuer.OIDC_SIGNINGALG)
-            val jwt = token!!.jwtClaimsSet
+            val jwt = token.jwtClaimsSet
             compare(jwtOriginal, jwt)
         } catch (e: Exception) {
-            println("Error: " + e.message)
-            Assert.assertTrue(false)
+            fail("Error: " + e.message)
         }
     }
 
     @Test
     fun `Compare Generated Token To Original Token ver2`() {
         try {
-            // gammelt token
+            // Gammelt token
             val originalToken = getOriginalToken()
             val jwtOriginal = SignedJWT.parse(originalToken).jwtClaimsSet
             val username = jwtOriginal.subject
-            // test constructor
+            // Use test constructor
             // get token based on values from original token for comparison
             var oidcObj = OidcObject(AccessTokenIssuer.toZonedDateTime(jwtOriginal.issueTime), AccessTokenIssuer.toZonedDateTime(jwtOriginal.expirationTime))
             oidcObj.id = jwtOriginal.jwtid
@@ -83,16 +91,15 @@ class OidcObjectTest {
             oidcObj.azp = username
             oidcObj.resourceType = AccessTokenIssuer.getIdentType(username)
             var token = oidcObj.getSignedToken(getCurrentRSAKey()!!, AccessTokenIssuer.OIDC_SIGNINGALG)
-            var jwt = token!!.jwtClaimsSet
+            var jwt = token.jwtClaimsSet
             compare(jwtOriginal, jwt)
-            // test constructor
+            // Use test constructor
             oidcObj = OidcObject(originalToken)
             token = oidcObj.getSignedToken(getCurrentRSAKey()!!, AccessTokenIssuer.OIDC_SIGNINGALG)
-            jwt = token!!.jwtClaimsSet
+            jwt = token.jwtClaimsSet
             compare(jwtOriginal, jwt)
         } catch (e: Exception) {
-            println("Error: " + e.message)
-            Assert.assertTrue(false)
+            fail("Error: " + e.message)
         }
     }
 
@@ -106,29 +113,27 @@ class OidcObjectTest {
             // get token based on values from original token for comparison
             val oidcObj = OidcObject(originalToken)
             val token = oidcObj.getSignedToken(getCurrentRSAKey()!!, AccessTokenIssuer.OIDC_SIGNINGALG)
-            val jwt = token!!.jwtClaimsSet
+            val jwt = token.jwtClaimsSet
             compare(jwtOriginal, jwt)
         } catch (e: Exception) {
-            println("Error: " + e.message)
-            Assert.assertTrue(false)
+            fail("Error: " + e.message)
         }
     }
 
     @Test
-    @Throws(NoSuchAlgorithmException::class, JOSEException::class)
     fun `Validate Valid Token`() {
         try {
             val originalToken = getOriginalToken()
             val oidcObj = OidcObject(originalToken)
             oidcObj.getSignedToken(getCurrentRSAKey()!!, AccessTokenIssuer.OIDC_SIGNINGALG)
-            oidcObj.validate(tokenIssuer, oidcObj.issueTime) // now is IssueTime
+            val jwk = getOriginalJwkSet().getKeyByKeyId(oidcObj.keyId) as RSAKey
+            oidcObj.validate(tokenIssuer.issuer, oidcObj.issueTime, jwk) // now is IssueTime
         } catch (e: Exception) {
-            Assert.assertTrue(false)
+            fail("Error: " + e.message)
         }
     }
 
     @Test
-    @Throws(NoSuchAlgorithmException::class, JOSEException::class)
     fun `Validate Unknown Issuer`() {
         try {
             val originalToken = getOriginalToken()
@@ -137,51 +142,51 @@ class OidcObjectTest {
             oidcObj.getSignedToken(getCurrentRSAKey()!!, AccessTokenIssuer.OIDC_SIGNINGALG)
             oidcObj.validate(tokenIssuer, oidcObj.issueTime) // now is IssueTime
         } catch (e: Exception) {
-            Assert.assertTrue(e.message!!.indexOf("issuer") >= 0)
+            assertTrue(e.message!!.indexOf("issuer") >= 0)
         }
     }
 
     @Test
-    @Throws(NoSuchAlgorithmException::class, JOSEException::class)
     fun `Validate - Has Expired`() {
         try {
             val originalToken = getOriginalToken()
             val oidcObj = OidcObject(originalToken)
             oidcObj.getSignedToken(getCurrentRSAKey()!!, AccessTokenIssuer.OIDC_SIGNINGALG)
-            oidcObj.validate(tokenIssuer) // now is after expirationTime
+            val jwk = getOriginalJwkSet().getKeyByKeyId(oidcObj.keyId) as RSAKey
+            oidcObj.validate(tokenIssuer, jwk) // now is after expirationTime
         } catch (e: Exception) {
-            Assert.assertTrue(e.message!!.indexOf("expired") >= 0)
+            assertTrue(e.message!!.indexOf("expired") >= 0)
         }
     }
 
     @Test
-    @Throws(NoSuchAlgorithmException::class, JOSEException::class)
     fun `Validate - Is Not Before`() {
         try {
             val originalToken = getOriginalToken()
             val oidcObj = OidcObject(originalToken)
             oidcObj.getSignedToken(getCurrentRSAKey()!!, AccessTokenIssuer.OIDC_SIGNINGALG)
-            oidcObj.validate(tokenIssuer, Date(oidcObj.notBeforeTime!!.time - 2)) // now is before notBeforeTime
+            val jwk = getOriginalJwkSet().getKeyByKeyId(oidcObj.keyId) as RSAKey
+            oidcObj.validate(tokenIssuer.issuer, Date(oidcObj.notBeforeTime!!.time - 2), jwk) // now is before notBeforeTime
         } catch (e: Exception) {
-            Assert.assertTrue(e.message!!.indexOf("notBeforeTime") >= 0)
+            assertTrue(e.message!!.indexOf("notBeforeTime") >= 0)
         }
     }
 
 
     @Test
-    @Throws(NoSuchAlgorithmException::class, JOSEException::class)
     fun `Validate - Unknown Key`() {
         try {
             val originalToken = getAlteredOriginalToken()
             val oidcObj = OidcObject(originalToken)
-            oidcObj.validate(tokenIssuer, oidcObj.issueTime) // now is IssueTime
+            // now is IssueTime
+            oidcObj.validate(tokenIssuer, oidcObj.issueTime)
         } catch (e: Exception) {
-            Assert.assertTrue(e.message!!.indexOf("failed to find key") >= 0)
+            println(e.message)
+            assertTrue(e.message!!.indexOf("failed to find key") >= 0)
         }
     }
 
     @Test
-    @Throws(NoSuchAlgorithmException::class, JOSEException::class)
     fun `Validate - Original Token`() {
         try {
             val alteredToken = getOriginalToken()
@@ -189,12 +194,11 @@ class OidcObjectTest {
             val jwk = getOriginalJwkSet().getKeyByKeyId(oidcObj.keyId) as RSAKey
             oidcObj.validate(tokenIssuer.issuer, oidcObj.issueTime, jwk) // now is IssueTime
         } catch (e: Exception) {
-            Assert.assertTrue(false)
+            fail("Error: " + e.message)
         }
     }
 
     @Test
-    @Throws(NoSuchAlgorithmException::class, JOSEException::class)
     fun `Validate Altered Token`() {
         try {
             val alteredToken = getAlteredOriginalToken()
@@ -202,7 +206,7 @@ class OidcObjectTest {
             val jwk = getOriginalJwkSet().getKeyByKeyId(oidcObj.keyId) as RSAKey
             oidcObj.validate(tokenIssuer.issuer, oidcObj.issueTime, jwk) // now is IssueTime
         } catch (e: Exception) {
-            Assert.assertTrue(e.message!!.indexOf("Signature validation failed") >= 0)
+            assertTrue(e.message!!.indexOf("Signature validation failed") >= 0)
         }
     }
 

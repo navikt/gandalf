@@ -2,7 +2,7 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.JWSAlgorithm
-import com.nimbusds.jose.jwk.JWKSet
+import com.nimbusds.jose.jwk.JWK
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.ParseException
@@ -35,37 +35,27 @@ class AccessTokenIssuer(
 ) : OidcIssuer {
 
     final override var issuer = applicationGeneralEnvironment.issuer
+    private val issuerSrvUser = applicationGeneralEnvironment.issuerSrvUser
     private val domain = getDomainFromIssuerURL(issuer)
     lateinit var knownIssuers: MutableList<OidcIssuer>
-
-    enum class IdentType(val value: String) {
-        SYSTEMRESSURS("Systemressurs"),
-        INTERNBRUKER("InternBruker"),
-        EKSTERNBRUKER("EksternBruker"),
-        SAMHANDLER("Samhandler")
-    }
 
     @PostConstruct
     @Throws(ParseException::class)
     fun setKnownIssuers() {
-        knownIssuers = mutableListOf()
-        knownIssuers.add(this)
-        knownIssuers.add(OidcIssuerImpl(
-                applicationGeneralEnvironment.openamIssuerUrl,
-                applicationGeneralEnvironment.openamJwksUrl,
-                httpClient)
+        knownIssuers = mutableListOf(
+                this,
+                OidcIssuerImpl(
+                        applicationGeneralEnvironment.openamIssuerUrl,
+                        applicationGeneralEnvironment.openamJwksUrl
+                ),
+                OidcIssuerImpl(
+                        applicationGeneralEnvironment.azureadIssuerUrl,
+                        applicationGeneralEnvironment.azureadJwksUrl
+                ),
+                OidcIssuerImplDifi(
+                        applicationGeneralEnvironment.difiOIDCIssuer
+                )
         )
-        knownIssuers.add(OidcIssuerImpl(
-                applicationGeneralEnvironment.azureadIssuerUrl,
-                applicationGeneralEnvironment.azureadJwksUrl,
-                httpClient)
-        )
-        //  knownIssuers.add(OidcIssuerImplDifi(
-        //          applicationEnv.difiConfigurationUrl,
-        //          PropertyUtil.get(Environment.STS_DIFI_CONFIGURATIONAPIKEY),
-        //          PropertyUtil.get(Environment.STS_DIFI_JWKSURL),
-        //          PropertyUtil.get(Environment.STS_DIFI_JWKSAPIKEY),
-        //          httpClient))
         //  knownIssuers.add(OidcIssuerImplDifi(PropertyUtil.get(Environment.STS_MASKINPORTEN_CONFIGURATIONURL),
         //          PropertyUtil.get(Environment.STS_MASKINPORTEN_CONFIGURATIONAPIKEY),
         //          PropertyUtil.get(Environment.STS_MASKINPORTEN_JWKSURL),
@@ -126,11 +116,11 @@ class AccessTokenIssuer(
 
     @JvmOverloads
     @Throws(Exception::class)
-    fun exchangeSamlToOidcToken(samlToken: String, now: ZonedDateTime = ZonedDateTime.now()): SignedJWT? {
+    fun exchangeSamlToOidcToken(samlToken: String, now: ZonedDateTime? = ZonedDateTime.now()): SignedJWT? {
         log.info("Issuing OIDC token from SAML: exchangeSamlToOidcToken - SAML:$samlToken")
 
         // read Saml token
-        val samlObj = SamlObject(now)
+        val samlObj = SamlObject(now!!)
         samlObj.read(samlToken)
 
         // validate token
@@ -204,12 +194,16 @@ class AccessTokenIssuer(
         return oidcObj.getSignedTokenCopyAndAddClaimsFrom(difiOidcObj, copyClaims, keyStore.currentRSAKey, OIDC_SIGNINGALG)
     }
 
-    val publicJWKSet: JWKSet?
-        get() = keyStore.getPublicJWKSet()
-
-    override fun getKeyByKeyId(keyId: String?): RSAKey {
-        requireNotNull(publicJWKSet) { "Failed to get keys from by issuer : $issuer" }
-        return publicJWKSet!!.getKeyByKeyId(keyId) as RSAKey
+    override fun getKeyByKeyId(keyId: String?): RSAKey? {
+        if (keyStore.publicJWKSet == null || keyStore.publicJWKSet != null && keyStore.publicJWKSet!!.keys.isEmpty()) {
+            throw IllegalArgumentException("Failed to get keys from by issuer: $issuer")
+        } else {
+            println("lol")
+            println(keyId)
+            println(keyStore.publicJWKSet)
+            val keyIdResult: JWK? = keyStore.publicJWKSet!!.getKeyByKeyId(keyId)
+            return if (keyIdResult != null) keyIdResult as RSAKey else keyIdResult
+        }
     }
 
     fun getAuthenticationLevel(samlObj: SamlObject): String? {
@@ -218,18 +212,19 @@ class AccessTokenIssuer(
         } else null
     }
 
+    fun getKeySelector() = keySelector
+
     companion object {
-        var OIDC_DURATION_TIME = 60 * 60 // seconds
-                .toLong()
+        // seconds
+        var OIDC_DURATION_TIME = 60 * 60.toLong()
         var OIDC_VERSION = "1.0"
-        var OIDC_SIGNINGALG = JWSAlgorithm.RS256
+        var OIDC_SIGNINGALG: JWSAlgorithm = JWSAlgorithm.RS256
         var SAML_ISSUER = "IS02"
-        var SAML_DURATION_TIME = 60 * 60 // seconds
-                .toLong()
+        var SAML_DURATION_TIME = 60 * 60.toLong()
         var EXCHANGE_TOKEN_EXTENDED_TIME: Long = 30 // seconds
         var DEFAULT_SAML_AUTHLEVEL = "0"
+
         fun getDomainFromIssuerURL(issuer: String?): String {
-            println("issuer: " + issuer)
             val domainPrefix = "nais."
             require(!(issuer == null || issuer.length < domainPrefix.length)) { "Failed to find domain from issuerUrl: $issuer" }
             return issuer.substring(issuer.indexOf(domainPrefix) + domainPrefix.length)
@@ -248,4 +243,11 @@ class AccessTokenIssuer(
             return ZonedDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault())
         }
     }
+}
+
+enum class IdentType(val value: String) {
+    SYSTEMRESSURS("Systemressurs"),
+    INTERNBRUKER("InternBruker"),
+    EKSTERNBRUKER("EksternBruker"),
+    SAMHANDLER("Samhandler")
 }
