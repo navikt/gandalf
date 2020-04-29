@@ -7,20 +7,17 @@ import com.nimbusds.jose.jwk.RSAKey
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.service.RSAKeyStoreService
-import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-@DirtiesContext
 class RSAKeyStoreRepositoryTest {
 
     @Autowired
@@ -28,13 +25,9 @@ class RSAKeyStoreRepositoryTest {
 
     @Before
     fun init() {
+        rsaKeyStoreService.resetRepository()
         rsaKeyStoreService.repositoryImpl.lockKeyStore(test = true)
         rsaKeyStoreService.resetCache()
-    }
-
-    @After
-    fun clear() {
-        rsaKeyStoreService.repositoryImpl.clear()
     }
 
     @Test

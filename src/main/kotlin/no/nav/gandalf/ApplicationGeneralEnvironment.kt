@@ -13,5 +13,6 @@ data class ApplicationGeneralEnvironment(
         var azureadIssuerUrl: String = "",
         var azureadJwksUrl: String = "",
         var baseUrl: String = "",
-        var difiOIDCIssuer: String = ""
+        var difiOIDCIssuer: String = "",
+        var difiMaskinportenIssuer: String = ""
 )

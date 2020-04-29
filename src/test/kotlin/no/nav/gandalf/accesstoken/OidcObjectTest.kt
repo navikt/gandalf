@@ -1,10 +1,7 @@
 package no.nav.gandalf.accesstoken
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule
-import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
-import no.nav.gandalf.keystore.RSAKeyStoreRepositoryImpl
 import no.nav.gandalf.service.RSAKeyStoreService
 import no.nav.gandalf.utils.compare
 import no.nav.gandalf.utils.getAlteredOriginalToken
@@ -13,24 +10,16 @@ import no.nav.gandalf.utils.getOriginalToken
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
-import org.junit.ClassRule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import java.security.NoSuchAlgorithmException
 import java.util.*
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
 class OidcObjectTest {
-
-    companion object {
-        @ClassRule
-        @JvmField
-        val wireMockRule = WireMockRule(8888)
-    }
 
     @Autowired
     private lateinit var tokenIssuer: AccessTokenIssuer
@@ -38,13 +27,10 @@ class OidcObjectTest {
     @Autowired
     private lateinit var rsaKeyStoreService: RSAKeyStoreService
 
-    @Autowired
-    private lateinit var rsaKeyStoreRepositoryImpl: RSAKeyStoreRepositoryImpl
-
-
     @Before
     fun init() {
-        rsaKeyStoreRepositoryImpl.lockKeyStore(test = true)
+        rsaKeyStoreService.resetRepository()
+        rsaKeyStoreService.repositoryImpl.lockKeyStore(test = true)
         rsaKeyStoreService.resetCache()
     }
 
@@ -182,7 +168,7 @@ class OidcObjectTest {
             oidcObj.validate(tokenIssuer, oidcObj.issueTime)
         } catch (e: Exception) {
             println(e.message)
-            assertTrue(e.message!!.indexOf("failed to find key") >= 0)
+            assertTrue(e.message!!.indexOf("Failed to get keys from by issuer") >= 0)
         }
     }
 

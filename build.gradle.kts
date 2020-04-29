@@ -75,6 +75,7 @@ dependencies {
         exclude(module = "junit")
     }
     testImplementation("com.github.tomakehurst:wiremock-jre8:${Version.wiremock}")
+    testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:2.2.2.RELEASE")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }

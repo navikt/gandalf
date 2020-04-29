@@ -14,14 +14,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import java.security.NoSuchAlgorithmException
 import java.time.LocalDateTime
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-@DirtiesContext
 class RSAKeyStoreRepositoryImplTest {
 
     @Autowired
@@ -29,6 +27,7 @@ class RSAKeyStoreRepositoryImplTest {
 
     @Before
     fun init() {
+        rsaKeyStoreRepositoryImpl.clear()
         rsaKeyStoreRepositoryImpl.lockKeyStore(test = true)
     }
 
@@ -57,8 +56,8 @@ class RSAKeyStoreRepositoryImplTest {
         val rsaKeyStore2: RSAKeyStore? = rsaKeyStoreRepositoryImpl.currentDBKeyUpdateIfNeeded // should not alter DB
         println(rsaKeyStore)
         println(rsaKeyStore2)
-        Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2 == rsaKeyStore)
         Assert.assertTrue(rsaKeyStoreRepositoryImpl.findAllOrdered().size == 1)
+        Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2.rSAKey == rsaKeyStore.rSAKey)
     }
 
     @Test
@@ -77,7 +76,7 @@ class RSAKeyStoreRepositoryImplTest {
         println(rsaKeyStore)
         println(rsaKeyStoreRepositoryImpl.findAllOrdered().size)
         Assert.assertTrue(rsaKeyStoreRepositoryImpl.findAllOrdered().size == 2)
-        Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2 == rsaKeyStore)
+        Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2.rSAKey == rsaKeyStore.rSAKey)
     }
 
     @Test
@@ -89,14 +88,17 @@ class RSAKeyStoreRepositoryImplTest {
         rsaKeyStoreRepositoryImpl.addRSAKey(LocalDateTime.now().minusSeconds(2 * RSAKeyStoreRepositoryImpl.keyRotationTime - 10)) // expired, but not outdated
         rsaKeyStoreRepositoryImpl.addRSAKey(LocalDateTime.now().minusSeconds(2 * RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdated
         rsaKeyStoreRepositoryImpl.addRSAKey(LocalDateTime.now().minusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired, but not outdated
+        println(rsaKeyStoreRepositoryImpl.findAllOrdered().size)
         Assert.assertTrue(rsaKeyStoreRepositoryImpl.findAllOrdered().size == 5)
         val rsaKeyStore: RSAKeyStore? = rsaKeyStoreRepositoryImpl.currentDBKeyUpdateIfNeeded // should add one new key and delete the 2 outdated keys
         Assert.assertTrue(rsaKeyStore != null)
         Assert.assertTrue(!rsaKeyStore!!.hasExpired())
         Assert.assertTrue(rsaKeyStoreRepositoryImpl.findAllOrdered().size == 4) // 5+1-2
         val rsaKeyStore2: RSAKeyStore? = rsaKeyStoreRepositoryImpl.currentDBKeyUpdateIfNeeded // should not alter DB
-        Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2 == rsaKeyStore)
+        println(rsaKeyStore2)
+        println(rsaKeyStore)
         Assert.assertTrue(rsaKeyStoreRepositoryImpl.findAllOrdered().size == 4)
+        Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2.rSAKey == rsaKeyStore.rSAKey)
     }
 
     @Test
@@ -112,8 +114,8 @@ class RSAKeyStoreRepositoryImplTest {
         Assert.assertTrue(!rsaKeyStore!!.hasExpired())
         Assert.assertTrue(rsaKeyStoreRepositoryImpl.findAllOrdered().size == RSAKeyStoreRepositoryImpl.minNoofKeys)
         val rsaKeyStore2: RSAKeyStore? = rsaKeyStoreRepositoryImpl.currentDBKeyUpdateIfNeeded // should not alter DB
-        Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2 == rsaKeyStore)
         Assert.assertTrue(rsaKeyStoreRepositoryImpl.findAllOrdered().size == RSAKeyStoreRepositoryImpl.minNoofKeys)
+        Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2.rSAKey == rsaKeyStore.rSAKey)
     }
 
     @Test

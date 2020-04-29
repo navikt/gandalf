@@ -83,6 +83,8 @@ class OidcObject {
 
     @Throws(JOSEException::class)
     fun validate(issuer: OidcIssuer, now: Date) {
+        println(issuer.issuer)
+        println(signedJWT!!.header.keyID)
         when (val rsaJwk = issuer.getKeyByKeyId(signedJWT!!.header.keyID)) {
             null -> {
                 throw IllegalArgumentException("Validation failed: failed to find key " + signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer)

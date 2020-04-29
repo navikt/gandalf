@@ -3,7 +3,6 @@ package no.nav.gandalf.accesstoken
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
-import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.nimbusds.jwt.SignedJWT
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
@@ -20,6 +19,8 @@ import no.nav.gandalf.utils.TestEnv
 import no.nav.gandalf.utils.azureADJwksUrl
 import no.nav.gandalf.utils.azureADResponseFileName
 import no.nav.gandalf.utils.diffTokens
+import no.nav.gandalf.utils.difiMASKINPORTENCJwksUrl
+import no.nav.gandalf.utils.difiMASKINPORTENConfigurationResponseFileName
 import no.nav.gandalf.utils.difiOIDCConfigurationResponseFileName
 import no.nav.gandalf.utils.difiOIDCConfigurationUrl
 import no.nav.gandalf.utils.difiOIDCJwksUrl
@@ -31,6 +32,7 @@ import no.nav.gandalf.utils.getAzureAdOIDC
 import no.nav.gandalf.utils.getDifiOidcToken
 import no.nav.gandalf.utils.getDpSamlToken
 import no.nav.gandalf.utils.getIDASelvutstedtSaml
+import no.nav.gandalf.utils.getMaskinportenToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.gandalf.utils.getSamlToken
@@ -38,30 +40,43 @@ import no.nav.gandalf.utils.jwksEndpointStub
 import no.nav.gandalf.utils.openAMJwksUrl
 import no.nav.gandalf.utils.openAMResponseFileName
 import org.apache.http.HttpStatus
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.ClassRule
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.jupiter.api.fail
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.ZonedDateTime
 import java.util.*
+import javax.annotation.PostConstruct
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
+// @ContextConfiguration(initializers = [WireMockContextInitializer::class])
+@AutoConfigureWireMock(port = 8888)
 class AccessTokenIssuerTest {
 
-    companion object {
-        @ClassRule
-        @JvmField
-        val wireMockRule = WireMockRule(8888)
-    }
+    // @Autowired
+    // private lateinit var wireMockServer: WireMockServer
+//
+    // @AfterEach
+    // fun afterEach() {
+    //     wireMockServer.resetAll()
+    // }
+
+    // companion object {
+    //     @ClassRule
+    //     @JvmField
+    //     val wireMockRule = WireMockRule(8888)
+    // }
 
     @Autowired
     private lateinit var env: TestEnv
@@ -72,8 +87,18 @@ class AccessTokenIssuerTest {
     @Autowired
     private lateinit var rsaKeyStoreService: RSAKeyStoreService
 
+    @PostConstruct
+    fun setupKnownIssuers() {
+        jwksEndpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
+        jwksEndpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
+        jwksEndpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
+        jwksEndpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENConfigurationResponseFileName)
+        jwksEndpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
+    }
+
     @Before
     fun setup() {
+        rsaKeyStoreService.resetRepository()
         rsaKeyStoreService.repositoryImpl.lockKeyStore(test = true)
         rsaKeyStoreService.resetCache()
     }
@@ -119,7 +144,6 @@ class AccessTokenIssuerTest {
 
     @Test
     fun `Validate OpenAm OIDC`() {
-        jwksEndpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
         val oidcToken: String = getOpenAmOIDC()
         val signedJWT: SignedJWT
         try {
@@ -137,7 +161,6 @@ class AccessTokenIssuerTest {
     // Ignoring, missing Azure token
     @Ignore
     fun `Validate AzureAd OIDC`() {
-        jwksEndpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
         val oidcToken: String = getAzureAdOIDC()
         val signedJWT: SignedJWT
         try {
@@ -353,7 +376,6 @@ class AccessTokenIssuerTest {
 
     @Test
     fun `Exchange OpenAm OIDC To SAML Token`() {
-        jwksEndpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
         val l: List<String> = getOpenAmAndDPSamlExchangePair()
         val oidcToken = l[0]
         val dpSamlToken = l[1]
@@ -405,9 +427,7 @@ class AccessTokenIssuerTest {
     }
 
     @Test
-    fun exchangeDifiTokenToOidcTest() {
-        jwksEndpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
-        jwksEndpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
+    fun `Exchange DIFI Token To OIDC`() {
         val difiToken: String = getDifiOidcToken()
         val difiJwt = SignedJWT.parse(difiToken).jwtClaimsSet
         val subject = difiJwt.getClaim("client_orgno") as String
@@ -423,7 +443,7 @@ class AccessTokenIssuerTest {
         assertTrue(jwt.issuer == issuer.issuer)
         assertTrue(jwt.getStringClaim(VERSION_CLAIM) == OIDC_VERSION)
         assertTrue(jwt.jwtid != null)
-        assertTrue(jwt.getClaim(RESOURCETYPE_CLAIM) == IdentType.SAMHANDLER.name)
+        assertTrue(jwt.getClaim(RESOURCETYPE_CLAIM) == IdentType.SAMHANDLER.value)
         assertTrue(jwt.getStringClaim(OidcObject.TRACKING_CLAIM) == difiJwt.jwtid)
 
         assertTrue(jwt.audience.size == difiJwt.audience.size)
@@ -434,5 +454,35 @@ class AccessTokenIssuerTest {
         assertTrue(jwt.notBeforeTime.compareTo(issueAt) == 0)
         assertTrue(jwt.getLongClaim(AUTHTIME_CLAIM) == jwt.issueTime.time / 1000)
         assertTrue((jwt.expirationTime.time - jwt.issueTime.time) / 1000 == OIDC_DURATION_TIME)
+    }
+
+    @Test
+    @Throws(java.lang.Exception::class)
+    fun `Exchange Maskinporten Token To Oidc`() {
+        val difiToken: String = getMaskinportenToken()
+        val difiJwt = SignedJWT.parse(difiToken).jwtClaimsSet
+        val subject = difiJwt.getClaim("client_orgno") as String
+        val issueAt = difiJwt.issueTime
+
+        // exchange token
+        val oidcToken = issuer.exchangeDifiTokenToOidc(difiToken, issueAt)
+
+        // check issued token
+        val jwt = oidcToken.jwtClaimsSet
+        assertEquals(jwt.subject, subject)
+        assertEquals(jwt.getClaim(AZP_CLAIM), subject)
+        assertEquals(jwt.issuer, issuer.issuer)
+        assertEquals(jwt.getStringClaim(VERSION_CLAIM), OIDC_VERSION)
+        assertNotNull(jwt.jwtid)
+        assertEquals(jwt.getClaim(RESOURCETYPE_CLAIM), IdentType.SAMHANDLER.value)
+        assertEquals(jwt.getStringClaim(OidcObject.TRACKING_CLAIM), difiJwt.jwtid)
+        assertEquals(jwt.audience.size.toLong(), difiJwt.audience.size.toLong())
+        for (i in jwt.audience.indices) {
+            assertEquals(jwt.audience[i], difiJwt.audience[i])
+        }
+        assertEquals(0, jwt.issueTime.compareTo(issueAt).toLong())
+        assertEquals(0, jwt.notBeforeTime.compareTo(issueAt).toLong())
+        assertEquals(jwt.getLongClaim(AUTHTIME_CLAIM) as Long, jwt.issueTime.time / 1000)
+        assertEquals((jwt.expirationTime.time - jwt.issueTime.time) / 1000, OIDC_DURATION_TIME)
     }
 }

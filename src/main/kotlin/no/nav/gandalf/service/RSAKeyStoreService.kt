@@ -52,8 +52,14 @@ class RSAKeyStoreService(
         return JWKSet(jwkList).toPublicJWKSet()
     }
 
+    // Kun Test
     fun resetCache() {
         currRSAKeyStore = null
         currPublicJWKSet = null
+    }
+
+    // Kun Test
+    fun resetRepository() {
+        repositoryImpl.clear()
     }
 }

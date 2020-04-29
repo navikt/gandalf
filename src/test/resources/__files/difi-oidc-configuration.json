@@ -4,7 +4,7 @@
   "token_endpoint": "https://oidc-ver2.difi.no/idporten-oidc-provider/token",
   "end_session_endpoint": "https://oidc-ver2.difi.no/idporten-oidc-provider/endsession",
   "revocation_endpoint": "https://oidc-ver2.difi.no/idporten-oidc-provider/revoke",
-  "jwks_uri": "https://oidc-ver2.difi.no/idporten-oidc-provider/jwk",
+  "jwks_uri": "http://localhost:8888/idporten-oidc-provider/jwk",
   "response_types_supported": [
     "code",
     "id_token",

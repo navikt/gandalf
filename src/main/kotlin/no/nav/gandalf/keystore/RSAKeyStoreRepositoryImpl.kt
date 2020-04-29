@@ -62,6 +62,7 @@ class RSAKeyStoreRepositoryImpl(
             // lock keystore before read, in case an update of keystore is needed
             lockKeyStore(false)
             val keyList: List<RSAKeyStore> = findAllOrdered()
+            println("keyList: " + keyList.size)
             if (keyList.isNotEmpty() && !keyList[0].hasExpired()) {
                 return keyList[0]
             }
@@ -127,5 +128,7 @@ class RSAKeyStoreRepositoryImpl(
     fun clear() {
         keyStoreLockRepository.deleteAll()
         rsaKeyStoreRepository.deleteAll()
+        keyStoreLockRepository.flush()
+        rsaKeyStoreRepository.flush()
     }
 }

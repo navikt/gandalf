@@ -39,5 +39,10 @@
       "name": "application.local.difiOIDCIssuer",
       "type": "java.lang.String",
       "description": "Description for application.local.difiOIDCIssuer."
+    },
+    {
+      "name": "application.local.difiMaskinportenIssuer",
+      "type": "java.lang.String",
+      "description": "Description for application.local.difiMaskinportenIssuer."
     }
   ] }

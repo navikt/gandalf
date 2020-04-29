@@ -31,7 +31,8 @@ class AccessTokenIssuer(
         @Autowired private val keyStore: RSAKeyStoreService,
         @Autowired private val keySelector: KeySelector,
         @Autowired private val keyStoreReader: KeyStoreReader,
-        @Autowired private val httpClient: HttpClient
+        @Autowired private val httpClient: HttpClient,
+        @Autowired private val difiConfiguration: DIFIConfiguration
 ) : OidcIssuer {
 
     final override var issuer = applicationGeneralEnvironment.issuer
@@ -53,14 +54,12 @@ class AccessTokenIssuer(
                         applicationGeneralEnvironment.azureadJwksUrl
                 ),
                 OidcIssuerImplDifi(
-                        applicationGeneralEnvironment.difiOIDCIssuer
-                )
+                        applicationGeneralEnvironment.difiOIDCIssuer,
+                        difiConfiguration
+                ),
+                OidcIssuerImplDifi(applicationGeneralEnvironment.difiMaskinportenIssuer,
+                        difiConfiguration)
         )
-        //  knownIssuers.add(OidcIssuerImplDifi(PropertyUtil.get(Environment.STS_MASKINPORTEN_CONFIGURATIONURL),
-        //          PropertyUtil.get(Environment.STS_MASKINPORTEN_CONFIGURATIONAPIKEY),
-        //          PropertyUtil.get(Environment.STS_MASKINPORTEN_JWKSURL),
-        //          PropertyUtil.get(Environment.STS_MASKINPORTEN_JWKSAPIKEY),
-        //          httpClient))
     }
 
     @Throws(Exception::class)
@@ -171,11 +170,8 @@ class AccessTokenIssuer(
     fun exchangeDifiTokenToOidc(difiToken: String?, now: Date = OidcObject.toDate(ZonedDateTime.now())): SignedJWT {
         log.info("Issuing Internal token from DIFI-token: exchangeDifiTokenToOidc")
         require(!(difiToken == null || difiToken.isEmpty())) { "Validation failed: OidcToken is null or empty" }
-        val difiOidcObj: OidcObject = OidcObject(difiToken)
-        val knownIssuer: OidcIssuer = knownIssuers.stream()
-                .filter { issuer: OidcIssuer? -> issuer!!.issuer == difiOidcObj.issuer }
-                .findAny()
-                .orElse(null)
+        val difiOidcObj = OidcObject(difiToken)
+        val knownIssuer: OidcIssuer = knownIssuers.map { it }.singleOrNull { it.issuer == difiOidcObj.issuer }
                 ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + difiOidcObj.issuer)
         log.info("DIFI-token issuer: " + knownIssuer.issuer)
         difiOidcObj.validate(knownIssuer, now)
