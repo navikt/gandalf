@@ -7,10 +7,13 @@ import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.ParseException
 import mu.KotlinLogging
-import no.nav.gandalf.ApplicationGeneralEnvironment
+import no.nav.gandalf.config.ExternalIssuer
+import no.nav.gandalf.config.LocalIssuer
+import no.nav.gandalf.domain.IdentType
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.service.RSAKeyStoreService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.xml.sax.SAXException
 import java.io.IOException
@@ -27,18 +30,20 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class AccessTokenIssuer(
-        @Autowired private val applicationGeneralEnvironment: ApplicationGeneralEnvironment,
         @Autowired private val keyStore: RSAKeyStoreService,
         @Autowired private val keySelector: KeySelector,
         @Autowired private val keyStoreReader: KeyStoreReader,
         @Autowired private val httpClient: HttpClient,
-        @Autowired private val difiConfiguration: DIFIConfiguration
+        @Autowired private val difiConfiguration: DIFIConfiguration,
+        @Autowired private val externalIssuers: ExternalIssuer,
+        @Autowired private val localIssuer: LocalIssuer
 ) : OidcIssuer {
 
-    final override var issuer = applicationGeneralEnvironment.issuer
-    private val issuerSrvUser = applicationGeneralEnvironment.issuerSrvUser
-    private val domain = getDomainFromIssuerURL(issuer)
-    lateinit var knownIssuers: MutableList<OidcIssuer>
+    final override val issuer = localIssuer.issuer
+    private val srvUser = localIssuer.issuerUsername
+
+    private val domain = getDomainFromIssuerURL(this.issuer)
+    private lateinit var knownIssuers: MutableList<OidcIssuer>
 
     @PostConstruct
     @Throws(ParseException::class)
@@ -46,18 +51,18 @@ class AccessTokenIssuer(
         knownIssuers = mutableListOf(
                 this,
                 OidcIssuerImpl(
-                        applicationGeneralEnvironment.openamIssuerUrl,
-                        applicationGeneralEnvironment.openamJwksUrl
+                        externalIssuers.issuerOpenAm,
+                        externalIssuers.jwksEndpointOpenAm
                 ),
                 OidcIssuerImpl(
-                        applicationGeneralEnvironment.azureadIssuerUrl,
-                        applicationGeneralEnvironment.azureadJwksUrl
+                        externalIssuers.issuerAzureAd,
+                        externalIssuers.jwksEndpointAzuread
                 ),
                 OidcIssuerImplDifi(
-                        applicationGeneralEnvironment.difiOIDCIssuer,
+                        externalIssuers.issuerDifiOIDC,
                         difiConfiguration
                 ),
-                OidcIssuerImplDifi(applicationGeneralEnvironment.difiMaskinportenIssuer,
+                OidcIssuerImplDifi(externalIssuers.issuerDifiMaskinporten,
                         difiConfiguration)
         )
     }
@@ -66,14 +71,13 @@ class AccessTokenIssuer(
     fun issueToken(username: String?): SignedJWT? {
         log.info("issueToken for $username")
         require(!(username == null || username.isEmpty())) { "Failed to issue oidc token, username is null" }
-        val oidcObj = OidcObject(ZonedDateTime.now(), OIDC_DURATION_TIME).apply {
-            subject = username
-            issuer = applicationGeneralEnvironment.issuer
-            version = OIDC_VERSION
-            setAudience(username, domain)
-            azp = username
-            resourceType = getIdentType(username)
-        }
+        val oidcObj = OidcObject(ZonedDateTime.now(), OIDC_DURATION_TIME)
+        oidcObj.subject = username
+        oidcObj.issuer = issuer
+        oidcObj.version = OIDC_VERSION
+        oidcObj.setAudience(username, domain)
+        oidcObj.azp = username
+        oidcObj.resourceType = getIdentType(username)
         return oidcObj.getSignedToken(keyStore.currentRSAKey, OIDC_SIGNINGALG)
     }
 
@@ -221,6 +225,7 @@ class AccessTokenIssuer(
         var DEFAULT_SAML_AUTHLEVEL = "0"
 
         fun getDomainFromIssuerURL(issuer: String?): String {
+            println("DOMANIN:" + issuer)
             val domainPrefix = "nais."
             require(!(issuer == null || issuer.length < domainPrefix.length)) { "Failed to find domain from issuerUrl: $issuer" }
             return issuer.substring(issuer.indexOf(domainPrefix) + domainPrefix.length)
@@ -239,11 +244,4 @@ class AccessTokenIssuer(
             return ZonedDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault())
         }
     }
-}
-
-enum class IdentType(val value: String) {
-    SYSTEMRESSURS("Systemressurs"),
-    INTERNBRUKER("InternBruker"),
-    EKSTERNBRUKER("EksternBruker"),
-    SAMHANDLER("Samhandler")
 }

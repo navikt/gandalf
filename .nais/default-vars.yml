@@ -1,3 +1,30 @@
 namespace: default
 ingresses:
   - https://security-token-service.nais.preprod.local
+envs:
+  - name: APPLICATION_OIDC_ISSUER
+    value: https://security-token-service.nais.preprod.local
+  - name: APPLICATION_EXTERNAL_ISSUER_OPENAM
+    value: https://isso-q.adeo.no:443/isso/oauth2
+  - name: APPLICATION_EXTERNAL_ISSUER_AZUREAD
+    value: https://login.microsoftonline.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
+  - name: APPLICATION_EXTERNAL_ISSUER_DIFI_OIDC
+    value: https://oidc-ver2.difi.no/idporten-oidc-provider/
+  - name: APPLICATION_EXTERNAL_ISSUER_DIFI_MASKINPORTEN
+    value: https://ver2.maskinporten.no/
+  - name: APPLICATION_JWKS_ENDPOINT_OPENAM
+    value: http://localhost:8888/isso/oauth2/connect/jwk_uri
+  - name: APPLICATION_JWKS_ENDPOINT_AZUREAD
+    value:
+replicas:
+  min: 2
+  max: 2
+vault-paths:
+  - kvPath: serviceuser/data/dev/srvsecurity-token-service
+    mountPath: /secrets/serviceuser
+  - kvPath: oracle/data/dev/creds/securitytokenservice_q1-user
+    mountPath: /secrets/database/credentials
+  - kvPath: oracle/data/dev/config/securitytokenservice_q1-user
+    mountPath: /secrets/database/config
+  - kvPath: kv/preprod/fss/srvsecurity-token-service/default
+    mountPath: /var/run/secrets/nais.io/vault

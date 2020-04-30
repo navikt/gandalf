@@ -1,4 +1,18 @@
 namespace: default
 ingresses:
   - https://security-token-service.nais.adeo.no
-
+envs:
+  - name: APPLICATION_OIDC_ISSUER
+    value: https://security-token-service.nais.adeo.no
+replicas:
+  min: 3
+  max: 6
+vault-paths:
+  - kvPath: serviceuser/data/prod/srvsecurity-token-service
+    mountPath: /secrets/serviceuser
+  - kvPath: oracle/data/prod/creds/securitytokenservice-user
+    mountPath: /secrets/database/credentials
+  - kvPath: oracle/data/prod/config/securitytokenservice-user
+    mountPath: /secrets/database/config
+  - kvPath: kv/prod/fss/srvsecurity-token-service/default
+    mountPath: /var/run/secrets/nais.io/vault

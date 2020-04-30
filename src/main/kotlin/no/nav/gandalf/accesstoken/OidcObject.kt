@@ -99,6 +99,7 @@ class OidcObject {
     fun validate(issuer: String?, now: Date, rsaJwk: RSAKey) {
         when {
             issuer == null || issuer != this.issuer -> {
+                println("SIMSIM: " + issuer)
                 throw IllegalArgumentException("Validation failed: 'issuer' is null or unknown")
             }
             // check time

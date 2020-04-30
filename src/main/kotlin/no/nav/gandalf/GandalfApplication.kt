@@ -1,11 +1,12 @@
 package no.nav.gandalf
 
+import no.nav.gandalf.config.EnvSetup
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-@EnableConfigurationProperties(ApplicationGeneralEnvironment::class)
+@EnableConfigurationProperties(EnvSetup::class)
 class GandalfApplication {
     companion object {
         @JvmStatic

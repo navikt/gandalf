@@ -2,6 +2,8 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
+import no.nav.gandalf.repository.KeyStoreLockRepository
+import no.nav.gandalf.repository.RSAKeyStoreRepository
 import no.nav.gandalf.service.RSAKeyStoreService
 import no.nav.gandalf.utils.compare
 import no.nav.gandalf.utils.getAlteredOriginalToken
@@ -27,10 +29,16 @@ class OidcObjectTest {
     @Autowired
     private lateinit var rsaKeyStoreService: RSAKeyStoreService
 
+    @Autowired
+    private lateinit var keyStoreLockRepository: KeyStoreLockRepository
+
+    @Autowired
+    private lateinit var rsaKeyStoreRepository: RSAKeyStoreRepository
+
     @Before
     fun init() {
         rsaKeyStoreService.resetRepository()
-        rsaKeyStoreService.repositoryImpl.lockKeyStore(test = true)
+        rsaKeyStoreService.lock(isTest = true)
         rsaKeyStoreService.resetCache()
     }
 

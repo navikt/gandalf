@@ -4,7 +4,7 @@ metadata:
   name: security-token-service
   namespace: {{namespace}}
   labels:
-    team: integrasjon
+    team: plattformsikkerhet
 spec:
   image: {{image}}
   ingresses:
@@ -26,8 +26,8 @@ spec:
     periodSeconds: 5
     failureThreshold: 30
   replicas:
-    min: 2
-    max: 4
+    min: {{replicas.min}}
+    max: {{replicas.max}}
   resources:
     limits:
       cpu: 800m
@@ -38,3 +38,14 @@ spec:
   cpuThresholdPercentage: 80
   vault:
     enabled: true
+  paths:
+    {{#each vault-paths}}
+    - kvPath: "{{this.kvPath}}"
+      mountPath: "{{this.mountPath}}"
+    {{/each}}
+  webproxy: true
+  env:
+    {{#each envs}}
+    - name: "{{this.name}}"
+      value: "{{this.value}}"
+    {{/each}}

@@ -12,6 +12,7 @@ object Version {
     const val json = "20190722"
     const val apacheHttp = "4.5.12"
     const val wiremock = "2.26.3"
+    const val oracle = "19.3.0.0"
 }
 
 val mainClass = "$group.no.nav.gandalf.GandalfApplication"
@@ -66,6 +67,8 @@ dependencies {
 
     // Hibernate
     implementation("org.hibernate:hibernate-core:${Version.hibernate}")
+    implementation("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
+
 
     // test
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")

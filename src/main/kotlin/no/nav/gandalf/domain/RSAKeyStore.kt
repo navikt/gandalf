@@ -1,6 +1,7 @@
 package no.nav.gandalf.domain
 
 import com.nimbusds.jose.jwk.RSAKey
+import no.nav.gandalf.util.TimestampConverter
 import org.json.JSONObject
 import java.time.LocalDateTime
 import javax.persistence.Column

@@ -1,4 +1,4 @@
-package no.nav.gandalf.domain
+package no.nav.gandalf.util
 
 import java.sql.Timestamp
 import java.time.LocalDateTime

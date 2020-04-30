@@ -1,6 +1,7 @@
 package no.nav.gandalf.keystore
 
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.FileInputStream
 import java.io.IOException
@@ -14,9 +15,10 @@ import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 
 @Component
-class KeyStoreReader {
-    // TODO
-    var keystoreFile: String = "/Users/m151886/IdeaProjects/gandalf/src/test/resources/keystore.jks"
+class KeyStoreReader(
+        @Value("\${nav.keystore.file}") private val keystoreFile: String,
+        @Value("\${nav.keystore.password}") private val keystorePassword: String
+) {
     private var keyStore: KeyStore? = null
     private var privateKey: PrivateKey? = null
     private var cert: X509Certificate? = null
@@ -43,19 +45,15 @@ class KeyStoreReader {
     @Throws(KeyStoreException::class, UnrecoverableKeyException::class, NoSuchAlgorithmException::class)
     private fun readKeyStore() {
         log.info("readKeyStore - Updating keystore for application")
-        val keystorePassword = "testkeystore1234"
         var tsis: InputStream? = null
         try {
             log.debug("Using keystorefile: $keystoreFile")
-            if (keystoreFile == null || keystoreFile!!.isEmpty()) {
-                // log.error("System property '" + KEYSTORE_PATH.toString() + "' is null or empty!")
-                //throw RuntimeException("Failed to load keystore, system property '" + KEYSTORE_PATH.toString() + "' is null or empty!")
+            if (keystoreFile.isEmpty()) {
+                throw RuntimeException("Failed to load keystore, system property '$keystoreFile' is null or empty!")
             }
-            //keystorePassword = PropertyUtil.get(KEYSTORE_PASSWORD)
-            // if (keystorePassword.isEmpty()) {
-            //  log.error("System property '" + KEYSTORE_PASSWORD.toString() + "' is null or empty!")
-            //throw RuntimeException("Failed to load keystore, system property '" + KEYSTORE_PASSWORD.toString() + "' is null or empty!")
-            // }
+            if (keystorePassword.isEmpty()) {
+                throw RuntimeException("Failed to load keystore, system property 'local-keystore.password' is null or empty!")
+            }
             keyStore = KeyStore.getInstance("JKS")
             tsis = FileInputStream(keystoreFile)
             keyStore?.run {

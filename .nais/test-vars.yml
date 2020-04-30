@@ -1,5 +1,19 @@
 namespace: t4
 ingresses:
   - https://security-token-service-t4.nais.preprod.local
-
+envs:
+  - name: APPLICATION_OIDC_ISSUER
+    value: https://security-token-service-t4.nais.preprod.local
+replicas:
+  min: 1
+  max: 1
+vault-paths:
+  - kvPath: serviceuser/data/dev/srvsecurity-token-service
+    mountPath: /secrets/serviceuser
+  - kvPath: oracle/data/dev/creds/securitytokenservice_t4-user
+    mountPath: /secrets/database/credentials
+  - kvPath: oracle/data/dev/config/securitytokenservice_t4-user
+    mountPath: /secrets/database/config
+  - kvPath: kv/preprod/fss/srvsecurity-token-service/t4
+    mountPath: /var/run/secrets/nais.io/vault
 
