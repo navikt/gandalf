@@ -14,7 +14,6 @@ import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(name = "KEYSTORE")
 data class RSAKeyStore(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "ID") var id: Long? = 0,

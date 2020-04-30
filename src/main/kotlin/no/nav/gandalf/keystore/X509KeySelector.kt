@@ -26,7 +26,6 @@ import javax.xml.crypto.dsig.keyinfo.X509Data
 private val log = KotlinLogging.logger { }
 
 @Component
-@Primary
 class X509KeySelector(
         @Value("\${nav.truststore.path}") private val truststoreFile: String,
         @Value("\${nav.truststore.password}") private val truststorePassword: String

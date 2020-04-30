@@ -1,5 +1,6 @@
 package no.nav.gandalf
 
+import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
 import java.security.cert.X509Certificate
 import javax.xml.crypto.AlgorithmMethod
@@ -12,6 +13,7 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfo
 import javax.xml.crypto.dsig.keyinfo.X509Data
 
 @Component
+@Primary
 class TestKeySelector : KeySelector() {
 
     @Throws(KeySelectorException::class)

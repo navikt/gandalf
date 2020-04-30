@@ -7,7 +7,6 @@ import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(name = "KEYSTORE_LOCK")
 data class KeyStoreLock(
         @Id
         @get: NotNull @Column(name = "ID") var id: Long = 0,

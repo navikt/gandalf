@@ -11,16 +11,16 @@ import javax.transaction.Transactional
 @Component
 class KeyStoreLockRepositoryImpl{
 
-    @Autowired lateinit var keyStoreLockRepository: KeyStoreLockRepository
+    @Autowired var keyStoreLockRepository: KeyStoreLockRepository?= null
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Throws(Exception::class)
     fun lockKeyStore(test: Boolean) {
-        val lockedList = keyStoreLockRepository.findAll().sortedBy { it.id == 1L }
+        val lockedList = keyStoreLockRepository!!.findAll().sortedBy { it.id == 1L }
         when {
             test && lockedList.isEmpty() -> {
                 val keyStoreLock = KeyStoreLock(1, false)
-                keyStoreLockRepository.save(keyStoreLock)
+                keyStoreLockRepository!!.save(keyStoreLock)
             }
             else -> {
                 if (lockedList.isEmpty()) {
@@ -32,7 +32,7 @@ class KeyStoreLockRepositoryImpl{
 
     // kun testing
     fun clear() {
-        keyStoreLockRepository.deleteAll()
-        keyStoreLockRepository.flush()
+        keyStoreLockRepository!!.deleteAll()
+        keyStoreLockRepository!!.flush()
     }
 }

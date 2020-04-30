@@ -21,11 +21,18 @@ plugins {
     application
     java
     val kotlinVersion = "1.3.21"
+    kotlin("plugin.allopen") version "1.3.61"
     id("org.springframework.boot") version "2.1.6.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
+}
+
+allOpen {
+    annotation("javax.persistence.Entity")
+    annotation("javax.persistence.Embeddable")
+    annotation("javax.persistence.MappedSuperclass")
 }
 
 application {

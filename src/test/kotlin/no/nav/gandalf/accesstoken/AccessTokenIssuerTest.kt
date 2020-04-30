@@ -349,9 +349,7 @@ class AccessTokenIssuerTest {
         }
     }
 
-    // TODO
     @Test
-    @Ignore
     fun `Exchange OIDC To SAML Token`() {
         try {
             val signedJWT = issuer.issueToken(env.issuerUsername)
