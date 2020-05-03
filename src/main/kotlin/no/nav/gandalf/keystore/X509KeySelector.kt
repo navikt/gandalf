@@ -1,9 +1,5 @@
 package no.nav.gandalf.keystore
 
-import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Primary
-import org.springframework.stereotype.Component
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -22,13 +18,16 @@ import javax.xml.crypto.XMLCryptoContext
 import javax.xml.crypto.XMLStructure
 import javax.xml.crypto.dsig.keyinfo.KeyInfo
 import javax.xml.crypto.dsig.keyinfo.X509Data
+import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
 
 private val log = KotlinLogging.logger { }
 
 @Component
 class X509KeySelector(
-        @Value("\${nav.truststore.path}") private val truststoreFile: String,
-        @Value("\${nav.truststore.password}") private val truststorePassword: String
+    @Value("\${nav.truststore.path}") private val truststoreFile: String,
+    @Value("\${nav.truststore.password}") private val truststorePassword: String
 ) : KeySelector() {
 
     private var trustManager: X509TrustManager? = null

@@ -1,4 +1,4 @@
-package no.nav.gandalf.domain
+package no.nav.gandalf.model
 
 enum class IdentType(val value: String) {
     SYSTEMRESSURS("Systemressurs"),

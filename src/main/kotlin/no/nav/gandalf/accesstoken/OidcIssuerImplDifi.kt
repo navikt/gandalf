@@ -2,17 +2,16 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
-import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Autowired
 import java.net.URL
 import java.text.ParseException
-
+import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Autowired
 
 private val log = KotlinLogging.logger { }
 
 class OidcIssuerImplDifi(
-        override val issuer: String,
-        @Autowired val difiConfiguration: DIFIConfiguration
+    override val issuer: String,
+    @Autowired val difiConfiguration: DIFIConfiguration
 ) : OidcIssuer {
 
     private var jwkSet: JWKSet? = null

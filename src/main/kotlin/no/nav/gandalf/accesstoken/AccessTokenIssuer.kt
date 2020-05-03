@@ -6,37 +6,36 @@ import com.nimbusds.jose.jwk.JWK
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.ParseException
-import mu.KotlinLogging
-import no.nav.gandalf.config.ExternalIssuer
-import no.nav.gandalf.config.LocalIssuer
-import no.nav.gandalf.domain.IdentType
-import no.nav.gandalf.keystore.KeyStoreReader
-import no.nav.gandalf.service.RSAKeyStoreService
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
-import org.xml.sax.SAXException
 import java.io.IOException
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Date
 import javax.annotation.PostConstruct
 import javax.xml.crypto.KeySelector
 import javax.xml.crypto.MarshalException
 import javax.xml.crypto.dsig.XMLSignatureException
 import javax.xml.parsers.ParserConfigurationException
+import mu.KotlinLogging
+import no.nav.gandalf.config.ExternalIssuer
+import no.nav.gandalf.config.LocalIssuer
+import no.nav.gandalf.keystore.KeyStoreReader
+import no.nav.gandalf.model.IdentType
+import no.nav.gandalf.service.RSAKeyStoreService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+import org.xml.sax.SAXException
 
 private val log = KotlinLogging.logger { }
 
 @Component
 class AccessTokenIssuer(
-        @Autowired private val keyStore: RSAKeyStoreService,
-        @Autowired private val keySelector: KeySelector,
-        @Autowired private val keyStoreReader: KeyStoreReader,
-        @Autowired private val httpClient: HttpClient,
-        @Autowired private val difiConfiguration: DIFIConfiguration,
-        @Autowired private val externalIssuers: ExternalIssuer,
-        @Autowired private val localIssuer: LocalIssuer
+    @Autowired private val keyStore: RSAKeyStoreService,
+    @Autowired private val keySelector: KeySelector,
+    @Autowired private val keyStoreReader: KeyStoreReader,
+    @Autowired private val httpClient: HttpClient,
+    @Autowired private val difiConfiguration: DIFIConfiguration,
+    @Autowired private val externalIssuers: ExternalIssuer,
+    @Autowired private val localIssuer: LocalIssuer
 ) : OidcIssuer {
 
     final override val issuer = localIssuer.issuer
@@ -186,7 +185,7 @@ class AccessTokenIssuer(
         oidcObj.subject = subject
         oidcObj.issuer = this.issuer
         oidcObj.version = OIDC_VERSION
-        //oidcObj.setAudience(username, getDomain()); copy this from difi token instead
+        // oidcObj.setAudience(username, getDomain()); copy this from difi token instead
         oidcObj.azp = subject
         oidcObj.resourceType = getIdentType(subject)
         oidcObj.auditTrackingId = difiOidcObj.id

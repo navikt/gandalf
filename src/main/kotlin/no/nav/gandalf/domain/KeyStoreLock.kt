@@ -7,10 +7,11 @@ import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
 @Entity
+@Table(name = "KEYSTORE_LOCK")
 data class KeyStoreLock(
-        @Id
-        @get: NotNull @Column(name = "ID") var id: Long = 0,
-        @get: NotNull @Column(name = "LOCKED") var locked: Long = 0
+    @Id
+    @get: NotNull @Column(name = "ID") var id: Long = 0,
+    @get: NotNull @Column(name = "LOCKED") var locked: Long = 0
 ) {
 
     constructor(id: Long, locked: Boolean) : this() {

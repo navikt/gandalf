@@ -3,7 +3,7 @@ package no.nav.gandalf.service
 import com.nimbusds.jwt.SignedJWT
 import no.nav.gandalf.model.AccessTokenResponse
 
-class AccessTokenResponseService(oidcToken: SignedJWT){
+class AccessTokenResponseService(oidcToken: SignedJWT) {
 
     val tokenResponse = AccessTokenResponse(
             access_token = oidcToken.serialize(),

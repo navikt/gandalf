@@ -1,5 +1,6 @@
 package no.nav.gandalf.keystore
 
+import java.time.LocalDateTime
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
 import no.nav.gandalf.service.RSAKeyStoreService
@@ -10,7 +11,6 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import java.time.LocalDateTime
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -22,7 +22,7 @@ class RSAKeyStoreServiceTest {
     @Before
     fun init() {
         rsaKeyStoreService.resetRepository()
-        rsaKeyStoreService.lock(isTest = true)
+        rsaKeyStoreService.resetCache()
     }
 
     @Test
@@ -81,22 +81,22 @@ class RSAKeyStoreServiceTest {
         println(rsaKeyStore)
         Assert.assertTrue(rsaKeyStoreService.findAllOrdered().size == 4)
         Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2.rSAKey == rsaKeyStore.rSAKey)
+    }
 
-        @Test
-        @Throws(Exception::class)
-        fun `Get Current DBKey WithExpired Key And Outdated Keys Check MinNoofKeys`() {
-            // db with 3 expired and outdated keys
-            rsaKeyStoreService.addRSAKey(LocalDateTime.now().minusSeconds(2 * RSAKeyStoreRepositoryImpl.keyRotationTime + 20)) // expired and outdated (more than 2*keyRotationTime)
-            rsaKeyStoreService.addRSAKey(LocalDateTime.now().minusSeconds(2 * RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired and outdated
-            rsaKeyStoreService.addRSAKey(LocalDateTime.now().minusSeconds(2 * RSAKeyStoreRepositoryImpl.keyRotationTime + 5)) // expired and outdated
-            Assert.assertTrue(rsaKeyStoreService.findAllOrdered().size == 3)
-            val rsaKeyStore: RSAKeyStore? = rsaKeyStoreService.currentDBKeyUpdateIfNeeded // should add one new key and keep old keys according to minNoofKeys
-            Assert.assertTrue(rsaKeyStore != null)
-            Assert.assertTrue(!rsaKeyStore!!.hasExpired())
-            Assert.assertTrue(rsaKeyStoreService.findAllOrdered().size == RSAKeyStoreRepositoryImpl.minNoofKeys)
-            val rsaKeyStore2: RSAKeyStore? = rsaKeyStoreService.currentDBKeyUpdateIfNeeded // should not alter DB
-            Assert.assertTrue(rsaKeyStoreService.findAllOrdered().size == RSAKeyStoreRepositoryImpl.minNoofKeys)
-            Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2.rSAKey == rsaKeyStore.rSAKey)
-        }
+    @Test
+    @Throws(Exception::class)
+    fun `Get Current DBKey WithExpired Key And Outdated Keys Check MinNoofKeys`() {
+        // db with 3 expired and outdated keys
+        rsaKeyStoreService.addRSAKey(LocalDateTime.now().minusSeconds(2 * RSAKeyStoreRepositoryImpl.keyRotationTime + 20)) // expired and outdated (more than 2*keyRotationTime)
+        rsaKeyStoreService.addRSAKey(LocalDateTime.now().minusSeconds(2 * RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // expired and outdated
+        rsaKeyStoreService.addRSAKey(LocalDateTime.now().minusSeconds(2 * RSAKeyStoreRepositoryImpl.keyRotationTime + 5)) // expired and outdated
+        Assert.assertTrue(rsaKeyStoreService.findAllOrdered().size == 3)
+        val rsaKeyStore: RSAKeyStore? = rsaKeyStoreService.currentDBKeyUpdateIfNeeded // should add one new key and keep old keys according to minNoofKeys
+        Assert.assertTrue(rsaKeyStore != null)
+        Assert.assertTrue(!rsaKeyStore!!.hasExpired())
+        Assert.assertTrue(rsaKeyStoreService.findAllOrdered().size == RSAKeyStoreRepositoryImpl.minNoofKeys)
+        val rsaKeyStore2: RSAKeyStore? = rsaKeyStoreService.currentDBKeyUpdateIfNeeded // should not alter DB
+        Assert.assertTrue(rsaKeyStoreService.findAllOrdered().size == RSAKeyStoreRepositoryImpl.minNoofKeys)
+        Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2.rSAKey == rsaKeyStore.rSAKey)
     }
 }

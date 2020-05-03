@@ -5,23 +5,23 @@ import com.nimbusds.jose.jwk.JWK
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
+import java.security.NoSuchAlgorithmException
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.KeyStoreLockRepositoryImpl
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
 import org.json.JSONException
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
-import java.security.NoSuchAlgorithmException
-import java.time.LocalDateTime
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
+@DirtiesContext
 class RSAKeyStoreRepositoryImplTest {
 
     @Autowired
@@ -29,12 +29,6 @@ class RSAKeyStoreRepositoryImplTest {
 
     @Autowired
     private lateinit var keyStoreRepositoryImpl: KeyStoreLockRepositoryImpl
-
-    @Before
-    fun init() {
-        rsaKeyStoreRepositoryImpl.clear()
-        keyStoreRepositoryImpl.lockKeyStore(test = true)
-    }
 
     @Test
     @Throws(NoSuchAlgorithmException::class, JOSEException::class)
@@ -45,7 +39,6 @@ class RSAKeyStoreRepositoryImplTest {
         Assert.assertTrue(rsaKey.algorithm.name == AccessTokenIssuer.OIDC_SIGNINGALG.name)
         Assert.assertTrue(rsaKey.keyUse == KeyUse.SIGNATURE)
         Assert.assertTrue(rsaKeyStoreRepositoryImpl.findAllOrdered().size == noofKeys + 1)
-
     }
 
     @Test

@@ -1,7 +1,6 @@
 package no.nav.gandalf.utils
 
-import no.nav.gandalf.domain.IdentType
-import java.util.*
+import no.nav.gandalf.model.IdentType
 
 internal fun getSamlToken() = """<saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" ID="SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae" IssueInstant="2019-05-14T07:47:06.255Z" Version="2.0"><saml2:Issuer>IS02</saml2:Issuer><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI="#SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>+JCjyWxegtHXJKHTkHPlEegluxc=</DigestValue></Reference></SignedInfo><SignatureValue>CnpPln7EcTsBR7nIT8EYLkWIwoT5GlRWcZCO5d2mwBqEmGNKd3lF2luLBjHJEhgCufgQCUivcwmP
 u4tFDA5Sa8rqoCuyrFNi7UVEYrWWrUwK72vTCX25tnGUgplsukxH/YO2V9NVAKTDQg+sgQ7IpvTS

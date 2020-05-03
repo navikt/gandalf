@@ -1,8 +1,6 @@
 package no.nav.gandalf.domain
 
 import com.nimbusds.jose.jwk.RSAKey
-import no.nav.gandalf.util.TimestampConverter
-import org.json.JSONObject
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Convert
@@ -12,13 +10,16 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
+import no.nav.gandalf.util.TimestampConverter
+import org.json.JSONObject
 
 @Entity
+@Table(name = "KEYSTORE")
 data class RSAKeyStore(
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "ID") var id: Long? = 0,
-        @get: NotNull @Column(name = "RSAKEY", length = 2000) var rsaKey: String = "",
-        @get: NotNull @Column(name = "EXPIRES") @Convert(converter = TimestampConverter::class) var expires: LocalDateTime = LocalDateTime.now()
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "ID") var id: Long? = 0,
+    @get: NotNull @Column(name = "RSAKEY", length = 2000) var rsaKey: String = "",
+    @get: NotNull @Column(name = "EXPIRES") @Convert(converter = TimestampConverter::class) var expires: LocalDateTime = LocalDateTime.now()
 ) {
 
     constructor(rsaKey: RSAKey, keyRotationTime: Long) : this() {

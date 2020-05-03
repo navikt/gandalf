@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.nimbusds.jwt.SignedJWT
+import java.time.ZonedDateTime
+import javax.annotation.PostConstruct
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_DURATION_TIME
@@ -13,8 +15,8 @@ import no.nav.gandalf.accesstoken.OidcObject.Companion.AZP_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.RESOURCETYPE_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.VERSION_CLAIM
 import no.nav.gandalf.config.LocalIssuer
-import no.nav.gandalf.domain.IdentType
 import no.nav.gandalf.model.ExchangeTokenResponse
+import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.AccessTokenResponseService
 import no.nav.gandalf.service.RSAKeyStoreService
 import no.nav.gandalf.utils.azureADJwksUrl
@@ -54,9 +56,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.context.junit4.SpringRunner
-import java.time.ZonedDateTime
-import java.util.*
-import javax.annotation.PostConstruct
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
 
@@ -75,13 +74,6 @@ class AccessTokenIssuerTest {
     @Autowired
     private lateinit var rsaKeyStoreService: RSAKeyStoreService
 
-    @Before
-    fun init() {
-        rsaKeyStoreService.resetRepository()
-        rsaKeyStoreService.lock(isTest = true)
-        rsaKeyStoreService.resetCache()
-    }
-
     @PostConstruct
     fun setupKnownIssuers() {
         jwksEndpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
@@ -94,7 +86,6 @@ class AccessTokenIssuerTest {
     @Before
     fun setup() {
         rsaKeyStoreService.resetRepository()
-        // rsaKeyStoreService.repositoryImpl.lockKeyStore(test = true)
         rsaKeyStoreService.resetCache()
     }
 
@@ -383,9 +374,9 @@ class AccessTokenIssuerTest {
             println("Saml token issued at: " + samlObj.issueInstant)
             val samlToken = issuer.exchangeOidcToSamlToken(oidcToken, samlObj.consumerId, OidcObject.toDate(samlObj.issueInstant))
 
-            //System.out.println("oidcToken: " + signedJwt.getJWTClaimsSet().toJSONObject());
-            //System.out.println("#DPSaml: " + dpSamlToken);
-            //System.out.println("#Saml: " + samlToken);
+            // System.out.println("oidcToken: " + signedJwt.getJWTClaimsSet().toJSONObject());
+            // System.out.println("#DPSaml: " + dpSamlToken);
+            // System.out.println("#Saml: " + samlToken);
 
             /* Diff myDiff = DiffBuilder.compare(dpSamlToken)
 /					.withNodeFilter(a-> {

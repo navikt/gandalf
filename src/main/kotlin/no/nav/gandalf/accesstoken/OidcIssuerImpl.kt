@@ -2,15 +2,15 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
-import mu.KotlinLogging
 import java.net.URL
 import java.text.ParseException
+import mu.KotlinLogging
 
 private val log = KotlinLogging.logger { }
 
 class OidcIssuerImpl(
-        override val issuer: String,
-        private val jwksUrl: String
+    override val issuer: String,
+    private val jwksUrl: String
 ) : OidcIssuer {
 
     private var jwkSet: JWKSet? = null

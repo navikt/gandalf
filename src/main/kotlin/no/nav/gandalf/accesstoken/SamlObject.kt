@@ -1,11 +1,5 @@
 package no.nav.gandalf.accesstoken
 
-import no.nav.gandalf.keystore.KeyStoreReader
-import org.slf4j.LoggerFactory
-import org.w3c.dom.Element
-import org.w3c.dom.Node
-import org.xml.sax.InputSource
-import org.xml.sax.SAXException
 import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter
@@ -14,7 +8,7 @@ import java.security.cert.X509Certificate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.UUID
 import javax.xml.crypto.KeySelector
 import javax.xml.crypto.MarshalException
 import javax.xml.crypto.XMLStructure
@@ -35,6 +29,13 @@ import javax.xml.parsers.ParserConfigurationException
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
+import kotlin.collections.ArrayList
+import no.nav.gandalf.keystore.KeyStoreReader
+import org.slf4j.LoggerFactory
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
 
 class SamlObject {
     var issuer: String? = null
@@ -51,11 +52,11 @@ class SamlObject {
     var identType: String? = null
     var auditTrackingId: String? = null
     private var signatureNode: Node? = null
-    private val format = DateTimeFormatter.ISO_INSTANT //DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private val format = DateTimeFormatter.ISO_INSTANT // DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     private val log = LoggerFactory.getLogger(javaClass)
 
     constructor() {
-        //this.now = ZonedDateTime.now();
+        // this.now = ZonedDateTime.now();
         now = ZonedDateTime.parse(ZonedDateTime.now().format(format))
         setId("SAML-" + UUID.randomUUID().toString())
     }

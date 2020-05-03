@@ -25,8 +25,9 @@ class AccessTokenController {
 
     @GetMapping("/token", produces = ["application/json"])
     fun getOIDCToken(
-            @RequestParam("grant_type", required = true) grantType: String,
-            @RequestParam("scope", required = true) scope: String): ResponseEntity<Any> {
+        @RequestParam("grant_type", required = true) grantType: String,
+        @RequestParam("scope", required = true) scope: String
+    ): ResponseEntity<Any> {
         when {
             !grantType.equals("client_credentials", ignoreCase = true) || !scope.equals("openid", ignoreCase = true) -> {
                 log.warn("Invalid request, grant_type= $grantType scope $scope")
@@ -54,7 +55,6 @@ class AccessTokenController {
                 return ResponseEntity.status(HttpStatus.OK).headers(headers).body(AccessTokenResponseService(oidcToken!!).tokenResponse)
             }
         }
-
     }
 
     fun authDetails() = SecurityContextHolder.getContext().authentication

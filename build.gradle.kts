@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav"
@@ -22,6 +23,8 @@ plugins {
     java
     val kotlinVersion = "1.3.21"
     kotlin("plugin.allopen") version "1.3.61"
+    // Messes with the build
+    //id("org.jmailen.kotlinter") version "2.3.2"
     id("org.springframework.boot") version "2.1.6.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
@@ -40,7 +43,10 @@ application {
 }
 
 repositories {
+    maven(url = "http://packages.confluent.io/maven")
+    maven(url = "https://kotlin.bintray.com/kotlinx")
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -105,6 +111,11 @@ tasks {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
             jvmTarget = "1.8"
+        }
+    }
+    withType<Test> {
+        testLogging {
+            events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         }
     }
 }

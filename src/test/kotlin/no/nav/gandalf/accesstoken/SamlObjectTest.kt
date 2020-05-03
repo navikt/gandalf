@@ -1,5 +1,11 @@
 package no.nav.gandalf.accesstoken
 
+import java.io.IOException
+import java.time.ZonedDateTime
+import javax.xml.crypto.KeySelector
+import javax.xml.crypto.MarshalException
+import javax.xml.crypto.dsig.XMLSignatureException
+import javax.xml.parsers.ParserConfigurationException
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.utils.getAlteredSamlToken
@@ -12,12 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import org.xml.sax.SAXException
-import java.io.IOException
-import java.time.ZonedDateTime
-import javax.xml.crypto.KeySelector
-import javax.xml.crypto.MarshalException
-import javax.xml.crypto.dsig.XMLSignatureException
-import javax.xml.parsers.ParserConfigurationException
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -28,7 +28,6 @@ class SamlObjectTest {
 
     @Autowired
     private lateinit var keyStoreReader: KeyStoreReader
-
 
     @Test
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)

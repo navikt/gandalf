@@ -1,8 +1,5 @@
 package no.nav.gandalf.keystore
 
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -13,11 +10,14 @@ import java.security.PrivateKey
 import java.security.UnrecoverableKeyException
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
 
 @Component
 class KeyStoreReader(
-        @Value("\${nav.keystore.file}") private val keystoreFile: String,
-        @Value("\${nav.keystore.password}") private val keystorePassword: String
+    @Value("\${nav.keystore.file}") private val keystoreFile: String,
+    @Value("\${nav.keystore.password}") private val keystorePassword: String
 ) {
     private var keyStore: KeyStore? = null
     private var privateKey: PrivateKey? = null

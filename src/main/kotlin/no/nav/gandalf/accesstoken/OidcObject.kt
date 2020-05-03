@@ -10,12 +10,13 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import java.text.ParseException
+import java.time.ZonedDateTime
+import java.util.Date
+import java.util.UUID
 import mu.KotlinLogging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.text.ParseException
-import java.time.ZonedDateTime
-import java.util.*
 
 private val log = KotlinLogging.logger { }
 
@@ -144,7 +145,7 @@ class OidcObject {
                     .issuer(issuer)
                     .claim(VERSION_CLAIM, version)
                     .jwtID(id)
-                    .subject(subject) //				.audience(audience.get(0))	// spec2 spesifikk
+                    .subject(subject) // 				.audience(audience.get(0))	// spec2 spesifikk
                     .audience(audience)
                     .claim(AUTHTIME_CLAIM, issueTime)
                     .notBeforeTime(issueTime)

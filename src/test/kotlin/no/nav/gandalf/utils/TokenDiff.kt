@@ -1,14 +1,13 @@
 package no.nav.gandalf.utils
 
+import java.io.IOException
+import java.io.StringReader
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.parsers.ParserConfigurationException
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
 import org.xml.sax.SAXException
-import java.io.IOException
-import java.io.StringReader
-import java.util.*
-import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.parsers.ParserConfigurationException
 
 @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
 internal fun diffTokens(token1: String, token2: String): List<String>? {
@@ -56,7 +55,6 @@ private fun diffNode(n1: Node, n2: Node, diff: MutableList<String>): List<String
     }
     return diff
 }
-
 
 private fun diffAttributes(n1: Node, n2: Node, diff: MutableList<String>): List<String>? {
     val map1 = n1.attributes

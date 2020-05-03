@@ -2,8 +2,8 @@ package no.nav.gandalf.utils
 
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jwt.JWTClaimsSet
-import org.junit.Assert
 import java.text.ParseException
+import org.junit.Assert
 
 internal fun compare(jwtOriginal: JWTClaimsSet, jwt: JWTClaimsSet) {
     val diffKeys: MutableSet<String> = HashSet(jwt.claims.keys)

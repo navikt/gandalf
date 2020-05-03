@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @Primary
-class MockDIFIConfiguration : DIFIConfiguration(){
+class MockDIFIConfiguration : DIFIConfiguration() {
 
     override fun getAuthServerMetadata(issuer: String) =
             AuthorizationServerMetadata.parse(MockDIFIConfiguration::class.java.getResource("/__files/difi-maskinporten-configuration.json").readText())!!

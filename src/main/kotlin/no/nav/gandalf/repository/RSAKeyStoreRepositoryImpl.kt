@@ -3,29 +3,23 @@ package no.nav.gandalf.repository
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
-import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.domain.KeyStoreLock
-import no.nav.gandalf.domain.RSAKeyStore
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.context.annotation.Lazy
-import org.springframework.context.annotation.Primary
-import org.springframework.data.jpa.repository.Lock
-import org.springframework.stereotype.Component
-import org.springframework.stereotype.Repository
 import java.security.KeyPairGenerator
 import java.security.NoSuchAlgorithmException
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.time.LocalDateTime
-import java.util.*
-import javax.persistence.LockModeType
+import java.util.UUID
 import javax.transaction.Transactional
+import no.nav.gandalf.accesstoken.AccessTokenIssuer
+import no.nav.gandalf.domain.RSAKeyStore
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Primary
+import org.springframework.stereotype.Component
 
 @Transactional
 @Component
 @Primary
-class RSAKeyStoreRepositoryImpl{
+class RSAKeyStoreRepositoryImpl {
 
     @Autowired lateinit var rsaKeyStoreRepository: RSAKeyStoreRepository
 

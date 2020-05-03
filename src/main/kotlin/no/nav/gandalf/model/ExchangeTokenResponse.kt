@@ -29,5 +29,4 @@ class ExchangeTokenResponse {
         expires_in = expiresIn
         issued_token_type = issuedTokenType
     }
-
 }
