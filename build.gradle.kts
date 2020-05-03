@@ -1,5 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 group = "no.nav"
 version = file("version.txt").readText().trim()
@@ -26,7 +27,7 @@ plugins {
     val kotlinVersion = "1.3.72"
     kotlin("plugin.allopen") version kotlinVersion
     // Messes with the build
-    //id("org.jmailen.kotlinter") version "2.3.2"
+    id("org.jmailen.kotlinter") version "2.3.2"
     id("com.github.ben-manes.versions") version "0.28.0"
     id("org.springframework.boot") version "2.2.6.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
@@ -85,6 +86,11 @@ dependencies {
     implementation("org.hibernate:hibernate-core:${Version.hibernate}")
     implementation("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
 
+    // Ldap
+    implementation("org.springframework.ldap:spring-ldap-core")
+    implementation("org.springframework.security:spring-security-ldap")
+    implementation("com.unboundid:unboundid-ldapsdk")
+
     // test
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")
     testImplementation("com.h2database:h2")
@@ -119,5 +125,13 @@ tasks {
         testLogging {
             events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         }
+    }
+    withType<DependencyUpdatesTask> {
+
+        // optional parameters
+        checkForGradleUpdate = true
+        outputFormatter = "json"
+        outputDir = "build/dependencyUpdates"
+        reportfileName = "report"
     }
 }

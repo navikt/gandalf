@@ -1,0 +1,57 @@
+dn: dc=test,dc=local
+objectClass: top
+objectClass: domain
+dc: test
+
+dn: ou=ServiceAccounts,dc=test,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: ServiceAccounts
+
+dn: ou=ApplAccounts,ou=ServiceAccounts,dc=test,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: ApplAccounts
+
+dn: ou=BusinessUnits,dc=test,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: BusinessUnits
+
+dn: ou=NAV,ou=BusinessUnits,dc=test,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: NAV
+
+dn: ou=Users,ou=NAV,ou=BusinessUnits,dc=test,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: Users
+
+dn: cn=srvSSOLinux,ou=ServiceAccounts,dc=test,dc=local
+objectClass: person
+objectClass: top
+cn: srvSSOLinux
+sn: srvSSOLinux
+userPassword: password
+
+dn: cn=srvPDP,ou=ServiceAccounts,dc=test,dc=local
+objectClass: person
+objectClass: top
+cn: srvPDP
+sn: srvPDP
+userPassword: password
+
+dn: cn=srvaltutkanal,ou=ApplAccounts,ou=ServiceAccounts,dc=test,dc=local
+objectClass: person
+objectClass: top
+cn: srvaltutkanal
+sn: srvaltutkanal
+userPassword: password
+
+dn: cn=M151886,ou=Users,ou=NAV,ou=BusinessUnits,dc=test,dc=local
+objectClass: person
+objectClass: top
+cn: M151886
+sn: M151886
+userPassword: password
