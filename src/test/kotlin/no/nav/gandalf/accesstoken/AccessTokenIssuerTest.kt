@@ -4,8 +4,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.nimbusds.jwt.SignedJWT
-import java.time.ZonedDateTime
-import javax.annotation.PostConstruct
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_DURATION_TIME
@@ -55,7 +53,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.ZonedDateTime
+import javax.annotation.PostConstruct
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
 
@@ -63,6 +64,8 @@ private const val ACCESS_TOKEN_TYPE = "bearer"
 @SpringBootTest
 @EnableConfigurationProperties
 @AutoConfigureWireMock(port = 8888)
+//@TestPropertySource(properties = ["spring.profiles.active=test"])
+@TestPropertySource(locations=["classpath:application-test.properties"])
 class AccessTokenIssuerTest {
 
     @Autowired
