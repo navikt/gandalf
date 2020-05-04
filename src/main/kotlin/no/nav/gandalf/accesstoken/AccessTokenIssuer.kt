@@ -116,6 +116,16 @@ class AccessTokenIssuer(
         samlObj.validate(keySelector)
     }
 
+    @Throws(ParserConfigurationException::class, SAXException::class, IOException::class, MarshalException::class, XMLSignatureException::class)
+    fun validateSamlToken(samlToken: String?, keySelector: KeySelector) {
+        // read Saml token
+        val samlObj = SamlObject()
+        samlObj.read(samlToken)
+
+        // validate token
+        samlObj.validate(keySelector)
+    }
+
     @JvmOverloads
     @Throws(Exception::class)
     fun exchangeSamlToOidcToken(samlToken: String, now: ZonedDateTime? = ZonedDateTime.now()): SignedJWT? {

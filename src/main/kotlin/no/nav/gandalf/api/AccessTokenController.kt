@@ -1,4 +1,4 @@
-package no.nav.gandalf.controller
+package no.nav.gandalf.api
 
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
