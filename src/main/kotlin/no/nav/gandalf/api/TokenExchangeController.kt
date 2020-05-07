@@ -1,13 +1,12 @@
 package no.nav.gandalf.api
 
 import com.nimbusds.jwt.SignedJWT
-import java.nio.charset.StandardCharsets
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
 import no.nav.gandalf.model.ErrorResponse
-import no.nav.gandalf.model.ExchangeTokenResponse
 import no.nav.gandalf.service.AccessTokenResponseService
+import no.nav.gandalf.service.ExchangeTokenService
 import org.apache.commons.codec.binary.Base64
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.nio.charset.StandardCharsets
 
 private val log = KotlinLogging.logger { }
 
@@ -29,10 +29,10 @@ class TokenExchangeController {
 
     @PostMapping("/token/exchange")
     fun exchangeSAMLToOIDCToSAMLToken(
-        @RequestParam("grant_type") grantType: String?,
-        @RequestParam("requested_token_type") reqTokenType: String?,
-        @RequestParam("subject_token") subjectToken: String?,
-        @RequestParam("subject_token_type") subTokenType: String?
+            @RequestParam("grant_type") grantType: String?,
+            @RequestParam("requested_token_type") reqTokenType: String?,
+            @RequestParam("subject_token") subjectToken: String?,
+            @RequestParam("subject_token_type") subTokenType: String?
     ): ResponseEntity<Any> {
         var copyReqTokenType = reqTokenType
         log.debug("Exchange $subTokenType to $copyReqTokenType")
@@ -65,7 +65,7 @@ class TokenExchangeController {
                 return ResponseEntity
                         .status(HttpStatus.OK)
                         .headers(tokenHeaders)
-                        .body(ExchangeTokenResponse(oidcToken!!))
+                        .body(ExchangeTokenService().getResponseFrom(oidcToken!!))
             }
             subTokenType.equals("urn:ietf:params:oauth:token-type:access_token", ignoreCase = true)
                     && (copyReqTokenType == null || copyReqTokenType.equals("urn:ietf:params:oauth:token-type:saml2", ignoreCase = true)) -> {
@@ -85,8 +85,13 @@ class TokenExchangeController {
                 }
                 return ResponseEntity.status(HttpStatus.OK)
                         .headers(tokenHeaders)
-                        .body(ExchangeTokenResponse(
-                                saml.first, "Bearer", copyReqTokenType, saml.second.expiresIn, true))
+                        .body(ExchangeTokenService().constructResponse(
+                                saml.first,
+                                "Bearer",
+                                copyReqTokenType,
+                                saml.second.expiresIn,
+                                true)
+                        )
             }
             else -> {
                 return badRequestResponse("Unsupported token exchange for subject/requested token type")
@@ -96,7 +101,7 @@ class TokenExchangeController {
 
     @PostMapping("/token/exchangedifi")
     fun exchangeDIFIOIDCToken(
-        @RequestHeader("token") difiToken: String?
+            @RequestHeader("token") difiToken: String?
     ): ResponseEntity<Any> {
         log.debug("Exchange difi token to oidc token")
         try {

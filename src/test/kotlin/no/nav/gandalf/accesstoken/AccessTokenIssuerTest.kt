@@ -18,6 +18,7 @@ import no.nav.gandalf.config.LocalIssuer
 import no.nav.gandalf.model.ExchangeTokenResponse
 import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.AccessTokenResponseService
+import no.nav.gandalf.service.ExchangeTokenService
 import no.nav.gandalf.service.RSAKeyStoreService
 import no.nav.gandalf.utils.azureADJwksUrl
 import no.nav.gandalf.utils.azureADResponseFileName
@@ -176,12 +177,12 @@ class AccessTokenIssuerTest {
         assertTrue(token!!.jwtClaimsSet.expirationTime != null)
         assertTrue(token.jwtClaimsSet.subject == subject)
         // Test response
-        val response = ExchangeTokenResponse(token)
+        val response = ExchangeTokenService().getResponseFrom(token)
         assertTrue(response.expires_in == beforeAfter + AccessTokenIssuer.EXCHANGE_TOKEN_EXTENDED_TIME)
         assertTrue(response.token_type.equals(ACCESS_TOKEN_TYPE, ignoreCase = true))
     }
 
-    // @Test
+    @Test
     @Throws(Exception::class)
     fun `Exchange Valid IDA Selvutstedt Token`() {
         val notOnOrAfter = ZonedDateTime.parse("2018-06-06T09:58:18.472Z")
@@ -193,7 +194,7 @@ class AccessTokenIssuerTest {
         assertTrue(token!!.jwtClaimsSet.expirationTime != null)
         assertTrue(token.jwtClaimsSet.subject == "Z991643")
         // Test response
-        val response = ExchangeTokenResponse(token)
+        val response = ExchangeTokenService().getResponseFrom(token)
         assertTrue(response.expires_in == beforeAfter + AccessTokenIssuer.EXCHANGE_TOKEN_EXTENDED_TIME)
         assertTrue(response.token_type.equals(ACCESS_TOKEN_TYPE, ignoreCase = true))
     }

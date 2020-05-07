@@ -50,9 +50,6 @@ class AccessTokenControllerTest {
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
-   // @Autowired
-   // private lateinit var rsaKeyStoreService: RSAKeyStoreService
-
     @PostConstruct
     fun setupKnownIssuers() {
         jwksEndpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
@@ -61,12 +58,6 @@ class AccessTokenControllerTest {
         jwksEndpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENConfigurationResponseFileName)
         jwksEndpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
     }
-
-   // @Before
-   // fun setup() {
-   //     rsaKeyStoreService.resetRepository()
-   //     rsaKeyStoreService.resetCache()
-   // }
 
     @Test
     fun `Get OIDC Token`() {

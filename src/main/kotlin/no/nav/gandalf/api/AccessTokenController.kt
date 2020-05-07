@@ -4,8 +4,8 @@ import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
 import no.nav.gandalf.model.AccessToken2Response
-import no.nav.gandalf.model.ExchangeTokenResponse
 import no.nav.gandalf.service.AccessTokenResponseService
+import no.nav.gandalf.service.ExchangeTokenService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,8 +27,8 @@ class AccessTokenController {
 
     @GetMapping("/token")
     fun getOIDCToken(
-        @RequestParam("grant_type", required = true) grantType: String,
-        @RequestParam("scope", required = true) scope: String
+            @RequestParam("grant_type", required = true) grantType: String,
+            @RequestParam("scope", required = true) scope: String
     ): ResponseEntity<Any> {
         when {
             grantType != "client_credentials" || scope != "openid" -> {
@@ -54,16 +54,16 @@ class AccessTokenController {
     // As specified in the Standard
     @PostMapping("/token")
     fun postOIDCToken(
-        @RequestParam("grant_type", required = true) grantType: String,
-        @RequestParam("scope", required = true) scope: String
+            @RequestParam("grant_type", required = true) grantType: String,
+            @RequestParam("scope", required = true) scope: String
     ): ResponseEntity<Any> {
         return getOIDCToken(grantType, scope)
     }
 
     @GetMapping("/token2")
     fun getOIDCToken2(
-        @RequestHeader("username") username: String,
-        @RequestHeader("password") password: String
+            @RequestHeader("username") username: String,
+            @RequestHeader("password") password: String
     ): ResponseEntity<Any> {
         try {
             // TODO sjekk ldap for username og password
@@ -106,6 +106,12 @@ class AccessTokenController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .headers(tokenHeaders)
-                .body(ExchangeTokenResponse(samlToken, "Bearer", "urn:ietf:params:oauth:token-type:saml2", samlObj.expiresIn, false))
+                .body(ExchangeTokenService().constructResponse(
+                        samlToken,
+                        "Bearer",
+                        "urn:ietf:params:oauth:token-type:saml2",
+                        samlObj.expiresIn,
+                        false)
+                )
     }
 }
