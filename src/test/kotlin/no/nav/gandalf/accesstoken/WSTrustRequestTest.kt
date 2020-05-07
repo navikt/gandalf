@@ -1,4 +1,4 @@
-package no.nav.gandalf.keystore
+package no.nav.gandalf.accesstoken
 
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner
 @SpringBootTest
 @EnableConfigurationProperties
 @DirtiesContext
-@TestPropertySource(locations=["classpath:application-test.properties"])
+@TestPropertySource(locations = ["classpath:application-test.properties"])
 class WSTrustRequestTest {
 
     @Autowired
@@ -34,16 +34,8 @@ class WSTrustRequestTest {
     @Autowired
     private lateinit var testKeySelector: TestKeySelector
 
-    @Autowired
-    private lateinit var rsaKeyStoreRepositoryImpl: RSAKeyStoreRepositoryImpl
-
     private val username = "srvsecurity-token-"
     private val password = "tull"
-
-    @Before
-    fun setup() {
-        rsaKeyStoreRepositoryImpl.clear()
-    }
 
     @Test
     fun `SAML Request`() {

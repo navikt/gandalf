@@ -3,6 +3,7 @@ package no.nav.gandalf.accesstoken
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.jwk.JWK
+import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.ParseException
@@ -107,13 +108,14 @@ class AccessTokenIssuer(
     }
 
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class, MarshalException::class, XMLSignatureException::class)
-    fun validateSamlToken(samlToken: String?) {
+    fun validateSamlToken(samlToken: String?): SamlObject {
         // read Saml token
         val samlObj = SamlObject()
         samlObj.read(samlToken)
 
         // validate token
         samlObj.validate(keySelector)
+        return samlObj
     }
 
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class, MarshalException::class, XMLSignatureException::class)
@@ -222,6 +224,10 @@ class AccessTokenIssuer(
     }
 
     fun getKeySelector() = keySelector
+
+    fun getPublicJWKSet(): JWKSet? {
+        return keyStore.publicJWKSet
+    }
 
     companion object {
         // seconds

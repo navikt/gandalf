@@ -1,4 +1,4 @@
-package no.nav.gandalf.keystore
+package no.nav.gandalf.accesstoken
 
 import java.time.LocalDateTime
 import no.nav.gandalf.domain.RSAKeyStore
@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-@TestPropertySource(locations=["classpath:application-test.properties"])
+@TestPropertySource(locations = ["classpath:application-test.properties"])
 class RSAKeyStoreServiceTest {
 
     @Autowired

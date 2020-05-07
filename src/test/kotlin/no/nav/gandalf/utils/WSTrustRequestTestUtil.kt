@@ -20,9 +20,9 @@ internal fun getOidcToSamlRequest(brukerNavn: String, passord: String, oidcToken
         "</soapenv:Envelope>"
 
 // datapower sts forventer "dobbel" base64 encoding
-internal fun getWrappedOidcToken(oidcToken: String) = ("<wsse:BinarySecurityToken EncodingType=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary\" ValueType=\"urn:ietf:params:oauth:token-type:jwt\">"
-        + Base64.encodeBase64URLSafeString(oidcToken.toByteArray())
-        + "</wsse:BinarySecurityToken>")
+internal fun getWrappedOidcToken(oidcToken: String) = ("<wsse:BinarySecurityToken EncodingType=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary\" ValueType=\"urn:ietf:params:oauth:token-type:jwt\">" +
+        Base64.encodeBase64URLSafeString(oidcToken.toByteArray()) +
+        "</wsse:BinarySecurityToken>")
 
 internal fun getSamlRequest(brukerNavn: String, passord: String) = "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
         "<soap:Header>" +

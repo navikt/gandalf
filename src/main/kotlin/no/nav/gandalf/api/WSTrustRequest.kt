@@ -1,12 +1,5 @@
 package no.nav.gandalf.api
 
-import no.nav.gandalf.accesstoken.SamlObject
-import org.apache.commons.codec.binary.Base64
-import org.w3c.dom.Document
-import org.w3c.dom.Node
-import org.w3c.dom.NodeList
-import org.xml.sax.InputSource
-import org.xml.sax.SAXException
 import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter
@@ -22,6 +15,13 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.TransformerFactoryConfigurationError
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
+import no.nav.gandalf.accesstoken.SamlObject
+import org.apache.commons.codec.binary.Base64
+import org.w3c.dom.Document
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
 
 internal val REQUEST_TYPE_ISSUE: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Issue"
 internal val REQUEST_TYPE_VALIDATE: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Validate"
@@ -29,13 +29,13 @@ internal val KEY_TYPE_BEARER: String = "http://docs.oasis-open.org/ws-sx/ws-trus
 internal val TOKEN_TYPE_SAML: String = "http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0"
 
 class WSTrustRequest(
-        var username: String? = null,
-        var password: String? = null,
-        var reqType: String? = null,
-        var keyType: String? = null,
-        var tokenType: String? = null,
-        var onBehalfOf: String? = null,
-        var validateTarget: String? = null
+    var username: String? = null,
+    var password: String? = null,
+    var reqType: String? = null,
+    var keyType: String? = null,
+    var tokenType: String? = null,
+    var onBehalfOf: String? = null,
+    var validateTarget: String? = null
 ) {
 
     val isIssueSamlFromUNT: Boolean
@@ -115,7 +115,6 @@ class WSTrustRequest(
         }
     }
 
-
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
     fun getResponse(samlToken: String): String? {
         val samlObj = SamlObject()
@@ -125,7 +124,7 @@ class WSTrustRequest(
 
     private fun getResponse(samlToken: String, issueInstant: ZonedDateTime, notOnOrAfter: ZonedDateTime) = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<soapenv:Envelope xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n" +
-            "<soapenv:Header>\r\n" +  //"<wsa:MessageID>urn:uuid:816f058a-62ca-4b27-9123-c654d35d7fab</wsa:MessageID>\r\n" +
+            "<soapenv:Header>\r\n" + // "<wsa:MessageID>urn:uuid:816f058a-62ca-4b27-9123-c654d35d7fab</wsa:MessageID>\r\n" +
             "<wsa:Action>http://docs.oasis-open.org/ws-sx/ws-trust/200512/RSTRC/IssueFinal</wsa:Action>\r\n" +
             "<wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>\r\n" +
             "</soapenv:Header>\r\n" +

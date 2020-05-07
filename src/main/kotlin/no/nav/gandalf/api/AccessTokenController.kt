@@ -2,14 +2,16 @@ package no.nav.gandalf.api
 
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.model.ErrorResponse
+import no.nav.gandalf.accesstoken.SamlObject
+import no.nav.gandalf.model.AccessToken2Response
+import no.nav.gandalf.model.ExchangeTokenResponse
 import no.nav.gandalf.service.AccessTokenResponseService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -17,45 +19,93 @@ import org.springframework.web.bind.annotation.RestController
 private val log = KotlinLogging.logger { }
 
 @RestController
-@RequestMapping("v1/sts")
+@RequestMapping("v1/sts", produces = ["application/json"])
 class AccessTokenController {
 
     @Autowired
-    lateinit var issuer: AccessTokenIssuer
+    private lateinit var issuer: AccessTokenIssuer
 
-    @GetMapping("/token", produces = ["application/json"])
+    @GetMapping("/token")
     fun getOIDCToken(
         @RequestParam("grant_type", required = true) grantType: String,
         @RequestParam("scope", required = true) scope: String
     ): ResponseEntity<Any> {
         when {
-            !grantType.equals("client_credentials", ignoreCase = true) || !scope.equals("openid", ignoreCase = true) -> {
-                log.warn("Invalid request, grant_type= $grantType scope $scope")
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse("invalid_request"))
+            grantType != "client_credentials" || scope != "openid" -> {
+                return badRequestResponse("Invalid request, grant_type = $grantType scope = $scope")
             }
             else -> {
                 val user = try {
-                    authDetails().name
+                    authDetails()
                 } catch (e: Exception) {
-                    log.error("Error, invalid_client: " + e.message)
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse("invalid_client"))
+                    return unauthorizedResponse(e, "Error: " + e.message)
                 }
 
                 val oidcToken = try {
                     issuer.issueToken(user)
                 } catch (e: Exception) {
-                    log.error("Error: " + e.message)
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse("Internal server error, teknisk feil"))
+                    return serverErrorResponse(e)
                 }
-
-                val headers = HttpHeaders().apply {
-                    add("Cache-Control", "no-store")
-                    add("Pragma", "no-cache")
-                }
-                return ResponseEntity.status(HttpStatus.OK).headers(headers).body(AccessTokenResponseService(oidcToken!!).tokenResponse)
+                return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders).body(AccessTokenResponseService(oidcToken!!).tokenResponse)
             }
         }
     }
 
-    fun authDetails() = SecurityContextHolder.getContext().authentication
+    // As specified in the Standard
+    @PostMapping("/token")
+    fun postOIDCToken(
+        @RequestParam("grant_type", required = true) grantType: String,
+        @RequestParam("scope", required = true) scope: String
+    ): ResponseEntity<Any> {
+        return getOIDCToken(grantType, scope)
+    }
+
+    @GetMapping("/token2")
+    fun getOIDCToken2(
+        @RequestHeader("username") username: String,
+        @RequestHeader("password") password: String
+    ): ResponseEntity<Any> {
+        try {
+            // TODO sjekk ldap for username og password
+            authDetails()
+            // if (SrvUserAuthentication.tryBind(username, password, PropertyUtil.get(LDAP_SERVICEUSER_BASEDN)) == null) {
+            //     throw RuntimeException("")
+            // }
+        } catch (e: Exception) {
+            return unauthorizedResponse(e, "Error: " + e.message + " username = " + username)
+        }
+        log.info("Issue OIDC token2 for user: $username")
+
+        val oidcToken = try {
+            issuer.issueToken(username)
+        } catch (e: Exception) {
+            return serverErrorResponse(e)
+        }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(AccessToken2Response(oidcToken!!))
+    }
+
+    @GetMapping("/samltoken")
+    fun getSAMLToken(): ResponseEntity<Any> {
+        var username: String? = null
+        username = try {
+            authDetails()
+        } catch (e: Exception) {
+            return unauthorizedResponse(e, "Error: ${e.message} for username = $username")
+        }
+        log.debug("Issue SAML token for: $username")
+        val samlToken = try {
+            issuer.issueSamlToken(username, username, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
+        } catch (e: Exception) {
+            return serverErrorResponse(e)
+        }
+        val samlObj = SamlObject().apply {
+            this.read(samlToken)
+        }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .headers(tokenHeaders)
+                .body(ExchangeTokenResponse(samlToken, "Bearer", "urn:ietf:params:oauth:token-type:saml2", samlObj.expiresIn, false))
+    }
 }

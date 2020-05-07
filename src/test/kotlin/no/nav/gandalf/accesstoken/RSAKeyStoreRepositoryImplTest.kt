@@ -1,4 +1,4 @@
-package no.nav.gandalf.keystore
+package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.jwk.JWK
@@ -23,7 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @DirtiesContext
-@TestPropertySource(locations=["classpath:application-test.properties"])
+@TestPropertySource(locations = ["classpath:application-test.properties"])
 class RSAKeyStoreRepositoryImplTest {
 
     @Autowired

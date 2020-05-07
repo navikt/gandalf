@@ -98,6 +98,7 @@ dependencies {
         exclude("com.vaadin.external.google", module = "android-json")
         exclude(module = "junit")
     }
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.github.tomakehurst:wiremock-jre8:${Version.wiremock}")
     testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:${Version.wiremockCloud}")
     testImplementation("org.junit.jupiter:junit-jupiter-api")

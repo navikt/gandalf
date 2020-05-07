@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.nimbusds.jwt.SignedJWT
+import java.time.ZonedDateTime
+import javax.annotation.PostConstruct
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_DURATION_TIME
@@ -55,17 +57,16 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
-import java.time.ZonedDateTime
-import javax.annotation.PostConstruct
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
+private const val PORT = 8888
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @EnableConfigurationProperties
-@AutoConfigureWireMock(port = 8888)
-//@TestPropertySource(properties = ["spring.profiles.active=test"])
-@TestPropertySource(locations=["classpath:application-test.properties"])
+@AutoConfigureWireMock(port = PORT)
+// @TestPropertySource(properties = ["spring.profiles.active=test"])
+@TestPropertySource(locations = ["classpath:application-test.properties"])
 class AccessTokenIssuerTest {
 
     @Autowired
@@ -105,23 +106,19 @@ class AccessTokenIssuerTest {
         TestCase.assertEquals(jwt.getStringClaim(VERSION_CLAIM), OIDC_VERSION)
         TestCase.assertTrue(jwt.jwtid != null)
         TestCase.assertTrue(jwt.getClaim(RESOURCETYPE_CLAIM) == IdentType.INTERNBRUKER.value)
-
         // sjekk audience
         val audience = token.jwtClaimsSet.audience
         TestCase.assertEquals(2, audience.size)
         TestCase.assertEquals(audience[0], username)
         TestCase.assertEquals("preprod.local", audience[1])
-
         // sjekk time settings
         TestCase.assertEquals(0, jwt.notBeforeTime.compareTo(jwt.issueTime))
         TestCase.assertEquals(jwt.getLongClaim(AUTHTIME_CLAIM) as Long, jwt.issueTime.time / 1000)
         TestCase.assertEquals((jwt.expirationTime.time - jwt.issueTime.time) / 1000, OIDC_DURATION_TIME)
-
         // Test response
         val (_, token_type, expires_in) = AccessTokenResponseService(oidcToken = token).tokenResponse
         TestCase.assertTrue(expires_in == OIDC_DURATION_TIME)
         TestCase.assertTrue(token_type.equals(ACCESS_TOKEN_TYPE, ignoreCase = true))
-
         // test validation
         try {
             issuer.validateOidcToken(token.serialize())
@@ -163,16 +160,6 @@ class AccessTokenIssuerTest {
         verify(getRequestedFor(urlEqualTo(azureADJwksUrl)))
     }
 
-    // TODO
-    // @Test
-    // @Throws(Exception::class)
-    // fun `Get Jwk Keys`() {
-    //     issuer.issueToken("testuser")
-    //     val jwks: JWKSet? = issuer.getPublicJWKSet()
-    //     val jList = jwks!!.keys
-    //     assertTrue(jList.size == 1)
-    // }
-
     @Test
     @Throws(Exception::class)
     fun `Exchange Valid SAML To OIDC Token`() {
@@ -188,7 +175,6 @@ class AccessTokenIssuerTest {
         assertTrue(token != null)
         assertTrue(token!!.jwtClaimsSet.expirationTime != null)
         assertTrue(token.jwtClaimsSet.subject == subject)
-
         // Test response
         val response = ExchangeTokenResponse(token)
         assertTrue(response.expires_in == beforeAfter + AccessTokenIssuer.EXCHANGE_TOKEN_EXTENDED_TIME)
@@ -201,13 +187,11 @@ class AccessTokenIssuerTest {
         val notOnOrAfter = ZonedDateTime.parse("2018-06-06T09:58:18.472Z")
         val beforeAfter: Long = 2
         val now = notOnOrAfter.minusSeconds(beforeAfter)
-
         // exchangeToken med valid date
         val token = issuer.exchangeSamlToOidcToken(getIDASelvutstedtSaml(), now)
         assertTrue(token != null)
         assertTrue(token!!.jwtClaimsSet.expirationTime != null)
         assertTrue(token.jwtClaimsSet.subject == "Z991643")
-
         // Test response
         val response = ExchangeTokenResponse(token)
         assertTrue(response.expires_in == beforeAfter + AccessTokenIssuer.EXCHANGE_TOKEN_EXTENDED_TIME)
@@ -239,7 +223,6 @@ class AccessTokenIssuerTest {
         val samlObj = SamlObject()
         samlObj.read(samlToken)
         val notOnOrAfter: ZonedDateTime? = samlObj.notOnOrAfter
-
         // exchangeToken med invalid date
         try {
             issuer.exchangeSamlToOidcToken(samlToken, notOnOrAfter)
@@ -257,7 +240,6 @@ class AccessTokenIssuerTest {
         samlObj.read(samlToken)
         val notOnOrAfter: ZonedDateTime? = samlObj.notOnOrAfter
         val now = notOnOrAfter!!.plusSeconds(1)
-
         // exchangeToken med invalid date
         try {
             issuer.exchangeSamlToOidcToken(samlToken, now)
@@ -275,7 +257,6 @@ class AccessTokenIssuerTest {
         samlObj.read(samlToken)
         val notBefore: ZonedDateTime? = samlObj.dateNotBefore
         val now = notBefore!!.minusSeconds(1)
-
         // exchangeToken med invalid date
         try {
             issuer.exchangeSamlToOidcToken(samlToken, now)
@@ -293,7 +274,6 @@ class AccessTokenIssuerTest {
         samlObj.read(samlToken)
         val notOnOrAfter: ZonedDateTime? = samlObj.notOnOrAfter
         val now = notOnOrAfter!!.minusSeconds(2)
-
         // exchangeToken med altered samlToken
         try {
             issuer.exchangeSamlToOidcToken(samlToken, now)
@@ -376,7 +356,6 @@ class AccessTokenIssuerTest {
             println("Oidc token issued at: " + AccessTokenIssuer.toZonedDateTime(oidcObj.issueTime))
             println("Saml token issued at: " + samlObj.issueInstant)
             val samlToken = issuer.exchangeOidcToSamlToken(oidcToken, samlObj.consumerId, OidcObject.toDate(samlObj.issueInstant))
-
             // System.out.println("oidcToken: " + signedJwt.getJWTClaimsSet().toJSONObject());
             // System.out.println("#DPSaml: " + dpSamlToken);
             // System.out.println("#Saml: " + samlToken);
@@ -421,10 +400,8 @@ class AccessTokenIssuerTest {
         val difiJwt = SignedJWT.parse(difiToken).jwtClaimsSet
         val subject = difiJwt.getClaim("client_orgno") as String
         val issueAt = difiJwt.issueTime
-
         // exchange token
         val oidcToken = issuer.exchangeDifiTokenToOidc(difiToken, issueAt)
-
         // check issued token
         val jwt = oidcToken.jwtClaimsSet
         assertTrue(jwt.subject == subject)
@@ -452,10 +429,8 @@ class AccessTokenIssuerTest {
         val difiJwt = SignedJWT.parse(difiToken).jwtClaimsSet
         val subject = difiJwt.getClaim("client_orgno") as String
         val issueAt = difiJwt.issueTime
-
         // exchange token
         val oidcToken = issuer.exchangeDifiTokenToOidc(difiToken, issueAt)
-
         // check issued token
         val jwt = oidcToken.jwtClaimsSet
         assertEquals(jwt.subject, subject)
