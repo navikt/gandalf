@@ -58,7 +58,6 @@ class RSAKeyStoreService {
             // lock keystore before read, in case an update of keystore is needed
             keyStoreRepositoryImpl.lockKeyStore(false)
             val keyList: List<RSAKeyStore> = rsaKeyRepositoryImpl.findAllOrdered()
-            println("keyList: " + keyList.size)
             if (keyList.isNotEmpty() && !keyList[0].hasExpired()) {
                 return keyList[0]
             }

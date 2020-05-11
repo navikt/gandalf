@@ -8,10 +8,17 @@ internal const val BASE = "/v1/sts"
 internal const val TOKEN = "$BASE/token"
 internal const val TOKEN2 = "$BASE/token2"
 internal const val SAML_TOKEN = "$BASE/samltoken"
+internal const val EXCHANGE = "$BASE/token/exchange"
+internal const val EXCHANGE_DIFI = "$BASE/token/exchangedifi"
 internal const val PORT = 8888
+
 internal const val GRANT_TYPE = "grant_type"
 internal const val SCOPE = "scope"
 internal const val TOKEN_TYPE = "Bearer"
+internal const val TOKEN_SUBJECT = "token"
+internal const val REQUESTED_TOKEN_TYPE = "requested_token_type"
+internal const val SUBJECT_TOKEN = "subject_token"
+internal const val SUBJECT_TOKEN_TYPE = "subject_token_type"
 
 class ControllerUtil {
 

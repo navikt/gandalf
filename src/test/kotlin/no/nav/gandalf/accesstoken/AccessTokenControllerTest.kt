@@ -1,5 +1,6 @@
 package no.nav.gandalf.accesstoken
 
+import javax.annotation.PostConstruct
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
 import no.nav.gandalf.utils.SAML_TOKEN
@@ -7,18 +8,6 @@ import no.nav.gandalf.utils.SCOPE
 import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN2
 import no.nav.gandalf.utils.TOKEN_TYPE
-import no.nav.gandalf.utils.azureADJwksUrl
-import no.nav.gandalf.utils.azureADResponseFileName
-import no.nav.gandalf.utils.difiMASKINPORTENCJwksUrl
-import no.nav.gandalf.utils.difiMASKINPORTENConfigurationResponseFileName
-import no.nav.gandalf.utils.difiOIDCConfigurationResponseFileName
-import no.nav.gandalf.utils.difiOIDCConfigurationUrl
-import no.nav.gandalf.utils.difiOIDCJwksUrl
-import no.nav.gandalf.utils.difiOIDCResponseFileName
-import no.nav.gandalf.utils.jwksEndpointStub
-import no.nav.gandalf.utils.openAMJwksUrl
-import no.nav.gandalf.utils.openAMResponseFileName
-import org.apache.http.HttpStatus
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,7 +23,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import javax.annotation.PostConstruct
 
 @RunWith(SpringRunner::class)
 @SpringBootTest

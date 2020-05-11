@@ -3,8 +3,8 @@ package no.nav.gandalf.ldap
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.context.TestPropertySource
 
-//@RunWith(SpringRunner::class)
-//@SpringBootTest
+// @RunWith(SpringRunner::class)
+// @SpringBootTest
 @TestPropertySource(
         locations = ["classpath:application-test.properties"],
         properties = ["spring.profiles.active=remote"]

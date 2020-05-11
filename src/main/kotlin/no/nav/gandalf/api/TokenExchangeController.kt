@@ -1,6 +1,7 @@
 package no.nav.gandalf.api
 
 import com.nimbusds.jwt.SignedJWT
+import java.nio.charset.StandardCharsets
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.nio.charset.StandardCharsets
 
 private val log = KotlinLogging.logger { }
 
@@ -29,10 +29,10 @@ class TokenExchangeController {
 
     @PostMapping("/token/exchange")
     fun exchangeSAMLToOIDCToSAMLToken(
-            @RequestParam("grant_type") grantType: String?,
-            @RequestParam("requested_token_type") reqTokenType: String?,
-            @RequestParam("subject_token") subjectToken: String?,
-            @RequestParam("subject_token_type") subTokenType: String?
+        @RequestParam("grant_type") grantType: String?,
+        @RequestParam("requested_token_type") reqTokenType: String?,
+        @RequestParam("subject_token") subjectToken: String?,
+        @RequestParam("subject_token_type") subTokenType: String?
     ): ResponseEntity<Any> {
         var copyReqTokenType = reqTokenType
         log.debug("Exchange $subTokenType to $copyReqTokenType")
@@ -42,7 +42,7 @@ class TokenExchangeController {
         val username = try {
             authDetails()
         } catch (e: Exception) {
-            return unauthorizedResponse(e, "Error: " + e.message)
+            return unauthorizedResponse(e, e.message!!)
         }
         if (grantType.isNullOrEmpty() || !grantType.equals("urn:ietf:params:oauth:grant-type:token-exchange", ignoreCase = true)) {
             return badRequestResponse("Unknown grant_type")
@@ -60,7 +60,7 @@ class TokenExchangeController {
                     val decodedSaml = Base64.decodeBase64(subjectToken.toByteArray())
                     issuer.exchangeSamlToOidcToken(String(decodedSaml, StandardCharsets.UTF_8))
                 } catch (e: Exception) {
-                    return badRequestResponse("Error: " + e.message)
+                    return badRequestResponse(e.message!!)
                 }
                 return ResponseEntity
                         .status(HttpStatus.OK)
@@ -81,7 +81,7 @@ class TokenExchangeController {
                     samlObj.read(samlToken)
                     Pair(samlToken, samlObj)
                 } catch (e: Exception) {
-                    return badRequestResponse("Error: " + e.message)
+                    return badRequestResponse(e.message!!)
                 }
                 return ResponseEntity.status(HttpStatus.OK)
                         .headers(tokenHeaders)
@@ -101,13 +101,13 @@ class TokenExchangeController {
 
     @PostMapping("/token/exchangedifi")
     fun exchangeDIFIOIDCToken(
-            @RequestHeader("token") difiToken: String?
+        @RequestHeader("token") difiToken: String?
     ): ResponseEntity<Any> {
         log.debug("Exchange difi token to oidc token")
         try {
             require(authDetails() == "srvDatapower") { "Client is unauthorized for this endpoint" }
         } catch (e: Exception) {
-            return unauthorizedResponse(e, "Error: " + e.message)
+            return unauthorizedResponse(e, e.message!!)
         }
         if (difiToken.isNullOrEmpty()) {
             val errorMessage = "Exchange difi token called with null or empty difi token"

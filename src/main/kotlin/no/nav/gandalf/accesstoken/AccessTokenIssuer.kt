@@ -209,9 +209,6 @@ class AccessTokenIssuer(
         if (keyStore.publicJWKSet == null || keyStore.publicJWKSet != null && keyStore.publicJWKSet!!.keys.isEmpty()) {
             throw IllegalArgumentException("Failed to get keys from by issuer: $issuer")
         } else {
-            println("lol")
-            println(keyId)
-            println(keyStore.publicJWKSet)
             val keyIdResult: JWK? = keyStore.publicJWKSet!!.getKeyByKeyId(keyId)
             return if (keyIdResult != null) keyIdResult as RSAKey else keyIdResult
         }
@@ -240,7 +237,6 @@ class AccessTokenIssuer(
         var DEFAULT_SAML_AUTHLEVEL = "0"
 
         fun getDomainFromIssuerURL(issuer: String?): String {
-            println("DOMANIN:" + issuer)
             val domainPrefix = "nais."
             require(!(issuer == null || issuer.length < domainPrefix.length)) { "Failed to find domain from issuerUrl: $issuer" }
             return issuer.substring(issuer.indexOf(domainPrefix) + domainPrefix.length)

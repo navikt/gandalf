@@ -6,7 +6,6 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
 import java.security.NoSuchAlgorithmException
-import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.KeyStoreLockRepositoryImpl
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl

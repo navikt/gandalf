@@ -15,7 +15,6 @@ import no.nav.gandalf.accesstoken.OidcObject.Companion.AZP_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.RESOURCETYPE_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.VERSION_CLAIM
 import no.nav.gandalf.config.LocalIssuer
-import no.nav.gandalf.model.ExchangeTokenResponse
 import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.AccessTokenResponseService
 import no.nav.gandalf.service.ExchangeTokenService

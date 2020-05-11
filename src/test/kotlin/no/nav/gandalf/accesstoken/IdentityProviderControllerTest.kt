@@ -1,5 +1,6 @@
 package no.nav.gandalf.accesstoken
 
+import javax.annotation.PostConstruct
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.JWKS
 import no.nav.gandalf.utils.WELL_KNOWN
@@ -18,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import javax.annotation.PostConstruct
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
