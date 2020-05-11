@@ -1,6 +1,8 @@
 package no.nav.gandalf.accesstoken
 
 import javax.annotation.PostConstruct
+import javax.inject.Inject
+import no.nav.gandalf.api.INVALID_REQUEST
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
 import no.nav.gandalf.utils.SAML_TOKEN
@@ -15,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.MediaType
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.TestPropertySource
@@ -27,7 +30,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@AutoConfigureWireMock(port = no.nav.gandalf.utils.PORT)
+@AutoConfigureWireMock(port = 0)
 @TestPropertySource(locations = ["classpath:application-test.properties"])
 @DirtiesContext
 class AccessTokenControllerTest {
@@ -38,9 +41,16 @@ class AccessTokenControllerTest {
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
+    @Inject
+    protected lateinit var authenticationManager: AuthenticationManager
+
     @PostConstruct
-    fun setupKnownIssuers() {
-        ControllerUtil().setupKnownIssuers()
+    fun setup() {
+        val controllerUtil = ControllerUtil()
+        controllerUtil.setupKnownIssuers()
+        controllerUtil.setupOverride()
+        controllerUtil.addUserContext(authenticationManager,
+                "srvPDP", "password")
     }
 
     // Path: /token
@@ -59,9 +69,21 @@ class AccessTokenControllerTest {
                 .andExpect(jsonPath("$.expires_in").value(3600))
     }
 
-    // TODO test more errors when LDAP is in place
     @Test
-    fun `Get OIDC Token Missing Params`() {
+    fun `Get OIDC Token - Not Known Params`() {
+        val unknownGrantType = "client_credential"
+        val scope = "openid"
+        mvc.perform(MockMvcRequestBuilders.get(TOKEN)
+                .param(GRANT_TYPE, unknownGrantType)
+                .param(SCOPE, "openid")
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+                .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
+                .andExpect(jsonPath("$.error_description").value("grant_type = $unknownGrantType, scope = $scope"))
+    }
+
+    @Test
+    fun `Get OIDC Token - Missing Params`() {
         mvc.perform(MockMvcRequestBuilders.get(TOKEN)
                 .param(GRANT_TYPE, "client_credentials")
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")))

@@ -1,65 +1,73 @@
 package no.nav.gandalf.config
 
-import mu.KotlinLogging
+import javax.inject.Inject
+import no.nav.gandalf.ldap.NAVLdapUserDetailsMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
-import org.springframework.security.crypto.password.PasswordEncoder
-
-private val log = KotlinLogging.logger { }
-private const val REALM_NAME = "gandalf"
+import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider
 
 @Configuration
 class SecurityConfig(
     val ldapConfig: LdapConfig
 ) : WebSecurityConfigurerAdapter() {
-    @Throws(Exception::class)
-    override fun configure(http: HttpSecurity) {
-        http.csrf().disable()
-        if (isTest()) {
+
+    @Inject
+    override fun configure(auth: AuthenticationManagerBuilder) {
+        if (!ldapConfig.remote.contains("remote")) {
+            println("HERE")
+            val encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
+            auth.inMemoryAuthentication()
+                    .passwordEncoder(encoder)
+                    .withUser("srvPDP").password(encoder.encode("password")).roles("USER")
+                    .and()
+                    .withUser("srvDatapower").password(encoder.encode("password")).roles("USER")
             return
         }
+        auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider())
+    }
+
+    override fun configure(http: HttpSecurity) {
         http
                 .csrf().disable()
                 .formLogin().disable()
-                .httpBasic()
+                .requestMatchers()
+                .antMatchers("rest/**")
                 .and()
                 .authorizeRequests()
                 .antMatchers("rest/**").authenticated()
                 .antMatchers("/").permitAll()
-        // .realmName(REALM_NAME)
-    }
-
-    @Throws(java.lang.Exception::class)
-    override fun configure(auth: AuthenticationManagerBuilder) {
-        if (isTest()) {
-            auth.inMemoryAuthentication().withUser("srvPDP").password("password").roles("USER")
-            return
-        }
-        auth
-                .ldapAuthentication()
-                // .userSearchFilter("(uid={0})")
-                .userDnPatterns("uid={0},ou=ServiceAccounts", "uid={0},ou=ApplAccounts,ou=ServiceAccounts")
-                .userSearchBase("ou=ServiceAccounts")
-                // .userSearchFilter("(uid={0})")
-                // .userDnPatterns("uid={0},ou=ServiceAccounts")
-                .contextSource()
-                .url("${ldapConfig.urls}/${ldapConfig.base}")
                 .and()
-                .passwordCompare()
-        // .passwordEncoder(passwordEncoder())
-        // .passwordAttribute("userPassword")
-
-        log.info { "Security configuration loaded." }
+                .httpBasic()
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     }
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder? {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder()
+    @Throws(Exception::class)
+    override fun authenticationManagerBean(): AuthenticationManager? {
+        return super.authenticationManagerBean()
     }
 
-    fun isTest() = !ldapConfig.remote.contains("remote")
+    // @Bean
+    // @Throws(Exception::class)
+    // override fun authenticationManagerBean(): AuthenticationManager? {
+    //     return super.authenticationManagerBean()
+    // }
+
+    @Bean
+    fun activeDirectoryLdapAuthenticationProvider(): AuthenticationProvider? {
+        val provider = ActiveDirectoryLdapAuthenticationProvider(ldapConfig.base, ldapConfig.urls)
+        provider.setUserDetailsContextMapper(NAVLdapUserDetailsMapper())
+        provider.setConvertSubErrorCodesToExceptions(true)
+        provider.setUseAuthenticationRequestCredentials(true)
+        provider.setSearchFilter("(&(objectClass=user)(|(sAMAccountName={1})(userPrincipalName={0})(mail={0})))")
+        return provider
+    }
 }

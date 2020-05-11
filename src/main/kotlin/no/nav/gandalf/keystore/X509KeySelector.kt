@@ -66,58 +66,38 @@ class X509KeySelector(
     val x509TrustManager: X509TrustManager
         get() {
             log.info("OidcTokenIssuer - Setup trustManager with: getX509TrustManager")
-            val trustStore: KeyStore
-            var tsis: InputStream? = null
-            try {
-                if (truststoreFile.isEmpty()) {
-                    throw RuntimeException("Failed to load truststore, system property '$TRUSTSTORE_FILENAME_PROPERTYNAME' is null or empty!")
-                }
-                if (truststorePassword.isEmpty()) {
-                    log.error("System property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
-                    throw RuntimeException("Failed to load truststore, system property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
-                }
-                trustStore = KeyStore.getInstance("JKS")
-                tsis = FileInputStream(truststoreFile)
-                trustStore.load(tsis, truststorePassword.toCharArray())
-                if (trustStore.size() == 0) {
-                    log.error("Error: truststore is empty. Loaded from file '$truststoreFile'")
-                    throw RuntimeException("Error: truststore is empty")
-                }
-            } catch (e: KeyStoreException) {
-                log.error("Failed to get trustStore instance" + e.message)
-                throw RuntimeException("Failed to get trustStore instance", e)
-            } catch (e: NoSuchAlgorithmException) {
-                log.error("Failed to load truststore" + e.message)
-                throw RuntimeException("Failed to load truststore", e)
-            } catch (e: CertificateException) {
-                log.error("Failed to load truststore" + e.message)
-                throw RuntimeException("Failed to load truststore", e)
-            } catch (e: IOException) {
-                log.error("Failed to load truststore" + e.message)
-                throw RuntimeException("Failed to load truststore", e)
-            } finally {
-                if (tsis != null) {
-                    try {
-                        tsis.close()
-                    } catch (e: Exception) {
-                        log.error("Failed to close inputstream on truststore. " + e.message)
-                        throw RuntimeException("Failed to close inputstream on truststore. ", e)
+            var trustStore: KeyStore? = null
+            var tsis: InputStream?
+            readKeyStoreAndHandle {
+                when {
+                    truststoreFile.isEmpty() -> {
+                        throw RuntimeException("Failed to load truststore, system property '$TRUSTSTORE_FILENAME_PROPERTYNAME' is null or empty!")
+                    }
+                    truststorePassword.isEmpty() -> {
+                        log.error("System property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
+                        throw RuntimeException("Failed to load truststore, system property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
+                    }
+                    else -> {
+                        trustStore = KeyStore.getInstance("JKS")
+                        tsis = FileInputStream(truststoreFile)
+                        trustStore!!.load(tsis, truststorePassword.toCharArray())
+                        if (trustStore!!.size() == 0) {
+                            log.error("Error: truststore is empty. Loaded from file '$truststoreFile'")
+                            throw RuntimeException("Error: truststore is empty")
+                        }
                     }
                 }
             }
-            var tmfactory: TrustManagerFactory?
-            try {
-                tmfactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-                tmfactory.init(trustStore)
-            } catch (e: NoSuchAlgorithmException) {
-                log.error("Failed to get instance of trustmanagerfactory" + e.message)
-                throw RuntimeException("Failed to get instance of trustmanagerfactory", e)
-            } catch (e: KeyStoreException) {
-                log.error("Failed to init trustmanagerfactory" + e.message)
-                throw RuntimeException("Failed to init trustmanagerfactory", e)
+
+            val tmfactory = trustManageFacHandle {
+                TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()).apply {
+                    this.run {
+                        init(trustStore)
+                    }
+                }
             }
-            for (trustManager in tmfactory.trustManagers) {
-                if (trustManager is X509TrustManager) {
+            for (trustManager in tmfactory.trustManagers) when (trustManager) {
+                is X509TrustManager -> {
                     return trustManager
                 }
             }
@@ -130,6 +110,40 @@ class X509KeySelector(
         const val TRUSTSTORE_PASSWORD_PROPERTYNAME = "javax.net.ssl.trustStorePassword"
         fun algEquals(algURI: String, algName: String): Boolean {
             return algName.equals("RSA", ignoreCase = true) && algURI.equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", ignoreCase = true)
+        }
+    }
+
+    fun trustManageFacHandle(
+        block: () -> TrustManagerFactory
+    ): TrustManagerFactory {
+        try {
+            return block.invoke()
+        } catch (e: NoSuchAlgorithmException) {
+            log.error("Failed to get instance of trustmanagerfactory" + e.message)
+            throw RuntimeException("Failed to get instance of trustmanagerfactory", e)
+        } catch (e: KeyStoreException) {
+            log.error("Failed to init trustmanagerfactory" + e.message)
+            throw RuntimeException("Failed to init trustmanagerfactory", e)
+        }
+    }
+
+    fun readKeyStoreAndHandle(
+        block: () -> Unit
+    ) {
+        try {
+            block.invoke()
+        } catch (e: KeyStoreException) {
+            log.error("Failed to get trustStore instance" + e.message)
+            throw RuntimeException("Failed to get trustStore instance", e)
+        } catch (e: NoSuchAlgorithmException) {
+            log.error("Failed to load truststore" + e.message)
+            throw RuntimeException("Failed to load truststore", e)
+        } catch (e: CertificateException) {
+            log.error("Failed to load truststore" + e.message)
+            throw RuntimeException("Failed to load truststore", e)
+        } catch (e: IOException) {
+            log.error("Failed to load truststore" + e.message)
+            throw RuntimeException("Failed to load truststore", e)
         }
     }
 }

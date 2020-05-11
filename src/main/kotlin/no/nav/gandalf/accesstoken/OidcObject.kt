@@ -202,23 +202,10 @@ class OidcObject {
         return getSignedJWT(cBuilder.build(), key, alg)
     }
 
-    fun getAudience(): List<String>? {
-        return audience
-    }
-
     val keyId: String?
         get() {
             return (if (signedJWT != null) signedJWT!!.header.keyID else null)
         }
-
-    fun setAudience(audience: MutableList<String>?) {
-        this.audience = audience
-    }
-
-    fun setAudience(audience: String) {
-        this.audience = ArrayList()
-        (this.audience as ArrayList<String>).add(audience)
-    }
 
     fun setAudience(aud1: String, aud2: String) {
         audience = ArrayList()

@@ -39,7 +39,7 @@ class TokenExchangeController {
 
         // sjekk at bruker er gyldig, dvs at ikke basic auth har feilet
         // TODO Flytt denne ut for validering
-        val username = try {
+        val user = try {
             authDetails()
         } catch (e: Exception) {
             return unauthorizedResponse(e, e.message!!)
@@ -76,7 +76,7 @@ class TokenExchangeController {
                 }
 
                 val saml = try {
-                    val samlToken = issuer.exchangeOidcToSamlToken(subjectToken, username)
+                    val samlToken = issuer.exchangeOidcToSamlToken(subjectToken, user.username)
                     val samlObj = SamlObject()
                     samlObj.read(samlToken)
                     Pair(samlToken, samlObj)
@@ -105,7 +105,7 @@ class TokenExchangeController {
     ): ResponseEntity<Any> {
         log.debug("Exchange difi token to oidc token")
         try {
-            require(authDetails() == "srvDatapower") { "Client is unauthorized for this endpoint" }
+            require(authDetails().username == "srvDatapower") { "Client is unauthorized for this endpoint" }
         } catch (e: Exception) {
             return unauthorizedResponse(e, e.message!!)
         }

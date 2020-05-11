@@ -5,10 +5,9 @@ import no.nav.gandalf.model.ErrorDescriptiveResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl
+import org.springframework.security.core.userdetails.User
 
 internal const val INVALID_CLIENT = "invalid_client"
 internal const val INVALID_REQUEST = "invalid_request"
@@ -42,21 +41,11 @@ internal fun badRequestResponse(errorMessage: String): ResponseEntity<Any> {
             .body(ErrorDescriptiveResponse(INVALID_REQUEST, errorMessage))
 }
 
-internal fun authDetails(): String {
-    val authentication = SecurityContextHolder.getContext().authentication as AnonymousAuthenticationToken
-    println(":::::" + authentication.name)
-    val principal = authentication.principal as String
-    println(":::::" + principal)
-    return principal
-}
-
-internal fun getUserName() {
-    try {
+internal fun authDetails(): User {
+    return try {
         val authentication = SecurityContextHolder.getContext().authentication as UsernamePasswordAuthenticationToken
-        val principal = authentication.principal as LdapUserDetailsImpl
-        log.info("authentication: $authentication")
-        log.info("principal: $principal")
+        authentication.principal
     } catch (e: Exception) {
         // Todo
-    }
+    } as User
 }

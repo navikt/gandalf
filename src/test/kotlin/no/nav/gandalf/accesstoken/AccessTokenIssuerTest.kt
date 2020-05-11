@@ -65,7 +65,6 @@ private const val PORT = 8888
 @SpringBootTest
 @EnableConfigurationProperties
 @AutoConfigureWireMock(port = PORT)
-// @TestPropertySource(properties = ["spring.profiles.active=test"])
 @TestPropertySource(locations = ["classpath:application-test.properties"])
 class AccessTokenIssuerTest {
 

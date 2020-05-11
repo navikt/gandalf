@@ -59,6 +59,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("javax.inject:javax.inject:1")
 
     // Jackson
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Version.jackson}")

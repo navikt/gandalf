@@ -1,6 +1,7 @@
 package no.nav.gandalf.accesstoken
 
 import javax.annotation.PostConstruct
+import javax.inject.Inject
 import no.nav.gandalf.api.INVALID_CLIENT
 import no.nav.gandalf.api.INVALID_REQUEST
 import no.nav.gandalf.utils.ControllerUtil
@@ -21,6 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.MediaType
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.TestPropertySource
@@ -44,9 +46,16 @@ class TokenExchangeControllerTest {
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
+    @Inject
+    protected lateinit var authenticationManager: AuthenticationManager
+
     @PostConstruct
-    fun setupKnownIssuers() {
-        ControllerUtil().setupKnownIssuers()
+    fun setup() {
+        val controllerUtil = ControllerUtil()
+        controllerUtil.setupKnownIssuers()
+        controllerUtil.setupOverride()
+        controllerUtil.addUserContext(authenticationManager,
+                "srvPDP", "password")
     }
 
     // Path: /token/exchange

@@ -32,17 +32,17 @@ class AccessTokenController {
     ): ResponseEntity<Any> {
         when {
             grantType != "client_credentials" || scope != "openid" -> {
-                return badRequestResponse("Invalid request, grant_type = $grantType scope = $scope")
+                return badRequestResponse("grant_type = $grantType, scope = $scope")
             }
             else -> {
                 val user = try {
                     authDetails()
                 } catch (e: Exception) {
-                    return unauthorizedResponse(e, "Error: " + e.message)
+                    return unauthorizedResponse(e, e.message!!)
                 }
 
                 val oidcToken = try {
-                    issuer.issueToken(user)
+                    issuer.issueToken(user.username)
                 } catch (e: Exception) {
                     return serverErrorResponse(e)
                 }
@@ -88,15 +88,14 @@ class AccessTokenController {
 
     @GetMapping("/samltoken")
     fun getSAMLToken(): ResponseEntity<Any> {
-        var username: String? = null
-        username = try {
+        val user = try {
             authDetails()
         } catch (e: Exception) {
-            return unauthorizedResponse(e, "Error: ${e.message} for username = $username")
+            return unauthorizedResponse(e, "Error: ${e.message}")
         }
-        log.debug("Issue SAML token for: $username")
+        log.debug("Issue SAML token for: ${user.username}")
         val samlToken = try {
-            issuer.issueSamlToken(username, username, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
+            issuer.issueSamlToken(user.username, user.username, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
         } catch (e: Exception) {
             return serverErrorResponse(e)
         }
