@@ -49,7 +49,7 @@ class KeyStoreReader(
     @Throws(KeyStoreException::class, UnrecoverableKeyException::class, NoSuchAlgorithmException::class)
     private fun readKeyStore() {
         log.info("readKeyStore - Updating keystore for application")
-        var tsis: InputStream? = null
+        var tsis: InputStream?
         log.debug("Using keystorefile: $keystoreFile")
         readKeyStoreAndHandle {
             when {

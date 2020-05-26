@@ -3,18 +3,19 @@ package no.nav.gandalf.service
 import com.nimbusds.jose.jwk.JWK
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
-import java.time.LocalDateTime
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.KeyStoreLockRepositoryImpl
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class RSAKeyStoreService {
 
     @Autowired
     lateinit var rsaKeyRepositoryImpl: RSAKeyStoreRepositoryImpl
+
     @Autowired
     lateinit var keyStoreRepositoryImpl: KeyStoreLockRepositoryImpl
 
@@ -38,7 +39,11 @@ class RSAKeyStoreService {
     val publicJWKSet: JWKSet?
         get() {
             when {
-                currPublicJWKSet == null || currRSAKeyStore == null || currRSAKeyStore!!.hasExpired() -> {
+                currPublicJWKSet == null
+                        || currRSAKeyStore == null
+                        || currRSAKeyStore!!.hasExpired()
+                        || currPublicJWKSet!!.getKeyByKeyId(currRSAKeyStore!!.rSAKey.keyID) == null -> {
+                    // Hvis currPublicJWKSet er forskjellig fra database, oppdater currPublicJWKSet.
                     currPublicJWKSet = getPublicJWKSet(rsaKeyRepositoryImpl.findAllOrdered()) // les fra DB
                 }
             }

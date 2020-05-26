@@ -1,13 +1,16 @@
 package no.nav.gandalf.accesstoken
 
+import com.nimbusds.jose.jwk.JWK
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyType
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
-import java.time.LocalDateTime
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
 import no.nav.gandalf.service.RSAKeyStoreService
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -17,6 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.LocalDateTime
+import java.util.*
+
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -182,5 +188,24 @@ class RSAKeyStoreRepositoryTest {
         assertTrue(jwkSet!!.keys.size == 2)
         assertTrue(jwkSet.keys[0].keyID == newDbKey.rSAKey.keyID)
         assertTrue(jwkSet.keys[1].keyID == oldDbKey.rSAKey.keyID)
+    }
+
+    @Test
+    @Throws(java.lang.Exception::class)
+    fun `Check JWKSet Caching With Key Added And Not Matching Current RsaKey Store`() {
+        val newKey: RSAKeyStore = rsaKeyStoreService.addRSAKey(LocalDateTime.now().plusSeconds(RSAKeyStoreRepositoryImpl.keyRotationTime + 10)) // not expired
+        assertNotNull(newKey)
+        assertFalse(newKey.hasExpired())
+
+        // set cache values
+        rsaKeyStoreService.currRSAKeyStore = newKey
+        rsaKeyStoreService.currPublicJWKSet = JWKSet(listOf(RSAKeyStoreRepositoryImpl.generateNewRSAKey().rSAKey))
+
+        // get public jwkset
+        val jwkSet: JWKSet = rsaKeyStoreService.publicJWKSet!! // should read from DB
+        assertNotNull(jwkSet)
+        assertEquals(1, jwkSet.keys.size)
+        assertEquals(jwkSet.keys[0].keyID, newKey.rSAKey.keyID)
+        assertEquals(jwkSet.keys[0].keyID, rsaKeyStoreService.currPublicJWKSet!!.keys[0].keyID)
     }
 }

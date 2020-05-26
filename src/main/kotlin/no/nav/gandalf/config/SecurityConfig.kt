@@ -21,7 +21,6 @@ class SecurityConfig(
     @Inject
     override fun configure(auth: AuthenticationManagerBuilder) {
         if (!ldapConfig.remote.contains("remote")) {
-            println("HERE")
             val encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
             auth.inMemoryAuthentication()
                     .passwordEncoder(encoder)
