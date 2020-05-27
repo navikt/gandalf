@@ -62,7 +62,7 @@ class SecurityConfig(
 
     @Bean
     fun activeDirectoryLdapAuthenticationProvider(): AuthenticationProvider? {
-        val provider = ActiveDirectoryLdapAuthenticationProvider(ldapConfig.base, ldapConfig.urls)
+        val provider = ActiveDirectoryLdapAuthenticationProvider(ldapConfig.base, "${ldapConfig.url}:${ldapConfig.port}")
         provider.setUserDetailsContextMapper(NAVLdapUserDetailsMapper())
         provider.setConvertSubErrorCodesToExceptions(true)
         provider.setUseAuthenticationRequestCredentials(true)

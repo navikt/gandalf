@@ -18,7 +18,7 @@ import javax.xml.crypto.dsig.XMLSignatureException
 import javax.xml.parsers.ParserConfigurationException
 import mu.KotlinLogging
 import no.nav.gandalf.config.ExternalIssuer
-import no.nav.gandalf.config.LocalIssuer
+import no.nav.gandalf.config.LocalIssuerConfig
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.RSAKeyStoreService
@@ -36,11 +36,11 @@ class AccessTokenIssuer(
     @Autowired private val httpClient: HttpClient,
     @Autowired private val difiConfiguration: DIFIConfiguration,
     @Autowired private val externalIssuers: ExternalIssuer,
-    @Autowired private val localIssuer: LocalIssuer
+    @Autowired private val localIssuerConfig: LocalIssuerConfig
 ) : OidcIssuer {
 
-    final override val issuer = localIssuer.issuer
-    private val srvUser = localIssuer.issuerUsername
+    final override val issuer = localIssuerConfig.issuer
+    private val srvUser = localIssuerConfig.issuerUsername
 
     private val domain = getDomainFromIssuerURL(this.issuer)
     private lateinit var knownIssuers: MutableList<OidcIssuer>

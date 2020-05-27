@@ -14,7 +14,7 @@ import no.nav.gandalf.accesstoken.OidcObject.Companion.AUTHTIME_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.AZP_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.RESOURCETYPE_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.VERSION_CLAIM
-import no.nav.gandalf.config.LocalIssuer
+import no.nav.gandalf.config.LocalIssuerConfig
 import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.AccessTokenResponseService
 import no.nav.gandalf.service.ExchangeTokenService
@@ -69,7 +69,7 @@ private const val PORT = 8888
 class AccessTokenIssuerTest {
 
     @Autowired
-    private lateinit var env: LocalIssuer
+    private lateinit var env: LocalIssuerConfig
 
     @Autowired
     private lateinit var issuer: AccessTokenIssuer

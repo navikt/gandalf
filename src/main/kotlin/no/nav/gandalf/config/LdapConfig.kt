@@ -5,10 +5,12 @@ import org.springframework.stereotype.Component
 
 @Component
 data class LdapConfig(
-    @Value("\${spring.ldap.urls}")
-    val urls: String,
+    @Value("\${spring.ldap.url}")
+    val url: String,
     @Value("\${spring.ldap.base}")
     val base: String,
     @Value("\${spring.profiles.active}")
-    val remote: String
+    val remote: String,
+    @Value("\${spring.ldap.port}")
+    val port: Int
 )

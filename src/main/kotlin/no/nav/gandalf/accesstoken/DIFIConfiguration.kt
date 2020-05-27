@@ -18,12 +18,9 @@ class DIFIConfiguration {
     }
 
     fun getOIDCProviderMetadata(issuer: String): OIDCProviderMetadata {
-        // Will resolve the OpenID provider metadata automatically
         val request = OIDCProviderConfigurationRequest(Issuer(issuer))
-        // Make HTTP request
         val httpRequest = request.toHTTPRequest()
         val httpResponse = httpRequest.send()
-        // Parse OpenID provider metadata
         return OIDCProviderMetadata.parse(httpResponse.contentAsJSONObject)
     }
 }

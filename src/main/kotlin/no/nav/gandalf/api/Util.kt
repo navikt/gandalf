@@ -46,6 +46,6 @@ internal fun authDetails(): User {
         val authentication = SecurityContextHolder.getContext().authentication as UsernamePasswordAuthenticationToken
         authentication.principal
     } catch (e: Exception) {
-        // Todo
+        log.error { "Could not authenticate" }
     } as User
 }
