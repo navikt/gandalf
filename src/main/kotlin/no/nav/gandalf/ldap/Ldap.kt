@@ -3,6 +3,7 @@ package no.nav.gandalf.ldap
 import com.unboundid.ldap.sdk.LDAPConnection
 import com.unboundid.ldap.sdk.LDAPException
 import com.unboundid.ldap.sdk.LDAPSearchException
+import com.unboundid.ldap.sdk.SearchResult
 import com.unboundid.ldap.sdk.SearchScope
 import mu.KotlinLogging
 import no.nav.gandalf.config.LdapConfig
@@ -17,31 +18,53 @@ class Ldap(
     @Autowired val ldapConfig: LdapConfig
 ) {
 
-    fun result(user: User) = try {
+    fun result(user: User) =
+        try {
+            search(user)
+            true
+        } catch (t: Throwable) {
+            false
+        }
+
+    fun search(
+        user: User
+    ): SearchResult = tryToAuthenticate(user) {
         val connection = LDAPConnection(ldapConfig.url, ldapConfig.port)
-        connection.search(ldapConfig.base, SearchScope.SUB, "(cn=${user.username})").apply {
-            return when {
+        connection.search(
+            "${ldapConfig.ou},${ldapConfig.base}",
+            SearchScope.SUB,
+            "(cn=${user.username})"
+        ).apply {
+            when {
                 this.entryCount > 0 -> {
                     val entry = this.searchEntries[0]
-                    log.info { this.searchEntries[0] }
-                    log.info { "Found user: ${user.username}" }
+                    log.info { "Found user: ${user.username}, entry: ${entry.dn}" }
                     connection.bind(entry.dn, user.password)
-                    true
                 }
-                else -> false
+                else -> {
+                    throw Exception("Could not find user: ${user.username}")
+                }
             }
         }
-    } catch (t: Throwable) {
-        when (t) {
-            is LDAPException -> {
-                log.error { "Could not Authenticate user: ${user.username}, message: ${t.message}" }
-                false
+    }
+
+    fun tryToAuthenticate(
+        user: User,
+        block: () -> SearchResult
+    ) =
+        try {
+            block()
+        } catch (t: Throwable) {
+            when (t) {
+                is LDAPException -> {
+                    log.error { "Could not Authenticate user: ${user.username}, message: ${t.message}" }
+                    throw t
+                }
+                is LDAPSearchException -> {
+                    log.error { "Could not find user: ${user.username}, message: ${t.message}" }
+                    throw t
+                }
+                else -> throw t
             }
-            is LDAPSearchException -> {
-                log.error { "Could not find user: ${user.username}" }
-                false
-            }
-            else -> throw t
         }
-    } as Boolean
 }

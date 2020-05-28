@@ -1,9 +1,10 @@
-apiVersion: "nais.io/v1alpha1"
+apiVersion: "nais.io/v1"
 kind: "Alert"
 metadata:
   name: security-token-service-alerts
+  namespace: default
   labels:
-    team: integrasjon
+    team: plattformsikkerhet
 spec:
   receivers:
     slack:

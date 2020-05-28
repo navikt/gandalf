@@ -3,7 +3,10 @@ package no.nav.gandalf.api
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
+import no.nav.gandalf.config.LdapConfig
+import no.nav.gandalf.ldap.Ldap
 import no.nav.gandalf.model.AccessToken2Response
+import no.nav.gandalf.model.User
 import no.nav.gandalf.service.AccessTokenResponseService
 import no.nav.gandalf.service.ExchangeTokenService
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +23,9 @@ private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("v1/sts", produces = ["application/json"])
-class AccessTokenController {
+class AccessTokenController(
+    @Autowired val ldapConfig: LdapConfig
+) {
 
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
@@ -36,17 +41,17 @@ class AccessTokenController {
             }
             else -> {
                 val user = try {
-                    authDetails()
+                    userDetails()
                 } catch (e: Exception) {
-                    return unauthorizedResponse(e, e.message!!)
+                    return unauthorizedResponse(e, "Error: ${e.message}")
                 }
-
                 val oidcToken = try {
-                    issuer.issueToken(user.username)
+                    issuer.issueToken(user)
                 } catch (e: Exception) {
                     return serverErrorResponse(e)
                 }
-                return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders).body(AccessTokenResponseService(oidcToken!!).tokenResponse)
+                return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders)
+                    .body(AccessTokenResponseService(oidcToken!!).tokenResponse)
             }
         }
     }
@@ -65,15 +70,10 @@ class AccessTokenController {
         @RequestHeader("username") username: String,
         @RequestHeader("password") password: String
     ): ResponseEntity<Any> {
-        try {
-            // TODO sjekk ldap for username og password
-            authDetails()
-            // if (SrvUserAuthentication.tryBind(username, password, PropertyUtil.get(LDAP_SERVICEUSER_BASEDN)) == null) {
-            //     throw RuntimeException("")
-            // }
-        } catch (e: Exception) {
-            return unauthorizedResponse(e, "Error: " + e.message + " username = " + username)
+        if (!Ldap(ldapConfig).result(User(username, password))) {
+            return unauthorizedResponse(Exception(), "Not Authenticated: username = $username")
         }
+
         log.info("Issue OIDC token2 for user: $username")
 
         val oidcToken = try {
@@ -82,20 +82,20 @@ class AccessTokenController {
             return serverErrorResponse(e)
         }
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(AccessToken2Response(oidcToken!!))
+            .status(HttpStatus.OK)
+            .body(AccessToken2Response(oidcToken!!))
     }
 
     @GetMapping("/samltoken")
     fun getSAMLToken(): ResponseEntity<Any> {
         val user = try {
-            authDetails()
+            userDetails()
         } catch (e: Exception) {
             return unauthorizedResponse(e, "Error: ${e.message}")
         }
-        log.debug("Issue SAML token for: ${user.username}")
+        log.debug("Issue SAML token for: $user")
         val samlToken = try {
-            issuer.issueSamlToken(user.username, user.username, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
+            issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
         } catch (e: Exception) {
             return serverErrorResponse(e)
         }
@@ -103,14 +103,16 @@ class AccessTokenController {
             this.read(samlToken)
         }
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .headers(tokenHeaders)
-                .body(ExchangeTokenService().constructResponse(
-                        samlToken,
-                        "Bearer",
-                        "urn:ietf:params:oauth:token-type:saml2",
-                        samlObj.expiresIn,
-                        false)
+            .status(HttpStatus.OK)
+            .headers(tokenHeaders)
+            .body(
+                ExchangeTokenService().constructResponse(
+                    samlToken,
+                    "Bearer",
+                    "urn:ietf:params:oauth:token-type:saml2",
+                    samlObj.expiresIn,
+                    false
                 )
+            )
     }
 }

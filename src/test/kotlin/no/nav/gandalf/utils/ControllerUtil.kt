@@ -40,7 +40,16 @@ open class ControllerUtil {
     }
 
     fun addUserContext(authenticationManager: AuthenticationManager, username: String, password: String) {
-        val token: Authentication = authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
+        val token: Authentication =
+            authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
         SecurityContextHolder.getContext().authentication = token
+    }
+
+    fun runLdap(inMemoryLdap: InMemoryLdap) {
+        inMemoryLdap.start()
+    }
+
+    fun stopLdap(inMemoryLdap: InMemoryLdap) {
+        inMemoryLdap.stop()
     }
 }

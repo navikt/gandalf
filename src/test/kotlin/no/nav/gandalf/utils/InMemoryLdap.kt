@@ -38,6 +38,7 @@ class InMemoryLdap {
 
             // must bind before compare, equal to non-anonymous access./
             inMemConf!!.setAuthenticationRequiredOperationTypes(OperationType.COMPARE)
+            inMemConf!!.schema = null
             imDS = InMemoryDirectoryServer(inMemConf)
             imDS!!.importFromLDIF(true, "src/test/resources/users.ldif")
         } catch (e: LDAPException) {

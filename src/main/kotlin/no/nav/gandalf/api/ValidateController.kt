@@ -27,7 +27,7 @@ class ValidateController {
         @RequestParam("token") samlToken: String
     ): ResponseEntity<Any> {
         try {
-            authDetails()
+            userDetails()
         } catch (e: Exception) {
             return unauthorizedResponse(e, "Error: " + e.message)
         }
@@ -53,7 +53,7 @@ class ValidateController {
         @RequestParam("token") oidcToken: String?
     ): ResponseEntity<Any> {
         try {
-            authDetails()
+            userDetails()
         } catch (e: Exception) {
             return unauthorizedResponse(e, "Error: " + e.message)
         }
