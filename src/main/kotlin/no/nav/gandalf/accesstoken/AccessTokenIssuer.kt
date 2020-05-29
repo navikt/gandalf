@@ -17,7 +17,7 @@ import javax.xml.crypto.MarshalException
 import javax.xml.crypto.dsig.XMLSignatureException
 import javax.xml.parsers.ParserConfigurationException
 import mu.KotlinLogging
-import no.nav.gandalf.config.ExternalIssuer
+import no.nav.gandalf.config.ExternalIssuerConfig
 import no.nav.gandalf.config.LocalIssuerConfig
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.model.IdentType
@@ -35,7 +35,7 @@ class AccessTokenIssuer(
     @Autowired private val keyStoreReader: KeyStoreReader,
     @Autowired private val httpClient: HttpClient,
     @Autowired private val difiConfiguration: DIFIConfiguration,
-    @Autowired private val externalIssuers: ExternalIssuer,
+    @Autowired private val externalIssuersConfig: ExternalIssuerConfig,
     @Autowired private val localIssuerConfig: LocalIssuerConfig
 ) : OidcIssuer {
 
@@ -51,18 +51,18 @@ class AccessTokenIssuer(
         knownIssuers = mutableListOf(
                 this,
                 OidcIssuerImpl(
-                        externalIssuers.issuerOpenAm,
-                        externalIssuers.jwksEndpointOpenAm
+                        externalIssuersConfig.issuerOpenAm,
+                        externalIssuersConfig.jwksEndpointOpenAm
                 ),
                 OidcIssuerImpl(
-                        externalIssuers.issuerAzureAd,
-                        externalIssuers.jwksEndpointAzuread
+                        externalIssuersConfig.issuerAzureAd,
+                        externalIssuersConfig.jwksEndpointAzuread
                 ),
                 OidcIssuerImplDifi(
-                        externalIssuers.issuerDifiOIDC,
+                        externalIssuersConfig.issuerDifiOIDC,
                         difiConfiguration
                 ),
-                OidcIssuerImplDifi(externalIssuers.issuerDifiMaskinporten,
+                OidcIssuerImplDifi(externalIssuersConfig.issuerDifiMaskinporten,
                         difiConfiguration)
         )
     }

@@ -2,7 +2,6 @@ package no.nav.gandalf.ldap
 
 import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
-import no.nav.gandalf.utils.InMemoryLdap
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -28,8 +27,7 @@ class LdapTest {
 
     private val ldapConfig = LdapConfig(
         url = "localhost",
-        base = "dc=test,dc=local",
-        ou = "ou=ServiceAccounts",
+        base = "ou=ServiceAccounts,dc=test,dc=local",
         port = 11389,
         remote = "false"
     )

@@ -31,7 +31,7 @@ class Ldap(
     ): SearchResult = tryToAuthenticate(user) {
         val connection = LDAPConnection(ldapConfig.url, ldapConfig.port)
         connection.search(
-            "${ldapConfig.ou},${ldapConfig.base}",
+            ldapConfig.base,
             SearchScope.SUB,
             "(cn=${user.username})"
         ).apply {

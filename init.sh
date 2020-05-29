@@ -24,3 +24,14 @@ if test -f "/secrets/database/credentials/password"; then
   export SPRING_DATASOURCE_PASSWORD=$(cat /secrets/database/credentials/password)
   echo "Eksporterer variabel SPRING_DATASOURCE_PASSWORD"
 fi
+
+if test -f "/var/run/secrets/nais.io/vault/nav_keystore_file"; then
+  export NAV_KEYSTORE_FILE=$(cat /var/run/secrets/nais.io/vault/nav_keystore_file)
+  echo "Eksporterer variabel NAV_KEYSTORE_FILE"
+fi
+
+if test -f "/var/run/secrets/nais.io/vault/nav_keystore_password"; then
+  export NAV_KEYSTORE_PASSWORD=$(cat /var/run/secrets/nais.io/vault/nav_keystore_password)
+  echo "Eksporterer variabel NAV_KEYSTORE_PASSWORD"
+fi
+

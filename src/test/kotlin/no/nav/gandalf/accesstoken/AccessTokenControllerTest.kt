@@ -3,7 +3,7 @@ package no.nav.gandalf.accesstoken
 import no.nav.gandalf.api.INVALID_REQUEST
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
-import no.nav.gandalf.utils.InMemoryLdap
+import no.nav.gandalf.ldap.InMemoryLdap
 import no.nav.gandalf.utils.SAML_TOKEN
 import no.nav.gandalf.utils.SCOPE
 import no.nav.gandalf.utils.TOKEN

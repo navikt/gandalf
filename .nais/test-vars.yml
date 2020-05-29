@@ -4,6 +4,20 @@ ingresses:
 envs:
   - name: APPLICATION_OIDC_ISSUER
     value: https://security-token-service-t4.nais.preprod.local
+  - name: APPLICATION_EXTERNAL_ISSUER_OPENAM
+    value: https://isso-t.adeo.no:443/isso/oauth2
+  - name: APPLICATION_EXTERNAL_ISSUER_AZUREAD
+    value: https://login.microsoftonline.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
+  - name: APPLICATION_EXTERNAL_ISSUER_DIFI_OIDC
+    value: https://oidc-ver2.difi.no/idporten-oidc-provider/
+  - name: APPLICATION_EXTERNAL_ISSUER_DIFI_MASKINPORTEN
+    value: https://ver2.maskinporten.no/
+  - name: SPRING_LDAP_URL
+    value: ldaps://ldapgw.test.local
+  - name: SPRING_LDAP_PORT
+    value: 636
+  - name: SPRING_LDAP_BASE
+    value: ou=ServiceAccounts,dc=test,dc=local
 replicas:
   min: 1
   max: 1

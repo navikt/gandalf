@@ -1,5 +1,9 @@
 package no.nav.gandalf.keystore
 
+import mu.KotlinLogging
+import no.nav.gandalf.config.KeystoreReaderConfig
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -10,20 +14,18 @@ import java.security.PrivateKey
 import java.security.UnrecoverableKeyException
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
-import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
 
 private val log = KotlinLogging.logger { }
 
 @Component
 class KeyStoreReader(
-    @Value("\${nav.keystore.file}") private val keystoreFile: String,
-    @Value("\${nav.keystore.password}") private val keystorePassword: String
+    @Autowired val keystoreReaderConfig: KeystoreReaderConfig
 ) {
     private var keyStore: KeyStore? = null
     private var privateKey: PrivateKey? = null
     private var cert: X509Certificate? = null
+    private val keystoreFile: String
+        get() = keystoreReaderConfig.loadKeyStoreFromBase64ToFile()
 
     @get:Throws(UnrecoverableKeyException::class, KeyStoreException::class, NoSuchAlgorithmException::class)
     val signingCertificate: X509Certificate?
@@ -53,17 +55,15 @@ class KeyStoreReader(
         log.debug("Using keystorefile: $keystoreFile")
         readKeyStoreAndHandle {
             when {
-                keystoreFile.isEmpty() -> {
-                    throw RuntimeException("Failed to load keystore, system property '$keystoreFile' is null or empty!")
-                }
-                keystorePassword.isEmpty() -> {
+                keystoreFile.isEmpty() -> throw RuntimeException("Failed to load keystore, system property '$keystoreFile' is null or empty!")
+                keystoreReaderConfig.keystorePassword.isEmpty() -> {
                     throw RuntimeException("Failed to load keystore, system property 'local-keystore.password' is null or empty!")
                 }
                 else -> {
                     keyStore = KeyStore.getInstance("JKS")
                     tsis = FileInputStream(keystoreFile)
                     keyStore?.run {
-                        this.load(tsis, keystorePassword.toCharArray())
+                        this.load(tsis, keystoreReaderConfig.keystorePassword.toCharArray())
                     }
                     if (keyStore!!.size() == 0) {
                         log.error("Error: keystore is empty. Loaded from file '$keystoreFile'")
@@ -77,9 +77,11 @@ class KeyStoreReader(
         keyStore!!.aliases().apply {
             while (this.hasMoreElements()) {
                 val keyAlias = this.nextElement()
-                cert = keyStore!!.getCertificate(keyAlias) as X509Certificate // eller keyStore.getCertificateChain(keyAlias)[0];
+                cert =
+                    keyStore!!.getCertificate(keyAlias) as X509Certificate // eller keyStore.getCertificateChain(keyAlias)[0];
                 val keyUsage = cert!!.keyUsage
-                privateKey = keyStore!!.getKey(keyAlias, keystorePassword.toCharArray()) as PrivateKey
+                privateKey =
+                    keyStore!!.getKey(keyAlias, keystoreReaderConfig.keystorePassword.toCharArray()) as PrivateKey
                 if (privateKey != null && (keyUsage == null || keyUsage[0] || keyUsage[1])) { // if keyUsage is not specified or is digitalSignature or nonRepudation
                     break
                 }

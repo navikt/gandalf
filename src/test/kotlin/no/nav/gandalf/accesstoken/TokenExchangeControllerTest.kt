@@ -6,7 +6,7 @@ import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.EXCHANGE
 import no.nav.gandalf.utils.EXCHANGE_DIFI
 import no.nav.gandalf.utils.GRANT_TYPE
-import no.nav.gandalf.utils.InMemoryLdap
+import no.nav.gandalf.ldap.InMemoryLdap
 import no.nav.gandalf.utils.REQUESTED_TOKEN_TYPE
 import no.nav.gandalf.utils.SUBJECT_TOKEN
 import no.nav.gandalf.utils.SUBJECT_TOKEN_TYPE

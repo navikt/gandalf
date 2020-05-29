@@ -23,6 +23,8 @@ class SecurityConfig(
 
     override fun configure(http: HttpSecurity) {
         http
+            // If you are only creating a service that is used by non-browser clients,
+            // you will likely want to disable CSRF protection
             .csrf().disable()
             .formLogin().disable()
             .requestMatchers()

@@ -1,4 +1,4 @@
-package no.nav.gandalf.utils
+package no.nav.gandalf.ldap
 
 import com.unboundid.ldap.listener.InMemoryDirectoryServer
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig
@@ -20,7 +20,7 @@ class InMemoryLdap {
     private fun initLDAPServer() {
         try {
             inMemConf = InMemoryDirectoryServerConfig("dc=test,dc=local")
-            val tlsCF = SSLUtil(TrustAllTrustManager()).createSSLSocketFactory()
+            // val tlsCF = SSLUtil(TrustAllTrustManager()).createSSLSocketFactory()
             // tlsSF = new SSLUtil(new KeyStoreKeyManager(KeyStore, "password".toCharArray(), "JKS", "inmds"), new TrustStoreTrustManager(KeyStore)).createSSLServerSocketFactory();
         } catch (e: LDAPException) {
             e.printStackTrace()
