@@ -1,6 +1,5 @@
 package no.nav.gandalf.api
 
-import java.nio.charset.StandardCharsets
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.model.Validation
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.nio.charset.StandardCharsets
 
 private val log = KotlinLogging.logger { }
 
@@ -26,25 +26,22 @@ class ValidateController {
     fun validateSAMLToken(
         @RequestParam("token") samlToken: String
     ): ResponseEntity<Any> {
-        try {
-            userDetails()
-        } catch (e: Exception) {
-            return unauthorizedResponse(e, "Error: " + e.message)
-        }
+        userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
         log.debug("Validate SAML token")
         return try {
-            val samlObject = issuer.validateSamlToken(String(Base64.decodeBase64(samlToken.toByteArray()), StandardCharsets.UTF_8))
+            val samlObject =
+                issuer.validateSamlToken(String(Base64.decodeBase64(samlToken.toByteArray()), StandardCharsets.UTF_8))
             ResponseEntity
-                    .status(HttpStatus.OK)
-                    .headers(tokenHeaders)
-                    .body(Validation(true, samlObject.toString()))
+                .status(HttpStatus.OK)
+                .headers(tokenHeaders)
+                .body(Validation(true, samlObject.toString()))
         } catch (e: Exception) {
             val errorMessage = "Validation failed: " + e.message
             log.error(e) { errorMessage }
             ResponseEntity
-                    .status(HttpStatus.OK)
-                    .headers(tokenHeaders)
-                    .body(Validation(false, errorMessage))
+                .status(HttpStatus.OK)
+                .headers(tokenHeaders)
+                .body(Validation(false, errorMessage))
         }
     }
 
@@ -52,25 +49,21 @@ class ValidateController {
     fun validateOIDCToken(
         @RequestParam("token") oidcToken: String?
     ): ResponseEntity<Any> {
-        try {
-            userDetails()
-        } catch (e: Exception) {
-            return unauthorizedResponse(e, "Error: " + e.message)
-        }
+        userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
         log.debug("Validate oidc token")
         return try {
             val oidcObject = issuer.validateOidcToken(oidcToken)
             ResponseEntity
-                    .status(HttpStatus.OK)
-                    .headers(tokenHeaders)
-                    .body(Validation(true, oidcObject.issuer!!))
+                .status(HttpStatus.OK)
+                .headers(tokenHeaders)
+                .body(Validation(true, oidcObject.issuer!!))
         } catch (e: Exception) {
             val errorMessage = "Validation failed: " + e.message
             log.error(e) { errorMessage }
             ResponseEntity
-                    .status(HttpStatus.OK)
-                    .headers(tokenHeaders)
-                    .body(Validation(false, errorMessage))
+                .status(HttpStatus.OK)
+                .headers(tokenHeaders)
+                .body(Validation(false, errorMessage))
         }
     }
 }

@@ -33,7 +33,6 @@ class AccessTokenIssuer(
     @Autowired private val keyStore: RSAKeyStoreService,
     @Autowired private val keySelector: KeySelector,
     @Autowired private val keyStoreReader: KeyStoreReader,
-    @Autowired private val httpClient: HttpClient,
     @Autowired private val difiConfiguration: DIFIConfiguration,
     @Autowired private val externalIssuersConfig: ExternalIssuerConfig,
     @Autowired private val localIssuerConfig: LocalIssuerConfig

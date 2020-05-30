@@ -5,6 +5,7 @@ import no.nav.gandalf.model.User
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -50,6 +51,6 @@ class LdapTest {
     fun `UnAuthorized User`() {
         val ldap = Ldap(ldapConfig)
         val authenticatedUser = User("srvPDS", "password")
-        assert(!ldap.result(user = authenticatedUser))
+        assertThrows<Exception> { ldap.result(user = authenticatedUser) }
     }
 }

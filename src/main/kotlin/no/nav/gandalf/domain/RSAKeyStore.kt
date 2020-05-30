@@ -9,8 +9,8 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
-import javax.validation.constraints.NotNull
 import no.nav.gandalf.util.TimestampConverter
+import org.jetbrains.annotations.NotNull
 import org.json.JSONObject
 
 @Entity

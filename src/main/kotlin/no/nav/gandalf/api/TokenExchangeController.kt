@@ -1,7 +1,6 @@
 package no.nav.gandalf.api
 
 import com.nimbusds.jwt.SignedJWT
-import java.nio.charset.StandardCharsets
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.nio.charset.StandardCharsets
 
 private val log = KotlinLogging.logger { }
 
@@ -36,15 +36,12 @@ class TokenExchangeController {
     ): ResponseEntity<Any> {
         var copyReqTokenType = reqTokenType
         log.debug("Exchange $subTokenType to $copyReqTokenType")
-
-        // sjekk at bruker er gyldig, dvs at ikke basic auth har feilet
-        // TODO Flytt denne ut for validering
-        val user = try {
-            userDetails()
-        } catch (e: Exception) {
-            return unauthorizedResponse(e, e.message!!)
-        }
-        if (grantType.isNullOrEmpty() || !grantType.equals("urn:ietf:params:oauth:grant-type:token-exchange", ignoreCase = true)) {
+        val user = userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
+        if (grantType.isNullOrEmpty() || !grantType.equals(
+                "urn:ietf:params:oauth:grant-type:token-exchange",
+                ignoreCase = true
+            )
+        ) {
             return badRequestResponse("Unknown grant_type")
         }
         if (subjectToken.isNullOrEmpty()) {
@@ -56,19 +53,21 @@ class TokenExchangeController {
                 log.debug("Exchange SAML token to OIDC")
                 val oidcToken: SignedJWT?
                 oidcToken = try {
-                    // byte[] decodedSaml = Base64.getUrlDecoder().decode(subjectToken);
                     val decodedSaml = Base64.decodeBase64(subjectToken.toByteArray())
                     issuer.exchangeSamlToOidcToken(String(decodedSaml, StandardCharsets.UTF_8))
                 } catch (e: Exception) {
                     return badRequestResponse(e.message!!)
                 }
                 return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .headers(tokenHeaders)
-                        .body(ExchangeTokenService().getResponseFrom(oidcToken!!))
+                    .status(HttpStatus.OK)
+                    .headers(tokenHeaders)
+                    .body(ExchangeTokenService().getResponseFrom(oidcToken!!))
             }
             subTokenType.equals("urn:ietf:params:oauth:token-type:access_token", ignoreCase = true)
-                    && (copyReqTokenType == null || copyReqTokenType.equals("urn:ietf:params:oauth:token-type:saml2", ignoreCase = true)) -> {
+                && (copyReqTokenType == null || copyReqTokenType.equals(
+                "urn:ietf:params:oauth:token-type:saml2",
+                ignoreCase = true
+            )) -> {
                 // exchange OIDC token to SAML token
                 log.debug("Exchange OIDC to SAML token")
                 if (copyReqTokenType == null) {
@@ -84,14 +83,16 @@ class TokenExchangeController {
                     return badRequestResponse(e.message!!)
                 }
                 return ResponseEntity.status(HttpStatus.OK)
-                        .headers(tokenHeaders)
-                        .body(ExchangeTokenService().constructResponse(
-                                saml.first,
-                                "Bearer",
-                                copyReqTokenType,
-                                saml.second.expiresIn,
-                                true)
+                    .headers(tokenHeaders)
+                    .body(
+                        ExchangeTokenService().constructResponse(
+                            saml.first,
+                            "Bearer",
+                            copyReqTokenType,
+                            saml.second.expiresIn,
+                            true
                         )
+                    )
             }
             else -> {
                 return badRequestResponse("Unsupported token exchange for subject/requested token type")
@@ -120,7 +121,7 @@ class TokenExchangeController {
             return badRequestResponse("Failed to exchange difi oidc token to oidc token: " + e.message)
         }
         return ResponseEntity.status(HttpStatus.OK)
-                .headers(tokenHeaders)
-                .body(AccessTokenResponseService(oidcToken))
+            .headers(tokenHeaders)
+            .body(AccessTokenResponseService(oidcToken))
     }
 }

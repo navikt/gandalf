@@ -50,7 +50,11 @@ class WSSAMLTokenController {
             }
             wsReq.isIssueSamlFromUNT -> {
                 return try {
-                    val samlToken: String = issuer.issueSamlToken(wsReq.username!!, wsReq.username, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
+                    val samlToken: String = issuer.issueSamlToken(
+                        wsReq.username!!,
+                        wsReq.username,
+                        AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL
+                    )
                     ResponseEntity.status(HttpStatus.OK).body(wsReq.getResponse(samlToken))
                 } catch (e: Exception) {
                     serverErrorResponse(e)

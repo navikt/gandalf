@@ -5,8 +5,6 @@ import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig
 import com.unboundid.ldap.listener.InMemoryListenerConfig
 import com.unboundid.ldap.sdk.LDAPException
 import com.unboundid.ldap.sdk.OperationType
-import com.unboundid.util.ssl.SSLUtil
-import com.unboundid.util.ssl.TrustAllTrustManager
 import java.security.GeneralSecurityException
 
 class InMemoryLdap {

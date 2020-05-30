@@ -8,28 +8,28 @@ version = file("version.txt").readText().trim()
 object Version {
     const val gradleVersion = "6.3"
     const val kotlinLoggin = "1.7.9"
-    const val nimbus = "8.1"
+    const val nimbus = "8.4.2"
     const val snake = "1.26"
     const val hibernate = "5.4.14.Final"
-    const val json = "20190722"
+    const val json = "20200518"
     const val apacheHttp = "4.5.12"
     const val wiremock = "2.26.3"
     const val oracle = "19.3.0.0"
-    const val wiremockCloud = "2.2.2.RELEASE"
+    const val wiremockCloud = "2.2.3.RELEASE"
     const val jackson = "2.11.0"
+    const val unboundid = "5.0.1"
 }
 
-val mainClass = "$group.no.nav.gandalf.GandalfApplication"
+val mainClass = "no.nav.gandalf.GandalfApplication"
 
 plugins {
     application
     java
     val kotlinVersion = "1.3.72"
     kotlin("plugin.allopen") version kotlinVersion
-    // Messes with the build
     id("org.jmailen.kotlinter") version "2.3.2"
     id("com.github.ben-manes.versions") version "0.28.0"
-    id("org.springframework.boot") version "2.2.6.RELEASE"
+    id("org.springframework.boot") version "2.3.0.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
@@ -43,7 +43,7 @@ allOpen {
 }
 
 application {
-    mainClassName = mainClass
+    mainClassName = "no.nav.gandalf.GandalfApplication"
 }
 
 repositories {
@@ -54,43 +54,25 @@ repositories {
 }
 
 dependencies {
-    // Spring
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("javax.inject:javax.inject:1")
-
-    // Jackson
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Version.jackson}")
-
-    // JSON
     implementation("org.json:json:${Version.json}")
-
-    // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-    // Apache Http
     implementation("org.apache.httpcomponents:httpclient:${Version.apacheHttp}")
-
-    // Logging
     implementation("io.github.microutils:kotlin-logging:${Version.kotlinLoggin}")
-
-    // Oauth
     implementation("com.nimbusds:oauth2-oidc-sdk:${Version.nimbus}")
-
-    // Yaml
     implementation("org.yaml:snakeyaml:${Version.snake}")
-
-    // Hibernate
+    implementation("javax.validation:validation-api:2.0.1.Final")
     implementation("org.hibernate:hibernate-core:${Version.hibernate}")
     implementation("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
-
-    // Ldap
     implementation("org.springframework.ldap:spring-ldap-core")
     implementation("org.springframework.security:spring-security-ldap")
-    implementation("com.unboundid:unboundid-ldapsdk")
+    implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
 
     // test
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")

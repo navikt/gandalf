@@ -40,11 +40,7 @@ class AccessTokenController(
                 return badRequestResponse("grant_type = $grantType, scope = $scope")
             }
             else -> {
-                val user = try {
-                    userDetails()
-                } catch (e: Exception) {
-                    return unauthorizedResponse(e, "Error: ${e.message}")
-                }
+                val user = userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
                 val oidcToken = try {
                     issuer.issueToken(user)
                 } catch (e: Exception) {
@@ -70,12 +66,12 @@ class AccessTokenController(
         @RequestHeader("username") username: String,
         @RequestHeader("password") password: String
     ): ResponseEntity<Any> {
-        if (!Ldap(ldapConfig).result(User(username, password))) {
-            return unauthorizedResponse(Exception(), "Not Authenticated: username = $username")
+        try {
+            Ldap(ldapConfig).result(User(username, password))
+        } catch (e: Exception) {
+            return unauthorizedResponse(e, "Could Not Authenticate username: $username")
         }
-
         log.info("Issue OIDC token2 for user: $username")
-
         val oidcToken = try {
             issuer.issueToken(username)
         } catch (e: Exception) {
@@ -88,11 +84,7 @@ class AccessTokenController(
 
     @GetMapping("/samltoken")
     fun getSAMLToken(): ResponseEntity<Any> {
-        val user = try {
-            userDetails()
-        } catch (e: Exception) {
-            return unauthorizedResponse(e, "Error: ${e.message}")
-        }
+        val user = userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
         log.debug("Issue SAML token for: $user")
         val samlToken = try {
             issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)

@@ -23,7 +23,7 @@ class Ldap(
             search(user)
             true
         } catch (t: Throwable) {
-            false
+            throw t
         }
 
     fun search(
@@ -38,11 +38,11 @@ class Ldap(
             when {
                 this.entryCount > 0 -> {
                     val entry = this.searchEntries[0]
-                    log.info { "Found user: ${user.username}, entry: ${entry.dn}" }
+                    log.info { "User found: ${user.username}, entry: ${entry.dn}" }
                     connection.bind(entry.dn, user.password)
                 }
                 else -> {
-                    throw Exception("Could not find user: ${user.username}")
+                    throw Exception("User not found: ${user.username}")
                 }
             }
         }

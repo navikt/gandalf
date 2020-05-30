@@ -1,6 +1,8 @@
 package no.nav.gandalf.config
 
 import no.nav.gandalf.ldap.CustomAuthenticationProvider
+import no.nav.gandalf.ldap.RestAccessDeniedHandler
+import no.nav.gandalf.ldap.RestAuthenticationEntryPoint
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -25,19 +27,38 @@ class SecurityConfig(
         http
             // If you are only creating a service that is used by non-browser clients,
             // you will likely want to disable CSRF protection
+            .cors().disable()
             .csrf().disable()
             .formLogin().disable()
-            .requestMatchers()
-            .antMatchers("/v1/sts/**")
-            .and()
             .authorizeRequests()
-            .antMatchers("/v1/sts/token2").permitAll()
-            .antMatchers("/v1/sts/**").authenticated()
-            .antMatchers("/").permitAll()
+            .antMatchers(
+                "/v1/sts/token2",
+                "/.well-known/openid-configuration",
+                "/v1/sts/.well-known/openid-configuration",
+                "/jwks",
+                "/v1/sts/jwks"
+            ).permitAll()
+            .and()
+            .authorizeRequests().anyRequest().authenticated()
             .and()
             .httpBasic()
+            .authenticationEntryPoint(authenticationEntryPoint())
             .and()
+            // .exceptionHandling()
+            // .accessDeniedHandler(accessDeniedHandler())
+            // .authenticationEntryPoint(authenticationEntryPoint())
+            // .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+    }
+
+    @Bean
+    fun accessDeniedHandler(): RestAccessDeniedHandler? {
+        return RestAccessDeniedHandler()
+    }
+
+    @Bean
+    fun authenticationEntryPoint(): RestAuthenticationEntryPoint? {
+        return RestAuthenticationEntryPoint()
     }
 
     @Bean

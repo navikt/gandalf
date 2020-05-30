@@ -1,5 +1,6 @@
 package no.nav.gandalf.accesstoken
 
+import no.nav.gandalf.api.INVALID_CLIENT
 import no.nav.gandalf.api.INVALID_REQUEST
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
@@ -58,7 +59,7 @@ class AccessTokenControllerTest {
         controllerUtil.stopLdap(inMemoryLdap)
     }
 
-    // Path: /token
+    // GET Path: /token
     @Test
     fun `Get OIDC Token`() {
         mvc.perform(
@@ -86,7 +87,7 @@ class AccessTokenControllerTest {
                 .param(SCOPE, "openid")
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
         )
-            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
             .andExpect(jsonPath("$.error_description").value("grant_type = $unknownGrantType, scope = $scope"))
     }
@@ -98,14 +99,14 @@ class AccessTokenControllerTest {
                 .param(GRANT_TYPE, "client_credentials")
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
         )
-            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
 
         mvc.perform(
             MockMvcRequestBuilders.get(TOKEN)
                 .param(SCOPE, "openid")
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
         )
-            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
 
     @Test
@@ -114,9 +115,30 @@ class AccessTokenControllerTest {
             MockMvcRequestBuilders.get(TOKEN)
                 .param(GRANT_TYPE, "client_credentials")
                 .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPD", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPD", "passwor"))
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+            .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
+            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, User not found: srvPD"))
+    }
+
+    // POST Path: /token
+    // Should have the same result as for get
+    @Test
+    fun `POST OIDC Token`() {
+        mvc.perform(
+            MockMvcRequestBuilders.post(TOKEN)
+                .param(GRANT_TYPE, "client_credentials")
+                .param(SCOPE, "openid")
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
+            .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
+            .andExpect(jsonPath("$.access_token").isString)
+            .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
+            .andExpect(jsonPath("$.expires_in").value(3600))
     }
 
     // Path: /token2
@@ -170,5 +192,16 @@ class AccessTokenControllerTest {
             .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
             .andExpect(jsonPath("$.issued_token_type").value("urn:ietf:params:oauth:token-type:saml2"))
             .andExpect(jsonPath("$.expires_in").isNumber)
+    }
+
+    @Test
+    fun `UnAuthorized SAML Token`() {
+        mvc.perform(
+            MockMvcRequestBuilders.get(SAML_TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "pasword"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+            .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
+            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPDP,ou=ServiceAccounts,dc=test,dc=local' because the provided password was incorrect."))
     }
 }

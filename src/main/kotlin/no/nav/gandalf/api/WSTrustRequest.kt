@@ -1,5 +1,12 @@
 package no.nav.gandalf.api
 
+import no.nav.gandalf.accesstoken.SamlObject
+import org.apache.commons.codec.binary.Base64
+import org.w3c.dom.Document
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
 import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter
@@ -15,13 +22,6 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.TransformerFactoryConfigurationError
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
-import no.nav.gandalf.accesstoken.SamlObject
-import org.apache.commons.codec.binary.Base64
-import org.w3c.dom.Document
-import org.w3c.dom.Node
-import org.w3c.dom.NodeList
-import org.xml.sax.InputSource
-import org.xml.sax.SAXException
 
 internal val REQUEST_TYPE_ISSUE: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Issue"
 internal val REQUEST_TYPE_VALIDATE: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Validate"
@@ -40,12 +40,12 @@ class WSTrustRequest(
 
     val isIssueSamlFromUNT: Boolean
         get() = (((reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) &&
-                (onBehalfOf == null || onBehalfOf!!.isEmpty())))
+            (onBehalfOf == null || onBehalfOf!!.isEmpty())))
 
     val isExchangeOidcToSaml: Boolean
         get() {
             return (((reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) && (
-                    onBehalfOf != null) && !onBehalfOf!!.isEmpty()))
+                onBehalfOf != null) && !onBehalfOf!!.isEmpty()))
         }
 
     val isIssue: Boolean
@@ -122,7 +122,8 @@ class WSTrustRequest(
         return getResponse(samlToken, samlObj.issueInstant!!, samlObj.notOnOrAfter!!)
     }
 
-    private fun getResponse(samlToken: String, issueInstant: ZonedDateTime, notOnOrAfter: ZonedDateTime) = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+    private fun getResponse(samlToken: String, issueInstant: ZonedDateTime, notOnOrAfter: ZonedDateTime) =
+        ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<soapenv:Envelope xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n" +
             "<soapenv:Header>\r\n" + // "<wsa:MessageID>urn:uuid:816f058a-62ca-4b27-9123-c654d35d7fab</wsa:MessageID>\r\n" +
             "<wsa:Action>http://docs.oasis-open.org/ws-sx/ws-trust/200512/RSTRC/IssueFinal</wsa:Action>\r\n" +

@@ -40,14 +40,12 @@ internal fun badRequestResponse(errorMessage: String): ResponseEntity<Any> {
         .body(ErrorDescriptiveResponse(INVALID_REQUEST, errorMessage))
 }
 
-internal fun userDetails(): String {
-    when (SecurityContextHolder.getContext().authentication) {
-        null -> {
-            throw Exception("Could not authenticate")
-        }
+internal fun userDetails(): String? {
+    return when (SecurityContextHolder.getContext().authentication) {
+        null -> null
         else -> {
             val auth = SecurityContextHolder.getContext().authentication as UsernamePasswordAuthenticationToken
-            return auth.principal as String
+            auth.principal as String
         }
     }
 }

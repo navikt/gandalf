@@ -1,6 +1,5 @@
 package no.nav.gandalf.accesstoken
 
-import javax.annotation.PostConstruct
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.JWKS
 import no.nav.gandalf.utils.WELL_KNOWN
@@ -19,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import javax.annotation.PostConstruct
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -42,24 +42,29 @@ class IdentityProviderControllerTest {
     // Path: /jwks
     @Test
     fun `Get JWKS`() {
-        mvc.perform(MockMvcRequestBuilders.get(JWKS)
-                .with(SecurityMockMvcRequestPostProcessors.anonymous()))
-                .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$..keys").isArray)
+        mvc.perform(
+            MockMvcRequestBuilders.get(JWKS)
+                .with(SecurityMockMvcRequestPostProcessors.anonymous())
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$..keys").isArray)
     }
 
     // Path: /.well-known/openid-configuration
     @Test
     fun `Get WELL_KNOWN`() {
         val stsEndpoint = "https://security-token-service.nais.preprod.local"
-        mvc.perform(MockMvcRequestBuilders.get(WELL_KNOWN)
-                .with(SecurityMockMvcRequestPostProcessors.anonymous()))
-                .andExpect(MockMvcResultMatchers.status().isOk)
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.issuer").value(stsEndpoint))
-                .andExpect(jsonPath("$.token_endpoint").value("$stsEndpoint/rest/v1/sts/token"))
-                .andExpect(jsonPath("$.exchange_token_endpoint").value("$stsEndpoint/rest/v1/sts/token/exchange"))
-                .andExpect(jsonPath("$.jwks_uri").value("$stsEndpoint/rest/v1/sts/jwks"))
+        mvc.perform(
+            MockMvcRequestBuilders.get(WELL_KNOWN)
+                .with(SecurityMockMvcRequestPostProcessors.anonymous())
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.issuer").value(stsEndpoint))
+            .andExpect(jsonPath("$.token_endpoint").value("$stsEndpoint/rest/v1/sts/token"))
+            .andExpect(jsonPath("$.exchange_token_endpoint").value("$stsEndpoint/rest/v1/sts/token/exchange"))
+            .andExpect(jsonPath("$.jwks_uri").value("$stsEndpoint/rest/v1/sts/jwks"))
+            .andExpect(jsonPath("$.subject_types_supported").isArray)
     }
 }

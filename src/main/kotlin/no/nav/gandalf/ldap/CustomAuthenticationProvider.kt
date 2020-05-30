@@ -4,6 +4,7 @@ import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
@@ -18,13 +19,11 @@ class CustomAuthenticationProvider(
     override fun authenticate(authentication: Authentication): Authentication? {
         val name: String = authentication.name
         val password: String = authentication.credentials.toString()
-        return when {
-            Ldap(ldapConfig).result(User(name, password)) -> {
-                UsernamePasswordAuthenticationToken(name, password, ArrayList())
-            }
-            else -> {
-                null
-            }
+        return try {
+            Ldap(ldapConfig).result(User(name, password))
+            UsernamePasswordAuthenticationToken(name, password, ArrayList())
+        } catch (t: Throwable) {
+            throw BadCredentialsException("Authentication failed, ${t.message}")
         }
     }
 

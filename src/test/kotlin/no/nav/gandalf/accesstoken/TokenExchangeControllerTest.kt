@@ -137,4 +137,17 @@ class TokenExchangeControllerTest {
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
             .andExpect(jsonPath("$.error_description").value("Client is unauthorized for this endpoint"))
     }
+
+    @Test
+    fun `OIDC - Token Exchange - DIFI - oidc-difi-no`() {
+        mvc.perform(
+            MockMvcRequestBuilders.post(EXCHANGE_DIFI)
+                .header(TOKEN_SUBJECT, getDifiOidcToken())
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvDatapower", "password"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
+            .andExpect(jsonPath("$.error_description").value("Failed to exchange difi oidc token to oidc token: Validation failed: token has expired"))
+    }
 }

@@ -29,6 +29,15 @@ cn: srvPDP
 sn: srvPDP
 userPassword: password
 
+dn: cn=srvDatapower,ou=ServiceAccounts,dc=test,dc=local
+objectClass: person
+objectClass: user
+objectClass: top
+sAMAccountName: srvDatapower
+cn: srvDatapower
+sn: srvDatapower
+userPassword: password
+
 dn: cn=srvaltutkanal,ou=ApplAccounts,ou=ServiceAccounts,dc=test,dc=local
 objectClass: person
 objectClass: top
