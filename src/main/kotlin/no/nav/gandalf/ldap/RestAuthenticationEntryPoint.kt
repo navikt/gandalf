@@ -22,7 +22,7 @@ class RestAuthenticationEntryPoint : AuthenticationEntryPoint {
         httpServletResponse: HttpServletResponse,
         e: AuthenticationException?
     ) {
-        val response = ErrorDescriptiveResponse(INVALID_CLIENT, "Unauthorised: ${e?.message ?: "" }")
+        val response = ErrorDescriptiveResponse(INVALID_CLIENT, "Unauthorised: ${e?.message ?: ""}")
         httpServletResponse.status = HttpStatus.UNAUTHORIZED.value()
         httpServletResponse.contentType = ContentType.APPLICATION_JSON.mimeType
         val out: OutputStream = httpServletResponse.outputStream

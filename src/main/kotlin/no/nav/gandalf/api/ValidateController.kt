@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets
 private val log = KotlinLogging.logger { }
 
 @RestController
-@RequestMapping("v1/sts", produces = ["application/json"])
+@RequestMapping("rest/v1/sts", produces = ["application/json"])
 class ValidateController {
 
     @Autowired
@@ -26,7 +26,7 @@ class ValidateController {
     fun validateSAMLToken(
         @RequestParam("token") samlToken: String
     ): ResponseEntity<Any> {
-        userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
+        userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
         log.debug("Validate SAML token")
         return try {
             val samlObject =
@@ -35,7 +35,7 @@ class ValidateController {
                 .status(HttpStatus.OK)
                 .headers(tokenHeaders)
                 .body(Validation(true, samlObject.toString()))
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             val errorMessage = "Validation failed: " + e.message
             log.error(e) { errorMessage }
             ResponseEntity
@@ -49,7 +49,7 @@ class ValidateController {
     fun validateOIDCToken(
         @RequestParam("token") oidcToken: String?
     ): ResponseEntity<Any> {
-        userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
+        userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
         log.debug("Validate oidc token")
         return try {
             val oidcObject = issuer.validateOidcToken(oidcToken)
@@ -57,7 +57,7 @@ class ValidateController {
                 .status(HttpStatus.OK)
                 .headers(tokenHeaders)
                 .body(Validation(true, oidcObject.issuer!!))
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             val errorMessage = "Validation failed: " + e.message
             log.error(e) { errorMessage }
             ResponseEntity

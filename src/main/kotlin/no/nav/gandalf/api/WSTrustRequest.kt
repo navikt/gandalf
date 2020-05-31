@@ -110,7 +110,7 @@ class WSTrustRequest(
                 n = findChild(n, "Assertion", false)
                 validateTarget = nodeToString(n)
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             throw IllegalArgumentException("Error when reading xml request: " + e.message)
         }
     }

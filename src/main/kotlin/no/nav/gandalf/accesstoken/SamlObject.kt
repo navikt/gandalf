@@ -74,7 +74,7 @@ class SamlObject {
         val dbFact = DocumentBuilderFactory.newInstance()
         dbFact.isNamespaceAware = true
         val docBuilder = dbFact.newDocumentBuilder()
-        val doc = docBuilder.parse(InputSource(StringReader(samlToken)))
+        val doc = docBuilder.parse(InputSource(StringReader(samlToken!!)))
         doc.documentElement.normalize()
 
         // read Id

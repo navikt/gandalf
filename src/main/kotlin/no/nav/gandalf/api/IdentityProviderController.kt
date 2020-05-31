@@ -27,7 +27,7 @@ class IdentityProviderController {
             .body(accessTokenIssuer.getPublicJWKSet()!!.toJSONObject())
     }
 
-    @GetMapping("/v1/sts/jwks")
+    @GetMapping("rest/v1/sts/jwks")
     fun getDeprecatedKeys(): ResponseEntity<Any> {
         return getKeys()
     }
@@ -48,7 +48,7 @@ class IdentityProviderController {
             )
     }
 
-    @GetMapping("/v1/sts/.well-known/openid-configuration")
+    @GetMapping("rest/v1/sts/.well-known/openid-configuration")
     fun getDeprecatedConfiguration(): ResponseEntity<Any> {
         return getConfiguration()
     }

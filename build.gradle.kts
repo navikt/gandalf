@@ -18,6 +18,7 @@ object Version {
     const val wiremockCloud = "2.2.3.RELEASE"
     const val jackson = "2.11.0"
     const val unboundid = "5.0.1"
+    const val micrometer = "1.1.5"
 }
 
 val mainClass = "no.nav.gandalf.GandalfApplication"
@@ -73,6 +74,7 @@ dependencies {
     implementation("org.springframework.ldap:spring-ldap-core")
     implementation("org.springframework.security:spring-security-ldap")
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
+    implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
 
     // test
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")

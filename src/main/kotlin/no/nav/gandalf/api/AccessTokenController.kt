@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 private val log = KotlinLogging.logger { }
 
 @RestController
-@RequestMapping("v1/sts", produces = ["application/json"])
+@RequestMapping("rest/v1/sts", produces = ["application/json"])
 class AccessTokenController(
     @Autowired val ldapConfig: LdapConfig
 ) {
@@ -40,10 +40,10 @@ class AccessTokenController(
                 return badRequestResponse("grant_type = $grantType, scope = $scope")
             }
             else -> {
-                val user = userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
+                val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
                 val oidcToken = try {
                     issuer.issueToken(user)
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     return serverErrorResponse(e)
                 }
                 return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders)
@@ -68,13 +68,13 @@ class AccessTokenController(
     ): ResponseEntity<Any> {
         try {
             Ldap(ldapConfig).result(User(username, password))
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             return unauthorizedResponse(e, "Could Not Authenticate username: $username")
         }
         log.info("Issue OIDC token2 for user: $username")
         val oidcToken = try {
             issuer.issueToken(username)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             return serverErrorResponse(e)
         }
         return ResponseEntity
@@ -84,11 +84,11 @@ class AccessTokenController(
 
     @GetMapping("/samltoken")
     fun getSAMLToken(): ResponseEntity<Any> {
-        val user = userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
+        val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
         log.debug("Issue SAML token for: $user")
         val samlToken = try {
             issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             return serverErrorResponse(e)
         }
         val samlObj = SamlObject().apply {

@@ -19,14 +19,14 @@ internal val tokenHeaders = HttpHeaders().apply {
     add("Pragma", "no-cache")
 }
 
-internal fun serverErrorResponse(e: Exception): ResponseEntity<Any> {
+internal fun serverErrorResponse(e: Throwable): ResponseEntity<Any> {
     log.error(e) { "Error: " + e.message }
     return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(INTERNAL_SERVER_ERROR)
 }
 
-internal fun unauthorizedResponse(e: Exception, errorMessage: String): ResponseEntity<Any> {
+internal fun unauthorizedResponse(e: Throwable, errorMessage: String): ResponseEntity<Any> {
     log.error(e) { errorMessage }
     return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)

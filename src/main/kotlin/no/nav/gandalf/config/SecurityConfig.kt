@@ -1,7 +1,6 @@
 package no.nav.gandalf.config
 
 import no.nav.gandalf.ldap.CustomAuthenticationProvider
-import no.nav.gandalf.ldap.RestAccessDeniedHandler
 import no.nav.gandalf.ldap.RestAuthenticationEntryPoint
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -32,11 +31,14 @@ class SecurityConfig(
             .formLogin().disable()
             .authorizeRequests()
             .antMatchers(
-                "/v1/sts/token2",
+                "/rest/v1/sts/token2",
+                "/rest/v1/sts/ws/samltoken",
                 "/.well-known/openid-configuration",
-                "/v1/sts/.well-known/openid-configuration",
+                "/rest/v1/sts/.well-known/openid-configuration",
                 "/jwks",
-                "/v1/sts/jwks"
+                "/rest/v1/sts/jwks",
+                "/isAlive",
+                "/isReady"
             ).permitAll()
             .and()
             .authorizeRequests().anyRequest().authenticated()
@@ -44,16 +46,7 @@ class SecurityConfig(
             .httpBasic()
             .authenticationEntryPoint(authenticationEntryPoint())
             .and()
-            // .exceptionHandling()
-            // .accessDeniedHandler(accessDeniedHandler())
-            // .authenticationEntryPoint(authenticationEntryPoint())
-            // .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-    }
-
-    @Bean
-    fun accessDeniedHandler(): RestAccessDeniedHandler? {
-        return RestAccessDeniedHandler()
     }
 
     @Bean

@@ -9,12 +9,15 @@ import org.springframework.security.core.context.SecurityContextHolder
 
 internal const val JWKS = "/jwks"
 internal const val WELL_KNOWN = "/.well-known/openid-configuration"
-internal const val BASE = "/v1/sts"
+internal const val BASE = "/rest/v1/sts"
 internal const val TOKEN = "$BASE/token"
 internal const val TOKEN2 = "$BASE/token2"
 internal const val SAML_TOKEN = "$BASE/samltoken"
 internal const val EXCHANGE = "$BASE/token/exchange"
 internal const val EXCHANGE_DIFI = "$BASE/token/exchangedifi"
+internal const val SAML_TOKEN_VALIDATE = "$BASE/samltoken/validate"
+internal const val OIDC_TOKEN_VALIDATE = "$BASE/token/validate"
+internal const val WS_SAMLTOKEN = "$BASE/ws/samltoken"
 internal const val PORT = 8888
 
 internal const val GRANT_TYPE = "grant_type"

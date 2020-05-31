@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets
 private val log = KotlinLogging.logger { }
 
 @RestController
-@RequestMapping("v1/sts", produces = ["application/json"])
+@RequestMapping("rest/v1/sts", produces = ["application/json"])
 class TokenExchangeController {
 
     @Autowired
@@ -36,7 +36,7 @@ class TokenExchangeController {
     ): ResponseEntity<Any> {
         var copyReqTokenType = reqTokenType
         log.debug("Exchange $subTokenType to $copyReqTokenType")
-        val user = userDetails() ?: return unauthorizedResponse(Exception(), "Unauthorized")
+        val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
         if (grantType.isNullOrEmpty() || !grantType.equals(
                 "urn:ietf:params:oauth:grant-type:token-exchange",
                 ignoreCase = true
@@ -55,7 +55,7 @@ class TokenExchangeController {
                 oidcToken = try {
                     val decodedSaml = Base64.decodeBase64(subjectToken.toByteArray())
                     issuer.exchangeSamlToOidcToken(String(decodedSaml, StandardCharsets.UTF_8))
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     return badRequestResponse(e.message!!)
                 }
                 return ResponseEntity
@@ -79,7 +79,7 @@ class TokenExchangeController {
                     val samlObj = SamlObject()
                     samlObj.read(samlToken)
                     Pair(samlToken, samlObj)
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     return badRequestResponse(e.message!!)
                 }
                 return ResponseEntity.status(HttpStatus.OK)
@@ -107,7 +107,7 @@ class TokenExchangeController {
         log.debug("Exchange difi token to oidc token")
         try {
             require(userDetails() == "srvDatapower") { "Client is unauthorized for this endpoint" }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             return unauthorizedResponse(e, e.message!!)
         }
         if (difiToken.isNullOrEmpty()) {
@@ -117,7 +117,7 @@ class TokenExchangeController {
         }
         val oidcToken = try {
             issuer.exchangeDifiTokenToOidc(difiToken)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             return badRequestResponse("Failed to exchange difi oidc token to oidc token: " + e.message)
         }
         return ResponseEntity.status(HttpStatus.OK)
