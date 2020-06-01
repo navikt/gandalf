@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -23,14 +24,17 @@ class WSSAMLTokenController(
 
     @PostMapping("/ws/samltoken")
     fun getSAMLTokenWS(
-        xmlRequest: String?
+        @RequestBody xmlRequest: String?
     ): ResponseEntity<Any> {
+        if (xmlRequest == null) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Body is empty")
+        }
         // parse xml
         val wsReq = WSTrustRequest()
         try {
             wsReq.read(xmlRequest!!)
         } catch (e: Throwable) {
-            badRequestResponse("Error: ${e.message}")
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: ${e.message}")
         }
         // check authorization
         try {
@@ -45,6 +49,7 @@ class WSSAMLTokenController(
         }
         when {
             wsReq.isValidateSaml -> {
+                println("isValidateSaml")
                 return try {
                     val samlToken: String? = wsReq.validateTarget
                     issuer.validateSamlToken(samlToken)
@@ -54,6 +59,7 @@ class WSSAMLTokenController(
                 }
             }
             wsReq.isIssueSamlFromUNT -> {
+                println("isIssueSamlFromUNT")
                 return try {
                     val samlToken: String = issuer.issueSamlToken(
                         wsReq.username!!,
@@ -66,6 +72,7 @@ class WSSAMLTokenController(
                 }
             }
             wsReq.isExchangeOidcToSaml -> {
+                println("isExchangeOidcToSaml")
                 return try {
                     val samlToken: String = issuer.exchangeOidcToSamlToken(wsReq.decodedOidcToken!!, wsReq.username)
                     ResponseEntity.status(HttpStatus.OK).body(wsReq.getResponse(samlToken))

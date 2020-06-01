@@ -23,10 +23,10 @@ import javax.xml.transform.TransformerFactoryConfigurationError
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
-internal val REQUEST_TYPE_ISSUE: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Issue"
-internal val REQUEST_TYPE_VALIDATE: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Validate"
-internal val KEY_TYPE_BEARER: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Bearer"
-internal val TOKEN_TYPE_SAML: String = "http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0"
+internal const val REQUEST_TYPE_ISSUE: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Issue"
+internal const val REQUEST_TYPE_VALIDATE: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Validate"
+internal const val KEY_TYPE_BEARER: String = "http://docs.oasis-open.org/ws-sx/ws-trust/200512/Bearer"
+internal const val TOKEN_TYPE_SAML: String = "http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0"
 
 class WSTrustRequest(
     var username: String? = null,
