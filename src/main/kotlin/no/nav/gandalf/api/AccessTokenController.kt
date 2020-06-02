@@ -3,6 +3,12 @@ package no.nav.gandalf.api
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
+import no.nav.gandalf.api.metric.ApplicationMetric.token2Error
+import no.nav.gandalf.api.metric.ApplicationMetric.token2NotOk
+import no.nav.gandalf.api.metric.ApplicationMetric.token2Ok
+import no.nav.gandalf.api.metric.ApplicationMetric.tokenError
+import no.nav.gandalf.api.metric.ApplicationMetric.tokenNotOk
+import no.nav.gandalf.api.metric.ApplicationMetric.tokenOK
 import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.ldap.Ldap
 import no.nav.gandalf.model.AccessToken2Response
@@ -37,15 +43,21 @@ class AccessTokenController(
     ): ResponseEntity<Any> {
         when {
             grantType != "client_credentials" || scope != "openid" -> {
+                tokenNotOk.inc()
                 return badRequestResponse("grant_type = $grantType, scope = $scope")
             }
             else -> {
                 val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
+                    .also {
+                        tokenNotOk.inc()
+                    }
                 val oidcToken = try {
                     issuer.issueToken(user)
                 } catch (e: Throwable) {
+                    tokenError.inc()
                     return serverErrorResponse(e)
                 }
+                tokenOK.inc()
                 return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders)
                     .body(AccessTokenResponseService(oidcToken!!).tokenResponse)
             }
@@ -69,14 +81,17 @@ class AccessTokenController(
         try {
             Ldap(ldapConfig).result(User(username, password))
         } catch (e: Throwable) {
+            token2NotOk.inc()
             return unauthorizedResponse(e, "Could Not Authenticate username: $username")
         }
         log.info("Issue OIDC token2 for user: $username")
         val oidcToken = try {
             issuer.issueToken(username)
         } catch (e: Throwable) {
+            token2Error.inc()
             return serverErrorResponse(e)
         }
+        token2Ok.inc()
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(AccessToken2Response(oidcToken!!))

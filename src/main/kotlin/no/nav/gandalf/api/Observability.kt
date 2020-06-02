@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class Observability {
+
     @get:GetMapping("/isAlive")
     val isAlive = true
 

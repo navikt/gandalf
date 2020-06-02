@@ -38,7 +38,8 @@ class SecurityConfig(
                 "/jwks",
                 "/rest/v1/sts/jwks",
                 "/isAlive",
-                "/isReady"
+                "/isReady",
+                "/actuator/**"
             ).permitAll()
             .and()
             .authorizeRequests().anyRequest().authenticated()
