@@ -22,7 +22,7 @@ import no.nav.gandalf.utils.azureADJwksUrl
 import no.nav.gandalf.utils.azureADResponseFileName
 import no.nav.gandalf.utils.diffTokens
 import no.nav.gandalf.utils.difiMASKINPORTENCJwksUrl
-import no.nav.gandalf.utils.difiMASKINPORTENConfigurationResponseFileName
+import no.nav.gandalf.utils.difiMASKINPORTENJWKSResponseFileName
 import no.nav.gandalf.utils.difiOIDCConfigurationResponseFileName
 import no.nav.gandalf.utils.difiOIDCConfigurationUrl
 import no.nav.gandalf.utils.difiOIDCJwksUrl
@@ -38,7 +38,7 @@ import no.nav.gandalf.utils.getMaskinportenToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.gandalf.utils.getSamlToken
-import no.nav.gandalf.utils.jwksEndpointStub
+import no.nav.gandalf.utils.endpointStub
 import no.nav.gandalf.utils.openAMJwksUrl
 import no.nav.gandalf.utils.openAMResponseFileName
 import org.apache.http.HttpStatus
@@ -55,13 +55,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.ZonedDateTime
 import javax.annotation.PostConstruct
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
-private const val PORT = 8888
+const val PORT = 8888
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -81,11 +82,11 @@ class AccessTokenIssuerTest {
 
     @PostConstruct
     fun setupKnownIssuers() {
-        jwksEndpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
-        jwksEndpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
-        jwksEndpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
-        jwksEndpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENConfigurationResponseFileName)
-        jwksEndpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
+        endpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
+        endpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
+        endpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
+        endpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENJWKSResponseFileName)
+        endpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
     }
 
     @Before

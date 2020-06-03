@@ -11,10 +11,10 @@ data class ExternalIssuerConfig(
     val jwksEndpointOpenAm: String,
     @Value("\${application.external.issuer.azuread}")
     val issuerAzureAd: String,
-    @Value("\${application.external.issuer.difi.oidc}")
-    val issuerDifiOIDC: String,
     @Value("\${application.jwks.endpoint.azuread}")
     val jwksEndpointAzuread: String,
+    @Value("\${application.external.issuer.difi.oidc}")
+    val issuerDifiOIDC: String,
     @Value("\${application.external.issuer.difi.maskinporten}")
     val issuerDifiMaskinporten: String
 )

@@ -31,11 +31,11 @@ internal const val SUBJECT_TOKEN_TYPE = "subject_token_type"
 open class ControllerUtil {
 
     fun setupKnownIssuers() {
-        jwksEndpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
-        jwksEndpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
-        jwksEndpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
-        jwksEndpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENConfigurationResponseFileName)
-        jwksEndpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
+        endpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
+        endpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
+        endpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
+        endpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENJWKSResponseFileName)
+        endpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
     }
 
     fun setupOverride() {
