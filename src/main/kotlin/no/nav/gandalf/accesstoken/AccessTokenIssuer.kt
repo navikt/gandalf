@@ -190,10 +190,13 @@ class AccessTokenIssuer(
         samlObj.issuer = SAML_ISSUER
         samlObj.setDuration((oidcObj.expirationTime.time - now.time) / 1000 + EXCHANGE_TOKEN_EXTENDED_TIME)
         samlObj.nameID = oidcObj.subject
-        if (oidcObj.authLevel != null) {
-            samlObj.authenticationLevel = oidcObj.authLevel
-        } else {
-            samlObj.authenticationLevel = DEFAULT_SAML_AUTHLEVEL
+        when {
+            oidcObj.authLevel != null -> {
+                samlObj.authenticationLevel = oidcObj.authLevel
+            }
+            else -> {
+                samlObj.authenticationLevel = DEFAULT_SAML_AUTHLEVEL
+            }
         }
         samlObj.consumerId = username
         samlObj.identType = getIdentType(samlObj.nameID!!)
@@ -244,18 +247,27 @@ class AccessTokenIssuer(
         }
 
     override fun getKeyByKeyId(keyId: String?): RSAKey? {
-        if (keyStore.publicJWKSet == null || keyStore.publicJWKSet != null && keyStore.publicJWKSet!!.keys.isEmpty()) {
-            throw IllegalArgumentException("Failed to get keys from by issuer: $issuer")
-        } else {
-            val keyIdResult: JWK? = keyStore.publicJWKSet!!.getKeyByKeyId(keyId)
-            return if (keyIdResult != null) keyIdResult as RSAKey else keyIdResult
+        return when {
+            keyStore.publicJWKSet == null || keyStore.publicJWKSet != null && keyStore.publicJWKSet!!.keys.isEmpty() -> {
+                throw IllegalArgumentException("Failed to get keys from by issuer: $issuer")
+            }
+            else -> {
+                val keyIdResult: JWK? = keyStore.publicJWKSet!!.getKeyByKeyId(keyId)
+                when {
+                    keyIdResult != null -> keyIdResult as RSAKey
+                    else -> keyIdResult
+                }
+            }
         }
     }
 
     fun getAuthenticationLevel(samlObj: SamlObject): String? {
-        return if (samlObj.identType.equals(IdentType.EKSTERNBRUKER.name, ignoreCase = true)) {
-            "Level" + samlObj.authenticationLevel
-        } else null
+        return when {
+            samlObj.identType.equals(IdentType.EKSTERNBRUKER.name, ignoreCase = true) -> {
+                "Level" + samlObj.authenticationLevel
+            }
+            else -> null
+        }
     }
 
     fun getKeySelector() = keySelector
@@ -284,9 +296,12 @@ class AccessTokenIssuer(
             if (subject.toLowerCase().startsWith("srv")) {
                 return IdentType.SYSTEMRESSURS.value
             }
-            return if (subject.length == 9 && subject.matches("[0-9]+".toRegex())) {
-                IdentType.SAMHANDLER.value
-            } else IdentType.INTERNBRUKER.value
+            return when {
+                subject.length == 9 && subject.matches("[0-9]+".toRegex()) -> {
+                    IdentType.SAMHANDLER.value
+                }
+                else -> IdentType.INTERNBRUKER.value
+            }
         }
 
         fun toZonedDateTime(d: Date): ZonedDateTime {

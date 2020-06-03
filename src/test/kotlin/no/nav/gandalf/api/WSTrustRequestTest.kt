@@ -74,6 +74,7 @@ class WSTrustRequestTest {
         }
     }
 
+    // From old STS, dont know really purpose, but cant delete
     @Test
     @Ignore
     fun test1() {

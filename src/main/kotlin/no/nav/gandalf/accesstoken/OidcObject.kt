@@ -194,16 +194,19 @@ class OidcObject {
         val newClaims: Map<String?, Any> = jWTClaimsSet.claims
         val cBuilder: JWTClaimsSet.Builder = JWTClaimsSet.Builder()
         for (cName: String? in newClaims.keys) {
-            if (copyClaimsList.contains(cName)) {
-                cBuilder.claim(cName, copyClaims.get(cName))
-            } else {
-                cBuilder.claim(cName, newClaims.get(cName))
+            when {
+                copyClaimsList.contains(cName) -> {
+                    cBuilder.claim(cName, copyClaims[cName])
+                }
+                else -> {
+                    cBuilder.claim(cName, newClaims[cName])
+                }
             }
         }
         cBuilder.claim(TRACKING_CLAIM, auditTrackingId)
         for (cName: String? in copyClaims.keys) {
             if (!newClaims.containsKey(cName)) {
-                cBuilder.claim(cName, copyClaims.get(cName))
+                cBuilder.claim(cName, copyClaims[cName])
             }
         }
         // generate signedJWT
@@ -212,7 +215,10 @@ class OidcObject {
 
     val keyId: String?
         get() {
-            return (if (signedJWT != null) signedJWT!!.header.keyID else null)
+            return when {
+                signedJWT != null -> signedJWT!!.header.keyID
+                else -> null
+            }
         }
 
     fun setAudience(aud1: String, aud2: String) {

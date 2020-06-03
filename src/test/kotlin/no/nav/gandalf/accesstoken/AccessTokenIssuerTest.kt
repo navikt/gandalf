@@ -18,16 +18,10 @@ import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.AccessTokenResponseService
 import no.nav.gandalf.service.ExchangeTokenService
 import no.nav.gandalf.service.RSAKeyStoreService
+import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.azureADJwksUrl
-import no.nav.gandalf.utils.azureADResponseFileName
 import no.nav.gandalf.utils.diffTokens
-import no.nav.gandalf.utils.difiMASKINPORTENCJwksUrl
-import no.nav.gandalf.utils.difiMASKINPORTENJWKSResponseFileName
-import no.nav.gandalf.utils.difiOIDCConfigurationResponseFileName
-import no.nav.gandalf.utils.difiOIDCConfigurationUrl
 import no.nav.gandalf.utils.difiOIDCJwksUrl
-import no.nav.gandalf.utils.difiOIDCResponseFileName
-import no.nav.gandalf.utils.endpointStub
 import no.nav.gandalf.utils.getAlteredSamlToken
 import no.nav.gandalf.utils.getAlteredSamlTokenWithEksternBrukerOgAuthLevel
 import no.nav.gandalf.utils.getAlteredSamlTokenWithInternBrukerOgAuthLevel
@@ -40,13 +34,10 @@ import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.gandalf.utils.getSamlToken
 import no.nav.gandalf.utils.openAMJwksUrl
-import no.nav.gandalf.utils.openAMResponseFileName
-import org.apache.http.HttpStatus
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
@@ -62,14 +53,13 @@ import java.time.ZonedDateTime
 import javax.annotation.PostConstruct
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
-const val PORT = 8888
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(
     properties = [
-        "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}/idporten-oidc-provider",
-        "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}/jwk",
-        "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}/isso/oauth2/connect/jwk_uri"
+        "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}$difiOIDCJwksUrl",
+        "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}$azureADJwksUrl",
+        "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}$openAMJwksUrl"
     ], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureMockMvc
@@ -89,11 +79,7 @@ class AccessTokenIssuerTest {
 
     @PostConstruct
     fun setupKnownIssuers() {
-        endpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENJWKSResponseFileName)
-        endpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
-        endpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
-        endpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
-        endpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
+        ControllerUtil().setupKnownIssuers()
     }
 
     @Before
@@ -153,8 +139,6 @@ class AccessTokenIssuerTest {
     }
 
     @Test
-    // Ignoring, missing Azure token
-    @Ignore
     fun `Validate AzureAd OIDC`() {
         val oidcToken: String = getAzureAdOIDC()
         val signedJWT: SignedJWT

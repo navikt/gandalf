@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey
 import java.net.URL
 import java.text.ParseException
 import mu.KotlinLogging
+import java.lang.RuntimeException
 
 private val log = KotlinLogging.logger { }
 
@@ -26,6 +27,6 @@ class OidcIssuerImpl(
                 }
             }
         }
-        return jwkSet!!.getKeyByKeyId(keyId).toRSAKey()
+        return jwkSet?.getKeyByKeyId(keyId)?.toRSAKey() ?: throw RuntimeException("Could not find any keys matching keyid: $keyId")
     }
 }
