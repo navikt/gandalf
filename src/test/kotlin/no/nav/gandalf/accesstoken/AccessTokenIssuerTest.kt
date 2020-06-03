@@ -47,7 +47,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.ZonedDateTime
 import javax.annotation.PostConstruct
@@ -62,9 +62,9 @@ private const val ACCESS_TOKEN_TYPE = "bearer"
         "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}$openAMJwksUrl"
     ], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @AutoConfigureWireMock(port = 0)
-@TestPropertySource(locations = ["classpath:application-test.properties"])
 @DirtiesContext
 class AccessTokenIssuerTest {
 

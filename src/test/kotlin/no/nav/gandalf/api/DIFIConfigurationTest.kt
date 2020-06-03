@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.TestPropertySource
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import javax.annotation.PostConstruct
 
@@ -32,7 +32,7 @@ import javax.annotation.PostConstruct
 )
 @EnableConfigurationProperties
 @AutoConfigureWireMock(port = 0)
-@TestPropertySource(locations = ["classpath:application-test.properties"])
+@ActiveProfiles("test")
 @DirtiesContext
 class DIFIConfigurationTest {
 
