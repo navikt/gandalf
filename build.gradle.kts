@@ -6,9 +6,9 @@ group = "no.nav"
 version = file("version.txt").readText().trim()
 
 object Version {
-    const val gradleVersion = "6.3"
+    const val gradleVersion = "6.5"
     const val kotlinLoggin = "1.7.9"
-    const val nimbus = "8.4.2"
+    const val nimbus = "8.4.3"
     const val snake = "1.26"
     const val hibernate = "5.4.14.Final"
     const val json = "20200518"
@@ -17,8 +17,9 @@ object Version {
     const val oracle = "19.3.0.0"
     const val wiremockCloud = "2.2.3.RELEASE"
     const val jackson = "2.11.0"
-    const val unboundid = "5.0.1"
-    const val micrometer = "1.1.5"
+    const val unboundid = "5.1.0"
+    const val micrometer = "1.5.1"
+    const val gson = "2.8.6"
 }
 
 val mainClass = "no.nav.gandalf.GandalfApplication"
@@ -75,6 +76,7 @@ dependencies {
     implementation("org.springframework.security:spring-security-ldap")
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
     implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
+    implementation("com.google.code.gson:gson:${Version.gson}")
 
     // test
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")

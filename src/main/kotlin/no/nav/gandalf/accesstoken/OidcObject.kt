@@ -10,13 +10,14 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import mu.KotlinLogging
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.text.ParseException
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.UUID
-import mu.KotlinLogging
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import kotlin.collections.ArrayList
 
 private val log = KotlinLogging.logger { }
 
@@ -26,6 +27,7 @@ class OidcObject {
     var id: String? = null
     var subject: String? = null
     private var audience: MutableList<String>? = null
+    private var orgno: String? = null
     var azp: String? = null
     var authLevel: String? = null
     var consumerId: String? = null
@@ -121,7 +123,8 @@ class OidcObject {
     fun getSignedTokenSpec2(key: RSAKey, alg: JWSAlgorithm) = getSignedJWT(jWTClaimsSetSpec2, key, alg)
 
     private val jWTClaimsSet: JWTClaimsSet
-        get() = JWTClaimsSet.Builder()
+        get() {
+            val clBuilder: JWTClaimsSet.Builder = JWTClaimsSet.Builder()
                 .issuer(issuer)
                 .claim(VERSION_CLAIM, version)
                 .jwtID(id)
@@ -133,7 +136,12 @@ class OidcObject {
                 .expirationTime(expirationTime)
                 .claim(AZP_CLAIM, azp)
                 .claim(RESOURCETYPE_CLAIM, resourceType)
-                .build()
+
+            if (orgno != null) {
+                clBuilder.claim(OidcObject.CLIENT_ORGNO_CLAIM, orgno)
+            }
+            return clBuilder.build()
+        }
 
     // kravene for saml til oidc, DISSE MÅ ENES
     private val jWTClaimsSetSpec2: JWTClaimsSet
@@ -213,6 +221,10 @@ class OidcObject {
         (audience as ArrayList<String>).add(aud2)
     }
 
+    fun setOrgno(orgno: String) {
+        this.orgno = orgno
+    }
+
     companion object {
         var VERSION_CLAIM: String = "ver"
         var CONSUMERID_CLAIM: String = "cid"
@@ -222,6 +234,7 @@ class OidcObject {
         var AZP_CLAIM: String = "azp"
         var UTY_CLAIM: String = "uty"
         var TRACKING_CLAIM: String = "auditTrackingId"
+        var CLIENT_ORGNO_CLAIM = "client_orgno"
         fun toDate(d: ZonedDateTime?): Date {
             return Date.from(d!!.toInstant())
         }

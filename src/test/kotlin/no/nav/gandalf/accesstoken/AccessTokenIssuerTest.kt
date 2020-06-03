@@ -4,14 +4,13 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.nimbusds.jwt.SignedJWT
-import java.time.ZonedDateTime
-import javax.annotation.PostConstruct
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_DURATION_TIME
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_VERSION
 import no.nav.gandalf.accesstoken.OidcObject.Companion.AUTHTIME_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.AZP_CLAIM
+import no.nav.gandalf.accesstoken.OidcObject.Companion.CLIENT_ORGNO_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.RESOURCETYPE_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.VERSION_CLAIM
 import no.nav.gandalf.config.LocalIssuerConfig
@@ -49,6 +48,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,6 +57,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.ZonedDateTime
+import javax.annotation.PostConstruct
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
 private const val PORT = 8888
@@ -394,31 +396,10 @@ class AccessTokenIssuerTest {
     }
 
     @Test
-    fun `Exchange DIFI Token To OIDC`() {
+    fun `Exchange DIFI Token To OIDC - Utdated Token Not In Use by DIFI`() {
         val difiToken: String = getDifiOidcToken()
         val difiJwt = SignedJWT.parse(difiToken).jwtClaimsSet
-        val subject = difiJwt.getClaim("client_orgno") as String
-        val issueAt = difiJwt.issueTime
-        // exchange token
-        val oidcToken = issuer.exchangeDifiTokenToOidc(difiToken, issueAt)
-        // check issued token
-        val jwt = oidcToken.jwtClaimsSet
-        assertTrue(jwt.subject == subject)
-        assertTrue(jwt.getClaim(AZP_CLAIM) == subject)
-        assertTrue(jwt.issuer == issuer.issuer)
-        assertTrue(jwt.getStringClaim(VERSION_CLAIM) == OIDC_VERSION)
-        assertTrue(jwt.jwtid != null)
-        assertTrue(jwt.getClaim(RESOURCETYPE_CLAIM) == IdentType.SAMHANDLER.value)
-        assertTrue(jwt.getStringClaim(OidcObject.TRACKING_CLAIM) == difiJwt.jwtid)
-
-        assertTrue(jwt.audience.size == difiJwt.audience.size)
-        for (i in jwt.audience.indices) {
-            assertTrue(jwt.audience[i] == difiJwt.audience[i])
-        }
-        assertTrue(jwt.issueTime.compareTo(issueAt) == 0)
-        assertTrue(jwt.notBeforeTime.compareTo(issueAt) == 0)
-        assertTrue(jwt.getLongClaim(AUTHTIME_CLAIM) == jwt.issueTime.time / 1000)
-        assertTrue((jwt.expirationTime.time - jwt.issueTime.time) / 1000 == OIDC_DURATION_TIME)
+        assertThrows<Exception> { issuer.getSubjectFromDifiToken(difiJwt.getClaim("consumer")) }
     }
 
     @Test
@@ -426,7 +407,7 @@ class AccessTokenIssuerTest {
     fun `Exchange Maskinporten Token To Oidc`() {
         val difiToken: String = getMaskinportenToken()
         val difiJwt = SignedJWT.parse(difiToken).jwtClaimsSet
-        val subject = difiJwt.getClaim("client_orgno") as String
+        val subject = issuer.getSubjectFromDifiToken(difiJwt.getClaim("consumer"))
         val issueAt = difiJwt.issueTime
         // exchange token
         val oidcToken = issuer.exchangeDifiTokenToOidc(difiToken, issueAt)
@@ -436,6 +417,7 @@ class AccessTokenIssuerTest {
         assertEquals(jwt.getClaim(AZP_CLAIM), subject)
         assertEquals(jwt.issuer, issuer.issuer)
         assertEquals(jwt.getStringClaim(VERSION_CLAIM), OIDC_VERSION)
+        assertEquals(jwt.getClaim(CLIENT_ORGNO_CLAIM), subject)
         assertNotNull(jwt.jwtid)
         assertEquals(jwt.getClaim(RESOURCETYPE_CLAIM), IdentType.SAMHANDLER.value)
         assertEquals(jwt.getStringClaim(OidcObject.TRACKING_CLAIM), difiJwt.jwtid)
