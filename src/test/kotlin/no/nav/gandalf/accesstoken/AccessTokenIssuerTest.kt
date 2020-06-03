@@ -27,6 +27,7 @@ import no.nav.gandalf.utils.difiOIDCConfigurationResponseFileName
 import no.nav.gandalf.utils.difiOIDCConfigurationUrl
 import no.nav.gandalf.utils.difiOIDCJwksUrl
 import no.nav.gandalf.utils.difiOIDCResponseFileName
+import no.nav.gandalf.utils.endpointStub
 import no.nav.gandalf.utils.getAlteredSamlToken
 import no.nav.gandalf.utils.getAlteredSamlTokenWithEksternBrukerOgAuthLevel
 import no.nav.gandalf.utils.getAlteredSamlTokenWithInternBrukerOgAuthLevel
@@ -38,7 +39,6 @@ import no.nav.gandalf.utils.getMaskinportenToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.gandalf.utils.getSamlToken
-import no.nav.gandalf.utils.endpointStub
 import no.nav.gandalf.utils.openAMJwksUrl
 import no.nav.gandalf.utils.openAMResponseFileName
 import org.apache.http.HttpStatus
@@ -52,9 +52,10 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.ZonedDateTime
@@ -64,10 +65,17 @@ private const val ACCESS_TOKEN_TYPE = "bearer"
 const val PORT = 8888
 
 @RunWith(SpringRunner::class)
-@SpringBootTest
-@EnableConfigurationProperties
-@AutoConfigureWireMock(port = PORT)
+@SpringBootTest(
+    properties = [
+        "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}/idporten-oidc-provider",
+        "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}/jwk",
+        "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}/isso/oauth2/connect/jwk_uri"
+    ], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
+@AutoConfigureMockMvc
+@AutoConfigureWireMock(port = 0)
 @TestPropertySource(locations = ["classpath:application-test.properties"])
+@DirtiesContext
 class AccessTokenIssuerTest {
 
     @Autowired
@@ -81,10 +89,10 @@ class AccessTokenIssuerTest {
 
     @PostConstruct
     fun setupKnownIssuers() {
+        endpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENJWKSResponseFileName)
         endpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
         endpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
         endpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
-        endpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENJWKSResponseFileName)
         endpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
     }
 
@@ -228,7 +236,12 @@ class AccessTokenIssuerTest {
         try {
             issuer.exchangeSamlToOidcToken(samlToken, notOnOrAfter)
         } catch (e: java.lang.Exception) {
-            assertTrue(e.message.equals("Invalid SAML token: condition NotOnOrAfter is $notOnOrAfter", ignoreCase = true))
+            assertTrue(
+                e.message.equals(
+                    "Invalid SAML token: condition NotOnOrAfter is $notOnOrAfter",
+                    ignoreCase = true
+                )
+            )
             return
         }
         assertTrue(false)
@@ -245,7 +258,12 @@ class AccessTokenIssuerTest {
         try {
             issuer.exchangeSamlToOidcToken(samlToken, now)
         } catch (e: java.lang.Exception) {
-            assertTrue(e.message.equals("Invalid SAML token: condition NotOnOrAfter is $notOnOrAfter", ignoreCase = true))
+            assertTrue(
+                e.message.equals(
+                    "Invalid SAML token: condition NotOnOrAfter is $notOnOrAfter",
+                    ignoreCase = true
+                )
+            )
             return
         }
         assertTrue(false)
@@ -279,7 +297,12 @@ class AccessTokenIssuerTest {
         try {
             issuer.exchangeSamlToOidcToken(samlToken, now)
         } catch (e: java.lang.Exception) {
-            assertTrue(e.message.equals("Invalid SAML token: Signature validation failed on reference #SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae", ignoreCase = true))
+            assertTrue(
+                e.message.equals(
+                    "Invalid SAML token: Signature validation failed on reference #SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae",
+                    ignoreCase = true
+                )
+            )
             return
         }
         assertTrue(false)
@@ -304,16 +327,22 @@ class AccessTokenIssuerTest {
             val dpSamlToken: String = getDpSamlToken()
             val samlObj = SamlObject()
             samlObj.read(dpSamlToken)
-            val samlToken = issuer.issueSamlToken(env.issuerUsername, env.issuerUsername, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL, samlObj.issueInstant!!)
+            val samlToken = issuer.issueSamlToken(
+                env.issuerUsername,
+                env.issuerUsername,
+                AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL,
+                samlObj.issueInstant!!
+            )
             val diff: List<String>? = diffTokens(dpSamlToken, samlToken)
             val realDiff: MutableList<String> = ArrayList()
             diff!!.forEach { line ->
                 // known differences
                 if (!(line.contains("Assertion Attribute ID has different") && line.contains("token2 has SAML-") ||
-                                line.contains("Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z") ||
-                                line.contains("Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z") ||
-                                line.contains("Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z") ||
-                                line.contains("Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z"))) {
+                        line.contains("Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z") ||
+                        line.contains("Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z") ||
+                        line.contains("Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z") ||
+                        line.contains("Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z"))
+                ) {
                     realDiff.add(line)
                     println("#Diff: $line")
                 }
@@ -356,7 +385,8 @@ class AccessTokenIssuerTest {
             samlObj.read(dpSamlToken)
             println("Oidc token issued at: " + AccessTokenIssuer.toZonedDateTime(oidcObj.issueTime))
             println("Saml token issued at: " + samlObj.issueInstant)
-            val samlToken = issuer.exchangeOidcToSamlToken(oidcToken, samlObj.consumerId, OidcObject.toDate(samlObj.issueInstant))
+            val samlToken =
+                issuer.exchangeOidcToSamlToken(oidcToken, samlObj.consumerId, OidcObject.toDate(samlObj.issueInstant))
             // System.out.println("oidcToken: " + signedJwt.getJWTClaimsSet().toJSONObject());
             // System.out.println("#DPSaml: " + dpSamlToken);
             // System.out.println("#Saml: " + samlToken);
@@ -378,13 +408,14 @@ class AccessTokenIssuerTest {
             diff!!.forEach { line ->
                 // filter known differences (Signature node er filtrert ut allerede)
                 if (line.contains("Assertion Attribute ID has different") && line.contains("token2 has SAML-") ||
-                        line.contains("saml2:Assertion has child saml2:AuthnStatement") ||
-                        line.contains("Attribute NameFormat has different") ||
-                        line.contains("Node saml2:Attribute:authenticationLevel token1 has textcontent 4 token2 has 0") ||
-                        line.contains("Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-18T07:27:29Z token2 has 2018-10-18T07:27:32Z") ||
-                        line.contains("Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-18T08:22:38Z token2 has 2018-10-18T08:23:08Z") ||
-                        line.contains("Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-18T07:27:29Z token2 has 2018-10-18T07:27:32Z") ||
-                        line.contains("Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-18T08:22:38Z token2 has 2018-10-18T08:23:08Z")) {
+                    line.contains("saml2:Assertion has child saml2:AuthnStatement") ||
+                    line.contains("Attribute NameFormat has different") ||
+                    line.contains("Node saml2:Attribute:authenticationLevel token1 has textcontent 4 token2 has 0") ||
+                    line.contains("Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-18T07:27:29Z token2 has 2018-10-18T07:27:32Z") ||
+                    line.contains("Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-18T08:22:38Z token2 has 2018-10-18T08:23:08Z") ||
+                    line.contains("Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-18T07:27:29Z token2 has 2018-10-18T07:27:32Z") ||
+                    line.contains("Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-18T08:22:38Z token2 has 2018-10-18T08:23:08Z")
+                ) {
                 } else {
                     realDiff.add(line)
                 }

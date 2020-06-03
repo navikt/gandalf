@@ -27,9 +27,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import javax.annotation.PostConstruct
 
 @RunWith(SpringRunner::class)
-@SpringBootTest
+@SpringBootTest(
+    properties = [
+        "application.external.issuer.difi.maskinporten=http://localhost:\${wiremock.server.port}/",
+        "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}/idporten-oidc-provider",
+        "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}/jwk",
+        "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}/isso/oauth2/connect/jwk_uri"
+    ], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
 @AutoConfigureMockMvc
-@AutoConfigureWireMock(port = no.nav.gandalf.utils.PORT)
+@AutoConfigureWireMock(port = 0)
 @TestPropertySource(locations = ["classpath:application-test.properties"])
 @DirtiesContext
 class ValidateControllerTest {

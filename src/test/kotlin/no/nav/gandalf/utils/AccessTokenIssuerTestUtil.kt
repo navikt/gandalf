@@ -10,7 +10,6 @@ internal const val openAMJwksUrl = "/isso/oauth2/connect/jwk_uri"
 
 internal const val difiOIDCJwksUrl = "/idporten-oidc-provider/jwk"
 internal const val difiOIDCResponseFileName = "difi-oidc-jwks.json"
-
 internal const val difiOIDCConfigurationUrl = "/idporten-oidc-provider/.well-known/openid-configuration"
 internal const val difiOIDCConfigurationResponseFileName = "difi-oidc-configuration.json"
 
@@ -20,7 +19,7 @@ internal const val difiMASKINPORTENJWKSResponseFileName = "difi-maskinporten-jwk
 internal const val difiMASKINPORTENConfigurationResponseFileName = "difi-maskinporten-configuration.json"
 
 internal const val azureADResponseFileName = "azuread-jwks.json"
-internal const val azureADJwksUrl = "/navtestb2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten_ver1"
+internal const val azureADJwksUrl = "/navtestb2c.onmicrosoft.com/discovery/v2.0/keys"
 
 internal fun endpointStub(status: Int = HttpStatus.SC_OK, path: String, bodyFile: String) =
     stubFor(
@@ -30,6 +29,17 @@ internal fun endpointStub(status: Int = HttpStatus.SC_OK, path: String, bodyFile
                     .withStatus(status)
                     .withHeader("Content-Type", "application/json; charset=UTF-8")
                     .withBodyFile(bodyFile)
+            )
+    )
+
+internal fun endpointStubWithBody(status: Int = HttpStatus.SC_OK, path: String, bodyFile: String) =
+    stubFor(
+        WireMock.get(WireMock.urlEqualTo(path))
+            .willReturn(
+                aResponse()
+                    .withStatus(status)
+                    .withHeader("Content-Type", "application/json; charset=UTF-8")
+                    .withBody(bodyFile)
             )
     )
 
