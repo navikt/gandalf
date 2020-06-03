@@ -1,6 +1,8 @@
 package no.nav.gandalf.api
 
+import io.prometheus.client.Histogram
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
+import no.nav.gandalf.api.metric.ApplicationMetric
 import no.nav.gandalf.model.ConfigurationResponse
 import no.nav.gandalf.model.toExchangePath
 import no.nav.gandalf.model.toJwksPath
@@ -13,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/", produces = ["application/json"])
+@RequestMapping(produces = ["application/json"])
 class IdentityProviderController {
 
     @Autowired
@@ -21,10 +23,15 @@ class IdentityProviderController {
 
     @GetMapping("/jwks")
     fun getKeys(): ResponseEntity<Any> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .headers(tokenHeaders)
-            .body(accessTokenIssuer.getPublicJWKSet()!!.toJSONObject())
+        val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyJwks.startTimer()
+        try {
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .headers(tokenHeaders)
+                .body(accessTokenIssuer.getPublicJWKSet()!!.toJSONObject())
+        } finally {
+            requestTimer.observeDuration()
+        }
     }
 
     @GetMapping("rest/v1/sts/jwks")

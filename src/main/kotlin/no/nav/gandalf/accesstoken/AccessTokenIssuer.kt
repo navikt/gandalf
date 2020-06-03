@@ -196,7 +196,6 @@ class AccessTokenIssuer(
         oidcObj.subject = subject
         oidcObj.issuer = this.issuer
         oidcObj.version = OIDC_VERSION
-        // oidcObj.setAudience(username, getDomain()); copy this from difi token instead
         oidcObj.azp = subject
         oidcObj.resourceType = getIdentType(subject)
         oidcObj.auditTrackingId = difiOidcObj.id

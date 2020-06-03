@@ -1,8 +1,15 @@
 package no.nav.gandalf.api
 
+import io.prometheus.client.Histogram
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
+import no.nav.gandalf.api.metric.ApplicationMetric.requestLatencySAMLToken
+import no.nav.gandalf.api.metric.ApplicationMetric.requestLatencyToken
+import no.nav.gandalf.api.metric.ApplicationMetric.requestLatencyToken2
+import no.nav.gandalf.api.metric.ApplicationMetric.samlTokenError
+import no.nav.gandalf.api.metric.ApplicationMetric.samlTokenNotOk
+import no.nav.gandalf.api.metric.ApplicationMetric.samlTokenOk
 import no.nav.gandalf.api.metric.ApplicationMetric.token2Error
 import no.nav.gandalf.api.metric.ApplicationMetric.token2NotOk
 import no.nav.gandalf.api.metric.ApplicationMetric.token2Ok
@@ -41,26 +48,31 @@ class AccessTokenController(
         @RequestParam("grant_type", required = true) grantType: String,
         @RequestParam("scope", required = true) scope: String
     ): ResponseEntity<Any> {
-        when {
-            grantType != "client_credentials" || scope != "openid" -> {
-                tokenNotOk.inc()
-                return badRequestResponse("grant_type = $grantType, scope = $scope")
-            }
-            else -> {
-                val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
-                    .also {
-                        tokenNotOk.inc()
-                    }
-                val oidcToken = try {
-                    issuer.issueToken(user)
-                } catch (e: Throwable) {
-                    tokenError.inc()
-                    return serverErrorResponse(e)
+        val requestTimer: Histogram.Timer = requestLatencyToken.startTimer()
+        try {
+            when {
+                grantType != "client_credentials" || scope != "openid" -> {
+                    tokenNotOk.inc()
+                    return badRequestResponse("grant_type = $grantType, scope = $scope")
                 }
-                tokenOK.inc()
-                return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders)
-                    .body(AccessTokenResponseService(oidcToken!!).tokenResponse)
+                else -> {
+                    val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
+                        .also {
+                            tokenNotOk.inc()
+                        }
+                    val oidcToken = try {
+                        issuer.issueToken(user)
+                    } catch (e: Throwable) {
+                        tokenError.inc()
+                        return serverErrorResponse(e)
+                    }
+                    tokenOK.inc()
+                    return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders)
+                        .body(AccessTokenResponseService(oidcToken!!).tokenResponse)
+                }
             }
+        } finally {
+            requestTimer.observeDuration()
         }
     }
 
@@ -78,48 +90,62 @@ class AccessTokenController(
         @RequestHeader("username") username: String,
         @RequestHeader("password") password: String
     ): ResponseEntity<Any> {
+        val requestTimer: Histogram.Timer = requestLatencyToken2.startTimer()
         try {
-            Ldap(ldapConfig).result(User(username, password))
-        } catch (e: Throwable) {
-            token2NotOk.inc()
-            return unauthorizedResponse(e, "Could Not Authenticate username: $username")
+            try {
+                Ldap(ldapConfig).result(User(username, password))
+            } catch (e: Throwable) {
+                token2NotOk.inc()
+                return unauthorizedResponse(e, "Could Not Authenticate username: $username")
+            }
+            log.info("Issue OIDC token2 for user: $username")
+            val oidcToken = try {
+                issuer.issueToken(username)
+            } catch (e: Throwable) {
+                token2Error.inc()
+                return serverErrorResponse(e)
+            }
+            token2Ok.inc()
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(AccessToken2Response(oidcToken!!))
+        } finally {
+            requestTimer.observeDuration()
         }
-        log.info("Issue OIDC token2 for user: $username")
-        val oidcToken = try {
-            issuer.issueToken(username)
-        } catch (e: Throwable) {
-            token2Error.inc()
-            return serverErrorResponse(e)
-        }
-        token2Ok.inc()
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(AccessToken2Response(oidcToken!!))
     }
 
     @GetMapping("/samltoken")
     fun getSAMLToken(): ResponseEntity<Any> {
-        val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
-        log.debug("Issue SAML token for: $user")
-        val samlToken = try {
-            issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
-        } catch (e: Throwable) {
-            return serverErrorResponse(e)
-        }
-        val samlObj = SamlObject().apply {
-            this.read(samlToken)
-        }
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .headers(tokenHeaders)
-            .body(
-                ExchangeTokenService().constructResponse(
-                    samlToken,
-                    "Bearer",
-                    "urn:ietf:params:oauth:token-type:saml2",
-                    samlObj.expiresIn,
-                    false
+        val requestTimer: Histogram.Timer = requestLatencySAMLToken.startTimer()
+        try {
+            val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized").also {
+                samlTokenNotOk.inc()
+            }
+            log.debug("Issue SAML token for: $user")
+            val samlToken = try {
+                issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
+            } catch (e: Throwable) {
+                samlTokenError.inc()
+                return serverErrorResponse(e)
+            }
+            val samlObj = SamlObject().apply {
+                this.read(samlToken)
+            }
+            samlTokenOk.inc()
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .headers(tokenHeaders)
+                .body(
+                    ExchangeTokenService().constructResponse(
+                        samlToken,
+                        "Bearer",
+                        "urn:ietf:params:oauth:token-type:saml2",
+                        samlObj.expiresIn,
+                        false
+                    )
                 )
-            )
+        } finally {
+            requestTimer.observeDuration()
+        }
     }
 }
