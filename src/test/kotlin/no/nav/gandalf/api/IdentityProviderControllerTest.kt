@@ -1,5 +1,6 @@
-package no.nav.gandalf.accesstoken
+package no.nav.gandalf.api
 
+import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.JWKS
 import no.nav.gandalf.utils.WELL_KNOWN

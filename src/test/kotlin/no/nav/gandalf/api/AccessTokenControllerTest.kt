@@ -1,7 +1,6 @@
-package no.nav.gandalf.accesstoken
+package no.nav.gandalf.api
 
-import no.nav.gandalf.api.INVALID_CLIENT
-import no.nav.gandalf.api.INVALID_REQUEST
+import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
 import no.nav.gandalf.ldap.InMemoryLdap

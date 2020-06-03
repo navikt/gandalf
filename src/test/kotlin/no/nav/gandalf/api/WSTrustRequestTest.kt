@@ -1,7 +1,8 @@
-package no.nav.gandalf.accesstoken
+package no.nav.gandalf.api
 
 import no.nav.gandalf.TestKeySelector
-import no.nav.gandalf.api.WSTrustRequest
+import no.nav.gandalf.accesstoken.AccessTokenIssuer
+import no.nav.gandalf.accesstoken.SamlObject
 import no.nav.gandalf.utils.getOidcToSamlRequest
 import no.nav.gandalf.utils.getSamlRequest
 import no.nav.gandalf.utils.getValidateSamlRequest

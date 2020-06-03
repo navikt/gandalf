@@ -1,4 +1,4 @@
-package no.nav.gandalf.accesstoken
+package no.nav.gandalf.keystore
 
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl

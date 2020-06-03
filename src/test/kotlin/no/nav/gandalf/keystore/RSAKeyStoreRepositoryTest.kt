@@ -1,9 +1,10 @@
-package no.nav.gandalf.accesstoken
+package no.nav.gandalf.keystore
 
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyType
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
+import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import java.time.LocalDateTime
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
