@@ -13,8 +13,8 @@ data class ExternalIssuerConfig(
     val issuerAzureAd: String,
     @Value("\${application.jwks.endpoint.azuread}")
     val jwksEndpointAzuread: String,
-    @Value("\${application.external.issuer.difi.oidc}")
-    val issuerDifiOIDC: String,
-    @Value("\${application.external.issuer.difi.maskinporten}")
-    val issuerDifiMaskinporten: String
+    @Value("\${application.external.configuration.difi.oidc}")
+    val configurationDIFIOIDCUrl: String,
+    @Value("\${application.external.configuration.difi.maskinporten}")
+    val configurationDIFIMaskinportenUrl: String
 )

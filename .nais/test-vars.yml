@@ -2,6 +2,8 @@ namespace: t4
 ingresses:
   - https://security-token-service-t4.nais.preprod.local
 envs:
+  - name: SPRING_PROFILES_ACTIVE
+    value: remote
   - name: APPLICATION_OIDC_ISSUER
     value: https://security-token-service-t4.nais.preprod.local
   - name: APPLICATION_EXTERNAL_ISSUER_OPENAM
@@ -12,10 +14,10 @@ envs:
     value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/
   - name: APPLICATION_JWKS_ENDPOINT_AZUREAD
     value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/discovery/v2.0/keys
-  - name: APPLICATION_EXTERNAL_ISSUER_DIFI_OIDC
-    value: https://oidc-ver2.difi.no/idporten-oidc-provider/
-  - name: APPLICATION_EXTERNAL_ISSUER_DIFI_MASKINPORTEN
-    value: https://ver2.maskinporten.no/
+  - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_OIDC
+    value: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
+  - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_MASKINPORTEN
+    value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
   - name: SPRING_LDAP_URL
     value: ldaps://ldapgw.test.local
   - name: SPRING_LDAP_PORT
