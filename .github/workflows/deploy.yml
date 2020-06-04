@@ -3,7 +3,7 @@ name: Build, push, and deploy
 on: [push, pull_request]
 
 env:
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/security-token-service:${{ github.sha }}
+  IMAGE: docker.pkg.github.com/${{ github.repository }}/gandalf-security-token-service:${{ github.sha }}
 
 jobs:
   test:
