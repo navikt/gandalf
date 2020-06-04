@@ -34,4 +34,3 @@ vault-paths:
     mountPath: /secrets/database/config
   - kvPath: kv/preprod/fss/srvsecurity-token-service/t4
     mountPath: /var/run/secrets/nais.io/vault
-
