@@ -1,6 +1,7 @@
 package no.nav.gandalf.ldap
 
 import com.unboundid.ldap.sdk.LDAPConnection
+import com.unboundid.ldap.sdk.LDAPConnectionPool
 import com.unboundid.ldap.sdk.LDAPException
 import com.unboundid.ldap.sdk.LDAPSearchException
 import com.unboundid.ldap.sdk.SearchResult
@@ -10,6 +11,7 @@ import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+
 
 private val log = KotlinLogging.logger { }
 
@@ -30,7 +32,9 @@ class Ldap(
         user: User
     ): SearchResult = tryToAuthenticate(user) {
         val connection = LDAPConnection(ldapConfig.url, ldapConfig.port)
-        connection.search(
+        val connectionPool = LDAPConnectionPool(connection, 10)
+        // connectionPool.maxWaitTimeMillis = 30000L
+        connectionPool.search(
             ldapConfig.base,
             SearchScope.SUB,
             "(cn=${user.username})"

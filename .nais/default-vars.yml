@@ -2,20 +2,28 @@ namespace: default
 ingresses:
   - https://security-token-service.nais.preprod.local
 envs:
+  - name: SPRING_PROFILES_ACTIVE
+    value: remote
   - name: APPLICATION_OIDC_ISSUER
     value: https://security-token-service.nais.preprod.local
   - name: APPLICATION_EXTERNAL_ISSUER_OPENAM
     value: https://isso-q.adeo.no:443/isso/oauth2
-  - name: APPLICATION_EXTERNAL_ISSUER_AZUREAD
-    value: https://login.microsoftonline.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
-  - name: APPLICATION_EXTERNAL_ISSUER_DIFI_OIDC
-    value: https://oidc-ver2.difi.no/idporten-oidc-provider/
-  - name: APPLICATION_EXTERNAL_ISSUER_DIFI_MASKINPORTEN
-    value: https://ver2.maskinporten.no/
   - name: APPLICATION_JWKS_ENDPOINT_OPENAM
-    value: http://localhost:8888/isso/oauth2/connect/jwk_uri
+    value: https://isso-q.adeo.no/isso/oauth2/connect/jwk_uri
+  - name: APPLICATION_EXTERNAL_ISSUER_AZUREAD
+    value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/
   - name: APPLICATION_JWKS_ENDPOINT_AZUREAD
-    value:
+    value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/discovery/v2.0/keys
+  - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_OIDC
+    value: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
+  - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_MASKINPORTEN
+    value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+  - name: SPRING_LDAP_URL
+    value: ldapgw.preprod.local
+  - name: SPRING_LDAP_PORT
+    value: 636
+  - name: SPRING_LDAP_BASE
+    value: ou=ServiceAccounts,dc=preprod,dc=local
 replicas:
   min: 2
   max: 2
