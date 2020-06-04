@@ -30,19 +30,19 @@ spec:
     max: {{replicas.max}}
   resources:
     limits:
-      cpu: 800m
-      memory: 3Gi
+      cpu: 1000m
+      memory: 2048Mi
     requests:
-      cpu: 600m
-      memory: 3Gi
+      cpu: 1000m
+      memory: 1024Mi
   cpuThresholdPercentage: 80
   vault:
     enabled: true
-  paths:
-    {{#each vault-paths}}
-    - kvPath: "{{this.kvPath}}"
-      mountPath: "{{this.mountPath}}"
-    {{/each}}
+    paths:
+      {{#each vault-paths}}
+      - kvPath: "{{this.kvPath}}"
+        mountPath: "{{this.mountPath}}"
+      {{/each}}
   webproxy: true
   env:
     {{#each envs}}
