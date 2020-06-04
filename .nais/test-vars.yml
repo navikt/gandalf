@@ -19,7 +19,7 @@ envs:
   - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_MASKINPORTEN
     value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
   - name: SPRING_LDAP_URL
-    value: ldaps://ldapgw.test.local
+    value: ldapgw.test.local
   - name: SPRING_LDAP_PORT
     value: 636
   - name: SPRING_LDAP_BASE
