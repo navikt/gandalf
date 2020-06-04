@@ -8,6 +8,7 @@ version = file("version.txt").readText().trim()
 object Version {
     const val gradleVersion = "6.5"
     const val kotlinLoggin = "1.7.9"
+    const val logback = "6.4"
     const val nimbus = "8.5"
     const val snake = "1.26"
     const val hibernate = "5.4.14.Final"
@@ -72,6 +73,7 @@ dependencies {
     implementation("org.json:json:${Version.json}")
     implementation("org.apache.httpcomponents:httpclient:${Version.apacheHttp}")
     implementation("io.github.microutils:kotlin-logging:${Version.kotlinLoggin}")
+    implementation("net.logstash.logback:logstash-logback-encoder:${Version.logback}")
     implementation("com.nimbusds:oauth2-oidc-sdk:${Version.nimbus}")
     implementation("org.yaml:snakeyaml:${Version.snake}")
     implementation("org.hibernate:hibernate-core:${Version.hibernate}")
