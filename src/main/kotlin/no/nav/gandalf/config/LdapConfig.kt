@@ -13,7 +13,7 @@ data class LdapConfig(
     val remote: String,
     @Value("\${spring.ldap.port}")
     val port: Int,
-    @Value("\${spring.ldap.timeout}")
+    @Value("\${spring.ldap.timeout: 3000}")
     val timeout: Int
 ) {
     override fun toString() =
