@@ -1,13 +1,10 @@
 package no.nav.gandalf.ldap
 
-import com.unboundid.ldap.sdk.LDAPConnection
-import com.unboundid.ldap.sdk.LDAPConnectionPool
 import com.unboundid.ldap.sdk.LDAPException
 import com.unboundid.ldap.sdk.LDAPSearchException
 import com.unboundid.ldap.sdk.SearchResult
 import com.unboundid.ldap.sdk.SearchScope
 import mu.KotlinLogging
-import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -15,26 +12,30 @@ import org.springframework.stereotype.Component
 private val log = KotlinLogging.logger { }
 
 @Component
-class Ldap(
-    @Autowired val ldapConfig: LdapConfig
+class LDAPAuthentication(
+    @Autowired val adSetup: LDAPConnectionSetup
 ) {
-
     fun result(user: User) =
-        try {
-            search(user)
-            true
-        } catch (t: Throwable) {
-            throw t
+        when {
+            !adSetup.connectionOk -> {
+                log.error { "Cannot authenticate, connection to ldap is down" }
+                false
+            }
+            else -> {
+                try {
+                    search(user)
+                    true
+                } catch (t: Throwable) {
+                    throw t
+                }
+            }
         }
 
     fun search(
         user: User
     ): SearchResult = tryToAuthenticate(user) {
-        val connection = LDAPConnection(ldapConfig.url, ldapConfig.port)
-        val connectionPool = LDAPConnectionPool(connection, 10)
-        // connectionPool.maxWaitTimeMillis = 30000L
-        connectionPool.search(
-            ldapConfig.base,
+        adSetup.ldapConnection.search(
+            adSetup.ldapConfig.base,
             SearchScope.SUB,
             "(cn=${user.username})"
         ).apply {
@@ -42,7 +43,7 @@ class Ldap(
                 this.entryCount > 0 -> {
                     val entry = this.searchEntries[0]
                     log.info { "User found: ${user.username}, entry: ${entry.dn}" }
-                    connection.bind(entry.dn, user.password)
+                    adSetup.ldapConnection.bind(entry.dn, user.password)
                 }
                 else -> {
                     throw Exception("User not found: ${user.username}")

@@ -1,5 +1,6 @@
 package no.nav.gandalf.keystore
 
+import io.prometheus.client.Counter
 import mu.KotlinLogging
 import no.nav.gandalf.config.KeystoreReaderConfig
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +15,9 @@ import java.security.PrivateKey
 import java.security.UnrecoverableKeyException
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 private val log = KotlinLogging.logger { }
 
@@ -80,12 +84,28 @@ class KeyStoreReader(
                 cert =
                     keyStore!!.getCertificate(keyAlias) as X509Certificate // eller keyStore.getCertificateChain(keyAlias)[0];
                 val keyUsage = cert!!.keyUsage
+                certCount.inc(numberOfDaysUtilCertificateExpire())
                 privateKey =
                     keyStore!!.getKey(keyAlias, keystoreReaderConfig.keystorePassword.toCharArray()) as PrivateKey
                 if (privateKey != null && (keyUsage == null || keyUsage[0] || keyUsage[1])) { // if keyUsage is not specified or is digitalSignature or nonRepudation
                     break
                 }
             }
+        }
+    }
+
+    fun numberOfDaysUtilCertificateExpire() = ChronoUnit.DAYS.between(
+        LocalDate.now(),
+        LocalDate.parse(
+            SimpleDateFormat("yyyy-MM-dd").format(cert?.notAfter)
+        )
+    ).toDouble().apply {
+        log.debug { "Signing certificate expires in: $this" }
+        return when {
+            this > 0 -> {
+                this
+            }
+            else -> 1.0
         }
     }
 
@@ -107,5 +127,13 @@ class KeyStoreReader(
             log.error("Failed to load keytstore" + e.message)
             throw RuntimeException("Failed to load keystore", e)
         }
+    }
+
+    companion object {
+        val certCount: Counter = Counter.build()
+            .help("Count days until expiry.")
+            .namespace("securitytokenservice")
+            .name("_cert_count")
+            .register()
     }
 }

@@ -1,4 +1,6 @@
 namespace: default
+team: integrasjon
+name: security-token-service
 ingresses:
   - https://security-token-service.nais.adeo.no
 envs:

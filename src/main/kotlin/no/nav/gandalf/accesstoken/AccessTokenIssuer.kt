@@ -213,8 +213,6 @@ class AccessTokenIssuer(
         log.info("Issuing Internal token from DIFI-token: exchangeDifiTokenToOidc")
         require(!(difiToken == null || difiToken.isEmpty())) { "Validation failed: OidcToken is null or empty" }
         val difiOidcObj = OidcObject(difiToken)
-        println(knownIssuers.map { it.issuer })
-        println(difiOidcObj.issuer)
         val knownIssuer: OidcIssuer = knownIssuers.map { it }.singleOrNull { it.issuer == difiOidcObj.issuer }
             ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + difiOidcObj.issuer)
         log.info("DIFI-token issuer: " + knownIssuer.issuer)

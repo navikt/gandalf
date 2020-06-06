@@ -1,5 +1,6 @@
 package no.nav.gandalf.ldap
 
+import no.nav.gandalf.api.initAD
 import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +21,7 @@ class CustomAuthenticationProvider(
         val name: String = authentication.name
         val password: String = authentication.credentials.toString()
         return try {
-            Ldap(ldapConfig).result(User(name, password))
+            LDAPAuthentication(initAD(ldapConfig)).result(User(name, password))
             UsernamePasswordAuthenticationToken(name, password, ArrayList())
         } catch (t: Throwable) {
             throw BadCredentialsException("Authentication failed, ${t.message}")

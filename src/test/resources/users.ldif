@@ -22,18 +22,14 @@ userPassword: password
 
 dn: cn=srvPDP,ou=ServiceAccounts,dc=test,dc=local
 objectClass: person
-objectClass: user
 objectClass: top
-sAMAccountName: srvPDP
 cn: srvPDP
 sn: srvPDP
 userPassword: password
 
 dn: cn=srvDatapower,ou=ServiceAccounts,dc=test,dc=local
 objectClass: person
-objectClass: user
 objectClass: top
-sAMAccountName: srvDatapower
 cn: srvDatapower
 sn: srvDatapower
 userPassword: password

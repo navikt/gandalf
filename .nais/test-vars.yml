@@ -1,4 +1,6 @@
 namespace: t4
+team: integrasjon
+name: security-token-service
 ingresses:
   - https://security-token-service-t4.nais.preprod.local
 envs:

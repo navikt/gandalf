@@ -8,8 +8,9 @@ version = file("version.txt").readText().trim()
 object Version {
     const val gradleVersion = "6.5"
     const val kotlinLoggin = "1.7.9"
-    const val logback = "6.4"
-    const val nimbus = "8.5"
+    const val logbackStash = "6.4"
+    const val logback = "1.2.3"
+    const val nimbus = "8.7"
     const val snake = "1.26"
     const val hibernate = "5.4.14.Final"
     const val json = "20200518"
@@ -58,6 +59,12 @@ repositories {
     jcenter()
 }
 
+configurations {
+    all {
+        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+    }
+}
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -73,7 +80,8 @@ dependencies {
     implementation("org.json:json:${Version.json}")
     implementation("org.apache.httpcomponents:httpclient:${Version.apacheHttp}")
     implementation("io.github.microutils:kotlin-logging:${Version.kotlinLoggin}")
-    implementation("net.logstash.logback:logstash-logback-encoder:${Version.logback}")
+    implementation("ch.qos.logback:logback-classic:${Version.logback}")
+    implementation("net.logstash.logback:logstash-logback-encoder:${Version.logbackStash}")
     implementation("com.nimbusds:oauth2-oidc-sdk:${Version.nimbus}")
     implementation("org.yaml:snakeyaml:${Version.snake}")
     implementation("org.hibernate:hibernate-core:${Version.hibernate}")
@@ -87,7 +95,7 @@ dependencies {
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")
     testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude("com.vaadin.external.google", module = "android-json")
+        exclude(group = "com.vaadin.external.google", module = "android-json")
         exclude(module = "junit")
     }
     testImplementation("org.springframework.security:spring-security-test")

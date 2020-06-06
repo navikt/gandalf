@@ -30,26 +30,27 @@ class LdapTest {
         url = "localhost",
         base = "ou=ServiceAccounts,dc=test,dc=local",
         port = 11389,
-        remote = "false"
+        remote = "false",
+        timeout = 1_000
     )
 
     @Test
     fun `Authenticated User Under OU=ServiceAccounts`() {
-        val ldap = Ldap(ldapConfig)
+        val ldap = LDAPAuthentication(LDAPConnectionSetup(ldapConfig = ldapConfig))
         val authenticatedUser = User("srvPDP", "password")
         assert(ldap.result(user = authenticatedUser))
     }
 
     @Test
     fun `Authenticated User Under OU=ApplAccounts,OU=ServiceAccounts`() {
-        val ldap = Ldap(ldapConfig)
+        val ldap = LDAPAuthentication(LDAPConnectionSetup(ldapConfig = ldapConfig))
         val authenticatedUser = User("srvaltutkanal", "password")
         assert(ldap.result(user = authenticatedUser))
     }
 
     @Test
     fun `UnAuthorized User`() {
-        val ldap = Ldap(ldapConfig)
+        val ldap = LDAPAuthentication(LDAPConnectionSetup(ldapConfig = ldapConfig))
         val authenticatedUser = User("srvPDS", "password")
         assertThrows<Exception> { ldap.result(user = authenticatedUser) }
     }

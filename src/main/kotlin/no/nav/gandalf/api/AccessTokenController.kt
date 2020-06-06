@@ -17,7 +17,7 @@ import no.nav.gandalf.api.metric.ApplicationMetric.tokenError
 import no.nav.gandalf.api.metric.ApplicationMetric.tokenNotOk
 import no.nav.gandalf.api.metric.ApplicationMetric.tokenOK
 import no.nav.gandalf.config.LdapConfig
-import no.nav.gandalf.ldap.Ldap
+import no.nav.gandalf.ldap.LDAPAuthentication
 import no.nav.gandalf.model.AccessToken2Response
 import no.nav.gandalf.model.User
 import no.nav.gandalf.service.AccessTokenResponseService
@@ -93,7 +93,7 @@ class AccessTokenController(
         val requestTimer: Histogram.Timer = requestLatencyToken2.startTimer()
         try {
             try {
-                Ldap(ldapConfig).result(User(username, password))
+                LDAPAuthentication(initAD(ldapConfig)).result(User(username, password))
             } catch (e: Throwable) {
                 token2NotOk.inc()
                 return unauthorizedResponse(e, "Could Not Authenticate username: $username")

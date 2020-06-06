@@ -3,56 +3,63 @@ package no.nav.gandalf.ldap
 import com.unboundid.ldap.listener.InMemoryDirectoryServer
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig
 import com.unboundid.ldap.listener.InMemoryListenerConfig
-import com.unboundid.ldap.sdk.LDAPException
 import com.unboundid.ldap.sdk.OperationType
-import java.security.GeneralSecurityException
+import com.unboundid.ldap.sdk.schema.Schema
+import com.unboundid.util.ssl.KeyStoreKeyManager
+import com.unboundid.util.ssl.SSLUtil
+import com.unboundid.util.ssl.TrustAllTrustManager
+import com.unboundid.util.ssl.TrustStoreTrustManager
+import mu.KotlinLogging
 
 class InMemoryLdap {
-    private var inMemConf: InMemoryDirectoryServerConfig? = null
+    private val LPORT = 11389
+    private val log = KotlinLogging.logger { }
+    private val LNAME = "LDAPS"
 
-    // Kan brukes hvis du vil teste SSL
-    private val KeyStore = "src/test/resources/inmds.jks"
+    private val imConf = InMemoryDirectoryServerConfig("dc=test,dc=local").apply {
 
-    // private SSLServerSocketFactory tlsSF;
-    private var imDS: InMemoryDirectoryServer? = null
-    private fun initLDAPServer() {
         try {
-            inMemConf = InMemoryDirectoryServerConfig("dc=test,dc=local")
-            // val tlsCF = SSLUtil(TrustAllTrustManager()).createSSLSocketFactory()
-            // tlsSF = new SSLUtil(new KeyStoreKeyManager(KeyStore, "password".toCharArray(), "JKS", "inmds"), new TrustStoreTrustManager(KeyStore)).createSSLServerSocketFactory();
-        } catch (e: LDAPException) {
-            e.printStackTrace()
-        } catch (e: GeneralSecurityException) {
-            e.printStackTrace()
+
+            val kStore = "src/test/resources/inmds.jks"
+            val tlsCF = SSLUtil(TrustAllTrustManager()).createSSLSocketFactory()
+            val tlsSF = SSLUtil(
+                KeyStoreKeyManager(kStore, "password".toCharArray(), "JKS", "inmds"),
+                TrustStoreTrustManager(kStore)
+            ).createSSLServerSocketFactory()
+
+            setListenerConfigs(
+                InMemoryListenerConfig.createLDAPSConfig(
+                    LNAME,
+                    null,
+                    LPORT, tlsSF, tlsCF
+                )
+            )
+
+            // require authentication for most operations except bind
+            setAuthenticationRequiredOperationTypes(
+                OperationType.COMPARE,
+                // On-prem Ldap do not require auth to search.
+                // OperationType.SEARCH,
+                OperationType.ADD,
+                OperationType.MODIFY,
+                OperationType.DELETE
+            )
+            // let the embedded server use identical schema as apache DS configured for AD support (group and sAMAcc..)
+            schema = Schema.getSchema("src/test/resources/apacheDS.ldif")
+        } catch (e: Exception) {
+            log.error { "$e" }
         }
     }
 
-    private fun configServer() {
-        println("ConfigServer is called - getting config in place")
-        initLDAPServer()
+    private val imDS = InMemoryDirectoryServer(imConf).apply {
         try {
-            inMemConf!!.setListenerConfigs(InMemoryListenerConfig.createLDAPConfig("LDAP", 11389))
-            // InMemoryListenerConfig.createLDAPSConfig("LDAPS", null, 11636, tlsSF, tlsCF));
-
-            // must bind before compare, equal to non-anonymous access./
-            inMemConf!!.setAuthenticationRequiredOperationTypes(OperationType.COMPARE)
-            inMemConf!!.schema = null
-            imDS = InMemoryDirectoryServer(inMemConf)
-            imDS!!.importFromLDIF(true, "src/test/resources/users.ldif")
-        } catch (e: LDAPException) {
-            e.printStackTrace()
+            importFromLDIF(true, "src/test/resources/users.ldif")
+        } catch (e: Exception) {
+            log.error { "$e" }
         }
     }
 
-    @Throws(LDAPException::class)
-    fun start() {
-        println("Start In-memory ldap server")
-        configServer()
-        imDS!!.startListening("LDAP")
-        println("Server is up and running")
-    }
+    fun start() = imDS.startListening(LNAME)
 
-    fun stop() {
-        imDS!!.shutDown(true)
-    }
+    fun stop() = imDS.shutDown(true)
 }

@@ -1,10 +1,10 @@
 kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
-  name: security-token-service
+  name: {{name}}
   namespace: {{namespace}}
   labels:
-    team: integrasjon
+    team: {{team}}
 spec:
   image: {{image}}
   ingresses:

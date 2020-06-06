@@ -12,5 +12,10 @@ data class LdapConfig(
     @Value("\${spring.profiles.active}")
     val remote: String,
     @Value("\${spring.ldap.port}")
-    val port: Int
-)
+    val port: Int,
+    @Value("\${spring.ldap.timeout}")
+    val timeout: Int
+) {
+    override fun toString() =
+        "Host: $url, Port: $port, Timeout: $timeout, Base: $base"
+}

@@ -1,6 +1,8 @@
 package no.nav.gandalf.api
 
 import mu.KotlinLogging
+import no.nav.gandalf.config.LdapConfig
+import no.nav.gandalf.ldap.LDAPConnectionSetup
 import no.nav.gandalf.model.ErrorDescriptiveResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -49,3 +51,5 @@ internal fun userDetails(): String? {
         }
     }
 }
+
+internal fun initAD(ldapConfig: LdapConfig) = LDAPConnectionSetup(ldapConfig = ldapConfig)
