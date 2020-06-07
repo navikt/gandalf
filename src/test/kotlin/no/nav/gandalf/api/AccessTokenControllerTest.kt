@@ -125,7 +125,7 @@ class AccessTokenControllerTest {
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
-            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, User not found: srvPD"))
+            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, Unable to bind as user 'uid=srvPD,OU=ServiceAccounts,dc=test,dc=local' because no such entry exists in the server."))
     }
 
     // POST Path: /token
@@ -208,6 +208,6 @@ class AccessTokenControllerTest {
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
-            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPDP,ou=ServiceAccounts,dc=test,dc=local' because the provided password was incorrect."))
+            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, Unable to bind as user 'uid=srvPDP,OU=ServiceAccounts,dc=test,dc=local' because the provided password was incorrect."))
     }
 }

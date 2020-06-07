@@ -25,7 +25,7 @@ envs:
   - name: SPRING_LDAP_PORT
     value: 636
   - name: SPRING_LDAP_BASE
-    value: ou=ServiceAccounts,dc=preprod,dc=local
+    value: dc=preprod,dc=local
 replicas:
   min: 2
   max: 2

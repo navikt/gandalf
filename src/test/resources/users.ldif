@@ -13,30 +13,38 @@ objectClass: top
 objectClass: organizationalUnit
 ou: ApplAccounts
 
-dn: cn=srvSSOLinux,ou=ServiceAccounts,dc=test,dc=local
+dn: uid=srvSSOLinux,ou=ServiceAccounts,dc=test,dc=local
+objectClass: inetOrgPerson
 objectClass: person
-objectClass: top
+objectClass: organizationalPerson
+uid: srvSSOLinux
 cn: srvSSOLinux
 sn: srvSSOLinux
 userPassword: password
 
-dn: cn=srvPDP,ou=ServiceAccounts,dc=test,dc=local
+dn: uid=srvPDP,ou=ServiceAccounts,dc=test,dc=local
+objectClass: inetOrgPerson
 objectClass: person
-objectClass: top
+objectClass: organizationalPerson
+uid: srvPDP
 cn: srvPDP
 sn: srvPDP
 userPassword: password
 
-dn: cn=srvDatapower,ou=ServiceAccounts,dc=test,dc=local
+dn: uid=srvDatapower,ou=ServiceAccounts,dc=test,dc=local
+objectClass: inetOrgPerson
 objectClass: person
-objectClass: top
+objectClass: organizationalPerson
+uid: srvDatapower
 cn: srvDatapower
 sn: srvDatapower
 userPassword: password
 
-dn: cn=srvaltutkanal,ou=ApplAccounts,ou=ServiceAccounts,dc=test,dc=local
+dn: uid=srvaltutkanal,ou=ApplAccounts,ou=ServiceAccounts,dc=test,dc=local
+objectClass: inetOrgPerson
 objectClass: person
-objectClass: top
+objectClass: organizationalPerson
+uid: srvaltutkanal
 cn: srvaltutkanal
 sn: srvaltutkanal
 userPassword: password

@@ -6,9 +6,11 @@ ingresses:
 envs:
   - name: APPLICATION_OIDC_ISSUER
     value: https://security-token-service.nais.adeo.no
+  - name: SPRING_LDAP_BASE
+    value: dc=adeo,dc=no
 replicas:
-  min: 3
-  max: 6
+  min: 2
+  max: 4
 vault-paths:
   - kvPath: serviceuser/data/prod/srvsecurity-token-service
     mountPath: /secrets/serviceuser

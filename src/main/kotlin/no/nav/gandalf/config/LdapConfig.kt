@@ -16,6 +16,7 @@ data class LdapConfig(
     @Value("\${spring.ldap.timeout: 3000}")
     val timeout: Int
 ) {
+
     override fun toString() =
         "Host: $url, Port: $port, Timeout: $timeout, Base: $base"
 }

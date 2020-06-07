@@ -28,7 +28,7 @@ class LdapTest {
 
     private val ldapConfig = LdapConfig(
         url = "localhost",
-        base = "ou=ServiceAccounts,dc=test,dc=local",
+        base = "dc=test,dc=local",
         port = 11389,
         remote = "false",
         timeout = 1_000

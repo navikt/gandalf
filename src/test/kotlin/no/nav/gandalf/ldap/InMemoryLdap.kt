@@ -38,8 +38,7 @@ class InMemoryLdap {
             // require authentication for most operations except bind
             setAuthenticationRequiredOperationTypes(
                 OperationType.COMPARE,
-                // On-prem Ldap do not require auth to search.
-                // OperationType.SEARCH,
+                OperationType.SEARCH,
                 OperationType.ADD,
                 OperationType.MODIFY,
                 OperationType.DELETE
