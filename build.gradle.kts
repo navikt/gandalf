@@ -86,7 +86,7 @@ dependencies {
     implementation("com.nimbusds:oauth2-oidc-sdk:${Version.nimbus}")
     implementation("org.yaml:snakeyaml:${Version.snake}")
     implementation("org.hibernate:hibernate-core:${Version.hibernate}")
-    implementation("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
+    runtimeOnly("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
     implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
     implementation("com.google.code.gson:gson:${Version.gson}")
