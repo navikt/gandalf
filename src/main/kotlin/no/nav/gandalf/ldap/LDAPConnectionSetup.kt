@@ -16,13 +16,13 @@ private val log = KotlinLogging.logger { }
 @Component
 class LDAPConnectionSetup(
     @Autowired val ldapConfig: LdapConfig
-) {
+) : AutoCloseable {
 
     private val connectOptions = LDAPConnectionOptions().apply {
         connectTimeoutMillis = ldapConfig.timeout
     }
 
-    final val ldapConnection = LDAPConnection(
+    var ldapConnection = LDAPConnection(
         SSLUtil(TrustAllTrustManager()).createSSLSocketFactory(),
         connectOptions
     )
@@ -42,6 +42,11 @@ class LDAPConnectionSetup(
                 )
             }
         }
+    }
+
+    override fun close() {
+        log.debug { "Closing ldap connection $ldapConfig" }
+        ldapConnection.close()
     }
 
     val connectionOk = ldapConnection.isConnected

@@ -6,11 +6,11 @@
 		</encoder>
 	</appender>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
 
     <logger name="no.nav" level="INFO"/>
 	<logger name="no.nav.gandalf" level="DEBUG"/>
-	<logger name="org.springframework" level="DEBUG"/>
+	<logger name="org.springframework" level="INFO"/>
 </configuration>
