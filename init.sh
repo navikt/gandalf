@@ -7,7 +7,7 @@ fi
 
 if test -f "/secrets/serviceuser/password"; then
   export APPLICATION_SERVICE_PASSWORD=$(cat /secrets/serviceuser/password)
-  echo "Eksporterer variabel APPLICATION_SERVICE_USERNAME"
+  echo "Eksporterer variabel APPLICATION_SERVICE_PASSWORD"
 fi
 
 if test -f "/secrets/database/config/jdbc_url"; then

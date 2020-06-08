@@ -1,13 +1,13 @@
-namespace: t4
+namespace: t5
 team: integrasjon
 name: security-token-service
 ingresses:
-  - https://security-token-service-t4.nais.preprod.local
+  - https://security-token-service-t5.nais.preprod.local
 envs:
   - name: SPRING_PROFILES_ACTIVE
     value: remote
   - name: APPLICATION_OIDC_ISSUER
-    value: https://security-token-service-t4.nais.preprod.local
+    value: https://security-token-service-t5.nais.preprod.local
   - name: APPLICATION_EXTERNAL_ISSUER_OPENAM
     value: https://isso-t.adeo.no:443/isso/oauth2
   - name: APPLICATION_JWKS_ENDPOINT_OPENAM
@@ -32,9 +32,9 @@ replicas:
 vault-paths:
   - kvPath: serviceuser/data/test/srvsecurity-token-service
     mountPath: /secrets/serviceuser
-  - kvPath: oracle/data/dev/creds/securitytokenservice_t4-user
+  - kvPath: oracle/data/dev/creds/securitytokenservice_t5-user
     mountPath: /secrets/database/credentials
-  - kvPath: oracle/data/dev/config/securitytokenservice_t4-user
+  - kvPath: oracle/data/dev/config/securitytokenservice_t5-user
     mountPath: /secrets/database/config
   - kvPath: kv/preprod/fss/security-token-service/t4
     mountPath: /var/run/secrets/nais.io/vault

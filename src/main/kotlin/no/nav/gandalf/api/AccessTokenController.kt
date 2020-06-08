@@ -17,11 +17,11 @@ import no.nav.gandalf.api.metric.ApplicationMetric.tokenError
 import no.nav.gandalf.api.metric.ApplicationMetric.tokenNotOk
 import no.nav.gandalf.api.metric.ApplicationMetric.tokenOK
 import no.nav.gandalf.config.LdapConfig
-import no.nav.gandalf.ldap.LDAPAuthentication
 import no.nav.gandalf.model.AccessToken2Response
 import no.nav.gandalf.model.User
 import no.nav.gandalf.service.AccessTokenResponseService
 import no.nav.gandalf.service.ExchangeTokenService
+import no.nav.gandalf.util.authenticate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -93,7 +93,7 @@ class AccessTokenController(
         val requestTimer: Histogram.Timer = requestLatencyToken2.startTimer()
         try {
             try {
-                LDAPAuthentication(initAD(ldapConfig)).result(User(username, password))
+                authenticate(ldapConfig, User(username, password))
             } catch (e: Throwable) {
                 token2NotOk.inc()
                 return unauthorizedResponse(e, "Could Not Authenticate username: $username")

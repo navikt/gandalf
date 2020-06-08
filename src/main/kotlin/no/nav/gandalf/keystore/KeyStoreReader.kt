@@ -28,7 +28,7 @@ class KeyStoreReader(
     private var keyStore: KeyStore? = null
     private var privateKey: PrivateKey? = null
     private var cert: X509Certificate? = null
-    private val keystoreFile: String
+    private val keystoreFile: String?
         get() = keystoreReaderConfig.loadKeyStoreFromBase64ToFile()
 
     @get:Throws(UnrecoverableKeyException::class, KeyStoreException::class, NoSuchAlgorithmException::class)
@@ -59,13 +59,13 @@ class KeyStoreReader(
         log.debug("Using keystorefile: $keystoreFile")
         readKeyStoreAndHandle {
             when {
-                keystoreFile.isEmpty() -> throw RuntimeException("Failed to load keystore, system property '$keystoreFile' is null or empty!")
+                keystoreFile.isNullOrEmpty() -> throw RuntimeException("Failed to load keystore, system property '$keystoreFile' is null or empty!")
                 keystoreReaderConfig.keystorePassword.isEmpty() -> {
                     throw RuntimeException("Failed to load keystore, system property 'local-keystore.password' is null or empty!")
                 }
                 else -> {
                     keyStore = KeyStore.getInstance("JKS")
-                    tsis = FileInputStream(keystoreFile)
+                    tsis = FileInputStream(keystoreFile!!)
                     keyStore?.run {
                         this.load(tsis, keystoreReaderConfig.keystorePassword.toCharArray())
                     }

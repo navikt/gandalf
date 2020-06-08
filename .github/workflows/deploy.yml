@@ -61,8 +61,8 @@ jobs:
           echo "$GITHUB_TOKEN" | docker login --username "$GITHUB_REPOSITORY" --password-stdin https://docker.pkg.github.com
           docker push ${IMAGE}
 
-  deploy-dev-t4:
-    name: Deploy to NAIS dev (t4)
+  deploy-dev-t5:
+    name: Deploy to NAIS dev (t5)
     needs: build
     runs-on: ubuntu-latest
     steps:

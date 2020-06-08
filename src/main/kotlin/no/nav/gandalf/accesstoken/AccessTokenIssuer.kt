@@ -151,7 +151,7 @@ class AccessTokenIssuer(
     @JvmOverloads
     @Throws(Exception::class)
     fun exchangeSamlToOidcToken(samlToken: String, now: ZonedDateTime? = ZonedDateTime.now()): SignedJWT? {
-        log.info("Issuing OIDC token from SAML: exchangeSamlToOidcToken - SAML:$samlToken")
+        log.info("Issuing OIDC token from SAML: exchangeSamlToOidcToken")
 
         // read Saml token
         val samlObj = SamlObject(now!!)

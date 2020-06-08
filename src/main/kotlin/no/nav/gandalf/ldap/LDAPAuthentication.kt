@@ -20,8 +20,7 @@ class LDAPAuthentication(
     fun result(user: User) =
         when {
             !adSetup.connectionOk -> {
-                log.error { "Cannot authenticate, connection to ldap is down" }
-                false
+                throw LDAPException(ldapException).also { log.error { "Cannot authenticate, connection to ldap is down" } }
             }
             else -> {
                 try {
@@ -34,7 +33,7 @@ class LDAPAuthentication(
                     }.also {
                         when (it) {
                             true -> log.info { "Successful bind of ${user.username} to ${adSetup.ldapConfig}" }
-                            false -> throw LDAPException(ldapException)
+                            false -> throw LDAPException(ldapException).also { log.error { "Could not bind ${user.username} to ${adSetup.ldapConfig}" } }
                         }
                     }
                 } catch (t: Throwable) {
@@ -50,12 +49,15 @@ class LDAPAuthentication(
         srvAccounts.map { srvAccount -> "$dnPrefix,$srvAccount,$dnPostfix" }
     }
 
-    private fun authenticated(dn: String, pwd: String, alreadyAuthenticated: Boolean): Boolean =
+    private fun authenticated(dn: String, pwd: String, alreadyAuthenticated: Boolean) =
         when {
             alreadyAuthenticated -> true
             else -> try {
+                println(dn)
+                println(adSetup.ldapConnection.bind(dn, pwd).resultCode)
                 (adSetup.ldapConnection.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
             } catch (e: LDAPException) {
+                println(e)
                 ldapException = e
                 false
             }

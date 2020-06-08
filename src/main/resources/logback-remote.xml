@@ -4,13 +4,10 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
+    <logger name="no.nav.gandalf" level="INFO"/>
+
     <root level="INFO">
         <appender-ref ref="stdout_json"/>
     </root>
 
-    <logger name="no.nav.gandalf" level="INFO" additivity="false">
-        <appender-ref ref="stdout_json"/>
-    </logger>
-
-    <logger name="org.springframework" level="INFO"/>
 </configuration>

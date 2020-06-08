@@ -7,8 +7,8 @@ import no.nav.gandalf.api.metric.ApplicationMetric.wsExchangeOIDCTokenNotOk
 import no.nav.gandalf.api.metric.ApplicationMetric.wsSAMLTokenNotOk
 import no.nav.gandalf.api.metric.ApplicationMetric.wsSAMLTokenOk
 import no.nav.gandalf.config.LdapConfig
-import no.nav.gandalf.ldap.LDAPAuthentication
 import no.nav.gandalf.model.User
+import no.nav.gandalf.util.authenticate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -48,7 +48,7 @@ class WSSAMLTokenController(
                 if (wsReq.username == null || wsReq.password == null) {
                     throw RuntimeException("Missing username and/or password")
                 } else {
-                    LDAPAuthentication(initAD(ldapConfig)).result(User(wsReq.username!!, wsReq.password!!))
+                    authenticate(ldapConfig, User(wsReq.username!!, wsReq.password!!))
                 }
             } catch (e: Throwable) {
                 wsSAMLTokenNotOk.inc()

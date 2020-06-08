@@ -1,5 +1,6 @@
 package no.nav.gandalf.ldap
 
+import com.unboundid.ldap.sdk.LDAPException
 import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
 import org.junit.After
@@ -51,7 +52,7 @@ class LdapTest {
     @Test
     fun `UnAuthorized User`() {
         val ldap = LDAPAuthentication(LDAPConnectionSetup(ldapConfig = ldapConfig))
-        val authenticatedUser = User("srvPDS", "password")
-        assertThrows<Exception> { ldap.result(user = authenticatedUser) }
+        val unauthorized = User("srvPDS", "password")
+        assertThrows<LDAPException> { ldap.result(user = unauthorized) }
     }
 }

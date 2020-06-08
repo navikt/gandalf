@@ -24,7 +24,7 @@ class OidcIssuerImplDifi(
         config.jwkSetURI.toString()
     } catch (e: Exception) {
         log.error(e) { "Failed to read jwks endpoint for issuer: $issuer" }
-        throw RuntimeException()
+        throw throw e
     }
 
     override fun getKeyByKeyId(keyId: String?): RSAKey? {

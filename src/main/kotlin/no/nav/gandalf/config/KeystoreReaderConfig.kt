@@ -33,7 +33,6 @@ data class KeystoreReaderConfig(
     fun decodeFile() =
         when {
             !keystoreFile.isNullOrEmpty() -> {
-                println(keystoreFile)
                 log.debug("Base64Encoded keystore: $keystoreFile")
                 writeByteArraysToFile(TARGET, Base64.getDecoder().decode(keystoreFile)).toString()
             }
