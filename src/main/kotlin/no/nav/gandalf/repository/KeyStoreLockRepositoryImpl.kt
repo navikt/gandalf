@@ -21,14 +21,14 @@ class KeyStoreLockRepositoryImpl(
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Throws(Exception::class)
     fun lockKeyStore() {
-        val lockedList = keyStoreLockRepository?.findAll()?.sortedBy { it.id == 1L }
+        val lockedList = keyStoreLockRepository?.findById(1)
         when (profile) {
             "test" -> {
                 val keyStoreLock = KeyStoreLock(1, false)
                 keyStoreLockRepository!!.save(keyStoreLock)
             }
             else -> {
-                if (lockedList.isNullOrEmpty()) {
+                if (lockedList == null || lockedList.isEmpty) {
                     throw Exception("Failed to lock keystore. KeyStoreLock is empty.")
                 }
             }

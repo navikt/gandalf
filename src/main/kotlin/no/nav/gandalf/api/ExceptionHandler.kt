@@ -1,12 +1,29 @@
 package no.nav.gandalf.api
 
-import io.prometheus.client.Counter
+import com.unboundid.ldap.sdk.LDAPException
+import no.nav.gandalf.model.ErrorDescriptiveResponse
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.context.request.WebRequest
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import java.util.*
 
-class ExceptionHandler() {
-    companion object {
-        val errorCounter: Counter = Counter.build().help("Interne feil").namespace("security-token-service")
-            .name("internal_server_errors_total").labelNames("exception").register()
+
+@SuppressWarnings("unchecked", "rawtypes")
+@ControllerAdvice
+class CustomExceptionHandler : ResponseEntityExceptionHandler() {
+
+    @ExceptionHandler(Exception::class)
+    fun handleAllExceptions(ex: Exception, request: WebRequest?): ResponseEntity<Any?> {
+        val error = ErrorDescriptiveResponse("Server Error", ex.localizedMessage)
+        return ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    // TODO
+    @ExceptionHandler(LDAPException::class)
+    fun handleLdapError(ex: LDAPException, request: WebRequest?): ResponseEntity<Any?> {
+        val error = ErrorDescriptiveResponse(INVALID_CLIENT, ex.localizedMessage)
+        return ResponseEntity(error, HttpStatus.UNAUTHORIZED)
+    }
 }
