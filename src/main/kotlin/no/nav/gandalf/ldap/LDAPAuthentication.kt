@@ -53,11 +53,10 @@ class LDAPAuthentication(
         when {
             alreadyAuthenticated -> true
             else -> try {
-                println(dn)
-                println(adSetup.ldapConnection.bind(dn, pwd).resultCode)
+                log.debug { "DN: $dn" }
+                log.debug { "P: $pwd" }
                 (adSetup.ldapConnection.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
             } catch (e: LDAPException) {
-                println(e)
                 ldapException = e
                 false
             }
