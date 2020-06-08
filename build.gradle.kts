@@ -109,6 +109,9 @@ tasks {
     create("printVersion") {
         println(project.version)
     }
+    withType<org.jmailen.gradle.kotlinter.tasks.LintTask> {
+        dependsOn("formatKotlin")
+    }
     bootJar {
         mainClassName = mainClass
     }
@@ -119,7 +122,7 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "1.8"
+            jvmTarget = "11"
         }
     }
     withType<Test> {
@@ -134,5 +137,9 @@ tasks {
         outputFormatter = "json"
         outputDir = "build/dependencyUpdates"
         reportfileName = "report"
+    }
+
+    "build" {
+        dependsOn("shadowJar")
     }
 }

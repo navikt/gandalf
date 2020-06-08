@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 
 private val log = KotlinLogging.logger { }
 
-private const val attributeName = "uid"
+private const val attributeName = "cn"
 
 @Component
 class LDAPAuthentication(

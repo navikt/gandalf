@@ -13,7 +13,7 @@ objectClass: top
 objectClass: organizationalUnit
 ou: ApplAccounts
 
-dn: uid=srvSSOLinux,ou=ServiceAccounts,dc=test,dc=local
+dn: cn=srvSSOLinux,ou=ServiceAccounts,dc=test,dc=local
 objectClass: inetOrgPerson
 objectClass: person
 objectClass: organizationalPerson
@@ -22,7 +22,7 @@ cn: srvSSOLinux
 sn: srvSSOLinux
 userPassword: password
 
-dn: uid=srvPDP,ou=ServiceAccounts,dc=test,dc=local
+dn: cn=srvPDP,ou=ServiceAccounts,dc=test,dc=local
 objectClass: inetOrgPerson
 objectClass: person
 objectClass: organizationalPerson
@@ -31,7 +31,7 @@ cn: srvPDP
 sn: srvPDP
 userPassword: password
 
-dn: uid=srvDatapower,ou=ServiceAccounts,dc=test,dc=local
+dn: cn=srvDatapower,ou=ServiceAccounts,dc=test,dc=local
 objectClass: inetOrgPerson
 objectClass: person
 objectClass: organizationalPerson
@@ -40,7 +40,7 @@ cn: srvDatapower
 sn: srvDatapower
 userPassword: password
 
-dn: uid=srvaltutkanal,ou=ApplAccounts,ou=ServiceAccounts,dc=test,dc=local
+dn: cn=srvaltutkanal,ou=ApplAccounts,ou=ServiceAccounts,dc=test,dc=local
 objectClass: inetOrgPerson
 objectClass: person
 objectClass: organizationalPerson
