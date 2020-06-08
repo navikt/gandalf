@@ -60,7 +60,6 @@ class OidcObject {
         // parse token
         signedJWT = SignedJWT.parse(oidcToken)
         val claimSet: JWTClaimsSet = signedJWT!!.jwtClaimsSet
-        println(claimSet)
 
         // get claims
         issuer = claimSet.issuer
@@ -167,7 +166,7 @@ class OidcObject {
         }
 
     private fun getSignedJWT(claimsSet: JWTClaimsSet, key: RSAKey, alg: JWSAlgorithm): SignedJWT {
-        log.info("getSignedJWT: Sign the jwt with claimSet")
+        log.info("Sign the jwt with claimSet for issuer: ${claimsSet.issuer}")
         try {
             val header: JWSHeader.Builder = JWSHeader.Builder(alg)
                     .keyID(key.keyID)
@@ -177,7 +176,7 @@ class OidcObject {
             signedJWT.sign(signer)
             return signedJWT
         } catch (e: JOSEException) {
-            log.warn("Could not sign the jwt with claimSet: $claimsSet")
+            log.error("Could not sign the jwt with claimSet: $claimsSet")
             throw RuntimeException(e)
         }
     }

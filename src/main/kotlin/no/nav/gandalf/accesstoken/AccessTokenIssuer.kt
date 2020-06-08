@@ -210,12 +210,12 @@ class AccessTokenIssuer(
     @JvmOverloads
     @Throws(Exception::class)
     fun exchangeDifiTokenToOidc(difiToken: String?, now: Date = OidcObject.toDate(ZonedDateTime.now())): SignedJWT {
-        log.info("Issuing Internal token from DIFI-token: exchangeDifiTokenToOidc")
+        log.info("Issuing a Exchange token for DIFI-Accesstoken")
         require(!(difiToken == null || difiToken.isEmpty())) { "Validation failed: OidcToken is null or empty" }
         val difiOidcObj = OidcObject(difiToken)
         val knownIssuer: OidcIssuer = knownIssuers.map { it }.singleOrNull { it.issuer == difiOidcObj.issuer }
             ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + difiOidcObj.issuer)
-        log.info("DIFI-token issuer: " + knownIssuer.issuer)
+        log.info("DIFI accessToken from issuer: " + knownIssuer.issuer)
         difiOidcObj.validate(knownIssuer, now)
 
         // issue new oidc token

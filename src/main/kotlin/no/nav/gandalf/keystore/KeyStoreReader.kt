@@ -28,8 +28,11 @@ class KeyStoreReader(
     private var keyStore: KeyStore? = null
     private var privateKey: PrivateKey? = null
     private var cert: X509Certificate? = null
-    private val keystoreFile: String?
-        get() = keystoreReaderConfig.loadKeyStoreFromBase64ToFile()
+    private var keystoreFile: String? = null
+
+    init {
+        if (keystoreFile.isNullOrEmpty()) keystoreFile = keystoreReaderConfig.loadKeyStoreFromBase64ToFile()
+    }
 
     @get:Throws(UnrecoverableKeyException::class, KeyStoreException::class, NoSuchAlgorithmException::class)
     val signingCertificate: X509Certificate?

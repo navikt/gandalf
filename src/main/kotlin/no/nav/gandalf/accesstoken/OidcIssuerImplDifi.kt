@@ -24,15 +24,14 @@ class OidcIssuerImplDifi(
         config.jwkSetURI.toString()
     } catch (e: Exception) {
         log.error(e) { "Failed to read jwks endpoint for issuer: $issuer" }
-        throw throw e
+        throw e
     }
 
     override fun getKeyByKeyId(keyId: String?): RSAKey? {
         when {
             jwkSet?.getKeyByKeyId(keyId) == null -> {
                 jwkSet = try {
-                    println(jwksUrl)
-                    JWKSet.load(URL(jwksUrl))
+                    JWKSet.load(URL(jwksUrl)).also { log.info { "Jwks endpoint: $jwksUrl validate keyid: $keyId" } }
                 } catch (e: ParseException) {
                     log.error(e) { "Failed to get keys from: $jwksUrl, by issuer : $issuer" }
                     throw IllegalStateException()
