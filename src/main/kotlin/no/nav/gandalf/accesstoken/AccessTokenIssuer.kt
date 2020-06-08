@@ -181,7 +181,7 @@ class AccessTokenIssuer(
         username: String?,
         now: Date = OidcObject.toDate(ZonedDateTime.now())
     ): String {
-        log.info("Issuing SAML: exchangeOidcToSamlToken from OIDC:$oidcToken")
+        log.info("Issuing SAML: exchangeOidcToSamlToken from OIDC")
         // validate oidc token
         val oidcObj: OidcObject = validateOidcToken(oidcToken, now)
 
