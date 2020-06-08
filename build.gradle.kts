@@ -90,7 +90,6 @@ dependencies {
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
     implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
     implementation("com.google.code.gson:gson:${Version.gson}")
-    runtimeOnly("com.h2database:h2")
 
     // test
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")
@@ -123,7 +122,7 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "11"
+            jvmTarget = "1.8"
         }
     }
     withType<Test> {
