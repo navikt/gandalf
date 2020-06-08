@@ -11,8 +11,8 @@ import no.nav.gandalf.api.metric.ApplicationMetric.exchangeDIFIOk
 import no.nav.gandalf.api.metric.ApplicationMetric.exchangeOIDCTokenOk
 import no.nav.gandalf.api.metric.ApplicationMetric.exchangeSAMLTokenOk
 import no.nav.gandalf.api.metric.ApplicationMetric.exchangeTokenNotOk
+import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.ErrorResponse
-import no.nav.gandalf.service.AccessTokenResponseService
 import no.nav.gandalf.service.ExchangeTokenService
 import org.apache.commons.codec.binary.Base64
 import org.springframework.beans.factory.annotation.Autowired
@@ -149,7 +149,7 @@ class TokenExchangeController {
             exchangeDIFIOk.inc()
             return ResponseEntity.status(HttpStatus.OK)
                 .headers(tokenHeaders)
-                .body(AccessTokenResponseService(oidcToken))
+                .body(AccessTokenResponse(oidcToken))
         } finally {
             requestTimer.observeDuration()
         }

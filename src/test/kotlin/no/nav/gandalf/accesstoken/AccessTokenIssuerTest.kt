@@ -14,8 +14,8 @@ import no.nav.gandalf.accesstoken.OidcObject.Companion.CLIENT_ORGNO_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.RESOURCETYPE_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.VERSION_CLAIM
 import no.nav.gandalf.config.LocalIssuerConfig
+import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.IdentType
-import no.nav.gandalf.service.AccessTokenResponseService
 import no.nav.gandalf.service.ExchangeTokenService
 import no.nav.gandalf.service.RSAKeyStoreService
 import no.nav.gandalf.utils.ControllerUtil
@@ -111,7 +111,7 @@ class AccessTokenIssuerTest {
         TestCase.assertEquals(jwt.getLongClaim(AUTHTIME_CLAIM) as Long, jwt.issueTime.time / 1000)
         TestCase.assertEquals((jwt.expirationTime.time - jwt.issueTime.time) / 1000, OIDC_DURATION_TIME)
         // Test response
-        val (_, token_type, expires_in) = AccessTokenResponseService(oidcToken = token).tokenResponse
+        val (_, token_type, expires_in) = AccessTokenResponse(oidcToken = token)
         TestCase.assertTrue(expires_in == OIDC_DURATION_TIME)
         TestCase.assertTrue(token_type.equals(ACCESS_TOKEN_TYPE, ignoreCase = true))
         // test validation

@@ -18,8 +18,8 @@ import no.nav.gandalf.api.metric.ApplicationMetric.tokenNotOk
 import no.nav.gandalf.api.metric.ApplicationMetric.tokenOK
 import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.AccessToken2Response
+import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.User
-import no.nav.gandalf.service.AccessTokenResponseService
 import no.nav.gandalf.service.ExchangeTokenService
 import no.nav.gandalf.util.authenticate
 import org.springframework.beans.factory.annotation.Autowired
@@ -68,7 +68,7 @@ class AccessTokenController(
                     }
                     tokenOK.inc()
                     return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders)
-                        .body(AccessTokenResponseService(oidcToken!!).tokenResponse)
+                        .body(AccessTokenResponse(oidcToken!!))
                 }
             }
         } finally {
