@@ -20,7 +20,7 @@ class OidcIssuerImpl(
         when {
             jwkSet == null || jwkSet!!.getKeyByKeyId(keyId) == null -> {
                 jwkSet = try {
-                    JWKSet.load(URL(jwksUrl))
+                    JWKSet.load(URL(jwksUrl)).also { log.info { "Load jwks from: $jwksUrl" } }
                 } catch (e: ParseException) {
                     log.error(e) { "Failed to get keys from: $jwksUrl, by issuer : $issuer" }
                     throw IllegalStateException()

@@ -1,29 +1,34 @@
 package no.nav.gandalf.repository
 
-import javax.persistence.LockModeType
-import javax.transaction.Transactional
 import no.nav.gandalf.domain.KeyStoreLock
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.jpa.repository.Lock
 import org.springframework.stereotype.Component
+import javax.persistence.LockModeType
+import javax.transaction.Transactional
 
 @Transactional
 @Component
-class KeyStoreLockRepositoryImpl {
+class KeyStoreLockRepositoryImpl(
+    @Value("\${spring.profiles.active}")
+    val profile: String
+) {
 
-    @Autowired var keyStoreLockRepository: KeyStoreLockRepository? = null
+    @Autowired
+    var keyStoreLockRepository: KeyStoreLockRepository? = null
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Throws(Exception::class)
-    fun lockKeyStore(test: Boolean) {
-        val lockedList = keyStoreLockRepository!!.findAll().sortedBy { it.id == 1L }
-        when {
-            lockedList.isEmpty() -> {
+    fun lockKeyStore() {
+        val lockedList = keyStoreLockRepository?.findAll()?.sortedBy { it.id == 1L }
+        when (profile) {
+            "test" -> {
                 val keyStoreLock = KeyStoreLock(1, false)
                 keyStoreLockRepository!!.save(keyStoreLock)
             }
             else -> {
-                if (lockedList.isEmpty()) {
+                if (lockedList.isNullOrEmpty()) {
                     throw Exception("Failed to lock keystore. KeyStoreLock is empty.")
                 }
             }

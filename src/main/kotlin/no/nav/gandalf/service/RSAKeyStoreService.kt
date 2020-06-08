@@ -61,15 +61,14 @@ class RSAKeyStoreService {
     val currentDBKeyUpdateIfNeeded: RSAKeyStore
         get() {
             // lock keystore before read, in case an update of keystore is needed
-            keyStoreRepositoryImpl.lockKeyStore(false)
-            val keyList: List<RSAKeyStore> = rsaKeyRepositoryImpl.findAllOrdered()
-            if (keyList.isNotEmpty() && !keyList[0].hasExpired()) {
+            keyStoreRepositoryImpl.lockKeyStore()
+            val keyList: List<RSAKeyStore>? = rsaKeyRepositoryImpl.findAllOrdered()
+            if (!keyList.isNullOrEmpty() && !keyList[0].hasExpired()) {
                 return keyList[0]
             }
-            println(keyList.size >= RSAKeyStoreRepositoryImpl.minNoofKeys)
             // newest key has expired, update needed
             // delete outdated keys
-            if (keyList.size >= RSAKeyStoreRepositoryImpl.minNoofKeys) {
+            if (!keyList.isNullOrEmpty() && keyList.size >= RSAKeyStoreRepositoryImpl.minNoofKeys) {
                 for (i in keyList.size - 1 downTo RSAKeyStoreRepositoryImpl.minNoofKeys - 1) { // evt slett bare oldest hvis man rensker db før prodsetting
                     if (keyList[i].expires.plusSeconds(2 * RSAKeyStoreRepositoryImpl.keyRotationTime).isAfter(LocalDateTime.now())) {
                         break
