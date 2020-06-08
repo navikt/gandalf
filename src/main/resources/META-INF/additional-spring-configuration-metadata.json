@@ -1,8 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "application.oidc.issuer",
-      "type": "java.lang.String",
-      "description": "Description for application.oidc.issuer."
-  }
-] }
