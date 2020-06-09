@@ -38,16 +38,16 @@ plugins {
     id("org.springframework.boot") version "2.3.0.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
-    id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
+    // id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("com.github.johnrengelman.shadow") version "5.2.0"
 }
 
-allOpen {
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.Embeddable")
-    annotation("javax.persistence.MappedSuperclass")
-}
+// allOpen {
+//     annotation("javax.persistence.Entity")
+//     annotation("javax.persistence.Embeddable")
+//     annotation("javax.persistence.MappedSuperclass")
+// }
 
 application {
     mainClassName = "no.nav.gandalf.GandalfApplication"
@@ -60,25 +60,18 @@ repositories {
     jcenter()
 }
 
-// configurations {
-//     all {
-//         exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
-//     }
-// }
-
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    // implementation("org.springframework.ldap:spring-ldap-core")
-    // implementation("org.springframework.security:spring-security-ldap")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("javax.inject:javax.inject:1")
     implementation("javax.validation:validation-api:${Version.javax}")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Version.jackson}")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${Version.jackson}")
     implementation("org.json:json:${Version.json}")
     implementation("org.apache.httpcomponents:httpclient:${Version.apacheHttp}")
     implementation("io.github.microutils:kotlin-logging:${Version.kotlinLoggin}")
@@ -91,7 +84,6 @@ dependencies {
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
     // implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
     implementation("io.prometheus:simpleclient_common:${Version.prometheus}")
-    // implementation("io.prometheus:simpleclient_hotspot:${Version.prometheus}")
     implementation("com.google.code.gson:gson:${Version.gson}")
 
 
@@ -134,15 +126,6 @@ tasks {
             events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         }
     }
-    withType<DependencyUpdatesTask> {
-
-        // optional parameters
-        checkForGradleUpdate = true
-        outputFormatter = "json"
-        outputDir = "build/dependencyUpdates"
-        reportfileName = "report"
-    }
-
     "build" {
         dependsOn("shadowJar")
     }
