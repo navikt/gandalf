@@ -70,6 +70,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.ldap:spring-ldap-core")
     implementation("org.springframework.security:spring-security-ldap")
@@ -89,8 +90,6 @@ dependencies {
     runtimeOnly("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
     implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
-    implementation("io.prometheus:simpleclient_common:${Version.prometheus}")
-    implementation("io.prometheus:simpleclient_hotspot:${Version.prometheus}")
     implementation("com.google.code.gson:gson:${Version.gson}")
 
 

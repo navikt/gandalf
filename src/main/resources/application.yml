@@ -51,5 +51,5 @@ management:
   endpoints.web:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
-  security.enabled: false
+    base-path: /
 
