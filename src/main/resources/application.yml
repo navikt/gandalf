@@ -52,4 +52,5 @@ management:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
     base-path: /
+  health.defaults.enabled: false
 

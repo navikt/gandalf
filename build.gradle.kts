@@ -1,6 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 group = "no.nav"
 version = file("version.txt").readText().trim()
@@ -42,12 +41,6 @@ plugins {
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("com.github.johnrengelman.shadow") version "5.2.0"
 }
-
-// allOpen {
-//     annotation("javax.persistence.Entity")
-//     annotation("javax.persistence.Embeddable")
-//     annotation("javax.persistence.MappedSuperclass")
-// }
 
 application {
     mainClassName = "no.nav.gandalf.GandalfApplication"
