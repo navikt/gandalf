@@ -1,0 +1,55 @@
+server:
+  port: 8080
+# Spring
+spring:
+  profiles:
+    active: remote
+  # Database
+  datasource:
+    url: <FROM ENV. VARS>
+    username: <FROM ENV. VARS>
+    password: <FROM ENV. VARS>
+    hikari:
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      maximum-pool-size: 15
+  # Ldap
+  ldap:
+    url: <FROM ENV. VARS>
+    base: dc=test,dc=local
+    port: <FROM ENV. VARS>
+    timeout: 3000
+# Application
+application:
+  oidc.issuer: <FROM ENV. VARS>
+  service:
+    username: <FROM ENV. VARS>
+    passoword: <FROM ENV. VARS>
+  # External
+  external.issuer:
+    openam: <FROM ENV. VARS>
+    azuread: <FROM ENV. VARS>
+    configuration.difi:
+      oidc: <FROM ENV. VARS>
+      maskinporten: <FROM ENV. VARS>
+  jwks:
+    endpoint:
+      openam: <FROM ENV. VARS>
+      azuread: <FROM ENV. VARS>
+# Truststore & KeyStore
+nav:
+  truststore:
+    path: <FROM ENV. VARS>
+    password: <FROM ENV. VARS>
+  keystore:
+    file: <FROM ENV. VARS>
+    password: <FROM ENV. VARS>
+# Prometheus
+management:
+  endpoint.prometheus.enabled: true
+  endpoints.web:
+    exposure.include: prometheus
+    path-mapping.prometheus: /prometheus
+  security.enabled: false
+
