@@ -34,7 +34,7 @@ vault-paths:
     mountPath: /secrets/serviceuser
   - kvPath: oracle/data/dev/creds/securitytokenservice_q1-user
     mountPath: /secrets/database/credentials
-  - kvPath: oracle/data/dev/config/securitytokenservice_q1-user
+  - kvPath: oracle/data/dev/config/securitytokenservice_q1
     mountPath: /secrets/database/config
   - kvPath: kv/preprod/fss/security-token-service/default
     mountPath: /var/run/secrets/nais.io/vault
