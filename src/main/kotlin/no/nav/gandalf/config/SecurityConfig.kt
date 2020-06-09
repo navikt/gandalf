@@ -33,13 +33,14 @@ class SecurityConfig(
             .antMatchers(
                 "/rest/v1/sts/token2",
                 "/rest/v1/sts/ws/samltoken",
+                // Disse to over bruker ldap for auth. men athentesering gjøres seinere.
                 "/.well-known/openid-configuration",
                 "/rest/v1/sts/.well-known/openid-configuration",
                 "/jwks",
                 "/rest/v1/sts/jwks",
                 "/isAlive",
                 "/isReady",
-                "/actuator/**"
+                "/prometheus"
             ).permitAll()
             .and()
             .authorizeRequests().anyRequest().authenticated()

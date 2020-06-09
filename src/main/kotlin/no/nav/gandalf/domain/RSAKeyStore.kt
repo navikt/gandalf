@@ -55,6 +55,7 @@ data class RSAKeyStore(
         return now.isAfter(expires)
     }
 
+    // Er denne i de heltatt i bruk?
     companion object {
         fun getNewFormat(rsaKey: String?): String? {
             if (rsaKey!!.contains("SIGNATURE")) { // old format

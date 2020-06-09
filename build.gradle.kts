@@ -21,6 +21,7 @@ object Version {
     const val jackson = "2.11.0"
     const val unboundid = "5.1.0"
     const val micrometer = "1.5.1"
+    const val prometheus = "0.9.0"
     const val gson = "2.8.6"
     const val javax = "2.0.1.Final"
 }
@@ -69,7 +70,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    // implementation("org.springframework.boot:spring-boot-starter-actuator")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.ldap:spring-ldap-core")
     implementation("org.springframework.security:spring-security-ldap")
@@ -89,7 +89,10 @@ dependencies {
     runtimeOnly("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
     implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
+    implementation("io.prometheus:simpleclient_common:${Version.prometheus}")
+    implementation("io.prometheus:simpleclient_hotspot:${Version.prometheus}")
     implementation("com.google.code.gson:gson:${Version.gson}")
+
 
     // test
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")

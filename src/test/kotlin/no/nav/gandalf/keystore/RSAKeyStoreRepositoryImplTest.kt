@@ -1,7 +1,6 @@
 package no.nav.gandalf.keystore
 
 import com.nimbusds.jose.JOSEException
-import com.nimbusds.jose.jwk.JWK
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
@@ -46,11 +45,10 @@ class RSAKeyStoreRepositoryImplTest {
     @Test
     @Throws(JSONException::class, NoSuchAlgorithmException::class)
     fun `Read Old And New Key`() {
-        val rkList: MutableList<JWK> = ArrayList()
-        rkList.add(RSAKey.parse(RSAKeyStore.getNewFormat(getOldDBKey())))
-        rkList.add(RSAKey.parse(RSAKeyStore.getNewFormat(getNewDBKey())))
-        val jwks = JWKSet(rkList)
-        println("jwks: " + jwks.toJSONObject())
+        val oldKey = JWKSet((RSAKey.parse(RSAKeyStore.getNewFormat(getOldDBKey()))))
+        val newKey = JWKSet((RSAKey.parse(RSAKeyStore.getNewFormat(getNewDBKey()))))
+        println(oldKey.toJSONObject())
+        println(newKey.toJSONObject())
     }
 
     private fun getOldDBKey(): String? {
