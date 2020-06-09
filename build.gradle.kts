@@ -75,7 +75,7 @@ dependencies {
     implementation("org.hibernate:hibernate-core:${Version.hibernate}")
     runtimeOnly("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
-    // implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
+    implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
     implementation("io.prometheus:simpleclient_common:${Version.prometheus}")
     implementation("com.google.code.gson:gson:${Version.gson}")
 

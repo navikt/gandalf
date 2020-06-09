@@ -47,10 +47,9 @@ nav:
     password: <FROM ENV. VARS>
 # Prometheus
 management:
+  health.defaults.enabled: false
   endpoint.prometheus.enabled: true
   endpoints.web:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
-    base-path: /
-  health.defaults.enabled: false
 
