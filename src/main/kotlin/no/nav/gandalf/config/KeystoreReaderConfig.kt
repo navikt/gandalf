@@ -2,7 +2,7 @@ package no.nav.gandalf.config
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
+import org.springframework.context.annotation.Configuration
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Base64
@@ -10,7 +10,7 @@ import java.util.Base64
 private val log = KotlinLogging.logger { }
 private const val TARGET = "keystore.file"
 
-@Component
+@Configuration
 data class KeystoreReaderConfig(
     @Value("\${nav.keystore.file}")
     val keystoreFile: String?,

@@ -10,7 +10,7 @@ object Version {
     const val kotlinLoggin = "1.7.9"
     const val logbackStash = "6.4"
     const val logback = "1.2.3"
-    const val nimbus = "8.7"
+    const val nimbus = "8.8"
     const val snake = "1.26"
     const val hibernate = "5.4.14.Final"
     const val json = "20200518"
