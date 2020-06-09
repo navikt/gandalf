@@ -60,20 +60,20 @@ repositories {
     jcenter()
 }
 
-configurations {
-    all {
-        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
-    }
-}
+// configurations {
+//     all {
+//         exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
+//     }
+// }
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
-    // implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    implementation("org.springframework.ldap:spring-ldap-core")
-    implementation("org.springframework.security:spring-security-ldap")
+    // implementation("org.springframework.ldap:spring-ldap-core")
+    // implementation("org.springframework.security:spring-security-ldap")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("javax.inject:javax.inject:1")
@@ -89,9 +89,9 @@ dependencies {
     implementation("org.hibernate:hibernate-core:${Version.hibernate}")
     runtimeOnly("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
-    implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
+    // implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
     implementation("io.prometheus:simpleclient_common:${Version.prometheus}")
-    implementation("io.prometheus:simpleclient_hotspot:${Version.prometheus}")
+    // implementation("io.prometheus:simpleclient_hotspot:${Version.prometheus}")
     implementation("com.google.code.gson:gson:${Version.gson}")
 
 
