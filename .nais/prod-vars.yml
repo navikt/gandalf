@@ -4,8 +4,26 @@ name: security-token-service
 ingresses:
   - https://security-token-service.nais.adeo.no
 envs:
+  - name: SPRING_PROFILES_ACTIVE
+    value: remote
   - name: APPLICATION_OIDC_ISSUER
     value: https://security-token-service.nais.adeo.no
+  - name: APPLICATION_EXTERNAL_ISSUER_OPENAM
+    value: https://isso.adeo.no:443/isso/oauth2
+  - name: APPLICATION_JWKS_ENDPOINT_OPENAM
+    value: https://isso.adeo.no/isso/oauth2/connect/jwk_uri
+  - name: APPLICATION_EXTERNAL_ISSUER_AZUREAD
+    value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0
+  - name: APPLICATION_JWKS_ENDPOINT_AZUREAD
+    value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/discovery/v2.0/keys
+  - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_OIDC
+    value: https://oidc.difi.no/idporten-oidc-provider/.well-known/openid-configuration
+  - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_MASKINPORTEN
+    value: https://maskinporten.no/.well-known/oauth-authorization-server
+  - name: SPRING_LDAP_URL
+    value: ldapgw.adeo.no
+  - name: SPRING_LDAP_PORT
+    value: 636
   - name: SPRING_LDAP_BASE
     value: dc=adeo,dc=no
 replicas:

@@ -1,17 +1,17 @@
-namespace: default
+namespace: t4
 team: integrasjon
 name: security-token-service
 ingresses:
-  - https://security-token-service.nais.preprod.local
+  - https://security-token-service-t4.nais.preprod.local
 envs:
   - name: SPRING_PROFILES_ACTIVE
     value: remote
   - name: APPLICATION_OIDC_ISSUER
-    value: https://security-token-service.nais.preprod.local
+    value: https://security-token-service-t4.nais.preprod.local
   - name: APPLICATION_EXTERNAL_ISSUER_OPENAM
-    value: https://isso-q.adeo.no:443/isso/oauth2
+    value: https://isso-t.adeo.no:443/isso/oauth2
   - name: APPLICATION_JWKS_ENDPOINT_OPENAM
-    value: https://isso-q.adeo.no/isso/oauth2/connect/jwk_uri
+    value: https://isso-t.adeo.no/isso/oauth2/connect/jwk_uri
   - name: APPLICATION_EXTERNAL_ISSUER_AZUREAD
     value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0
   - name: APPLICATION_JWKS_ENDPOINT_AZUREAD
@@ -21,20 +21,20 @@ envs:
   - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_MASKINPORTEN
     value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
   - name: SPRING_LDAP_URL
-    value: ldapgw.preprod.local
+    value: ldapgw.test.local
   - name: SPRING_LDAP_PORT
     value: 636
   - name: SPRING_LDAP_BASE
-    value: dc=preprod,dc=local
+    value: DC=test,DC=local
 replicas:
-  min: 2
-  max: 2
+  min: 1
+  max: 1
 vault-paths:
-  - kvPath: serviceuser/data/dev/srvsecurity-token-service
+  - kvPath: serviceuser/data/test/srvsecurity-token-service
     mountPath: /secrets/serviceuser
-  - kvPath: oracle/data/dev/creds/securitytokenservice_q1-user
+  - kvPath: oracle/data/dev/creds/securitytokenservice_t4-user
     mountPath: /secrets/database/credentials
-  - kvPath: oracle/data/dev/config/securitytokenservice_q1
+  - kvPath: oracle/data/dev/config/securitytokenservice_t4
     mountPath: /secrets/database/config
-  - kvPath: kv/preprod/fss/security-token-service/default
+  - kvPath: kv/preprod/fss/security-token-service/t4
     mountPath: /var/run/secrets/nais.io/vault
