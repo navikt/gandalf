@@ -2,8 +2,6 @@ server:
   port: 8080
 # Spring
 spring:
-  profiles:
-    active: remote
   # Database
   datasource:
     url: <FROM ENV. VARS>

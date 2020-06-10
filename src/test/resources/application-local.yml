@@ -1,0 +1,47 @@
+server:
+  port: 8080
+# Only in Test
+logging:
+  level:
+    org.springframework.security: DEBUG
+# Spring
+spring:
+  # Database
+  datasource:
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;Mode=Oracle
+    driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: true
+  # Ldap
+  ldap:
+    url: localhost
+    base: dc=test,dc=local
+    port: 11389
+    timeout: 1000
+# Application
+application:
+  oidc.issuer: https://security-token-service.nais.preprod.local
+  service:
+    username: srvsecurity-token-
+    passoword: password
+  # External
+  external:
+    issuer:
+      openam: https://isso-t.adeo.no:443/isso/oauth2
+      azuread: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0
+    configuration:
+      difi:
+        oidc: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
+        maskinporten: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+  jwks:
+    endpoint:
+      openam: http://localhost:8888/isso/oauth2/connect/jwk_uri
+      azuread:
+# Truststore & KeyStore
+nav:
+  truststore:
+    path: src/test/resources/truststore.jks
+    password: changeit
+  keystore:
+    file: src/test/resources/keystore.jks
+    password: testkeystore1234
