@@ -21,13 +21,16 @@ data class KeystoreReaderConfig(
 ) {
 
     fun loadKeyStoreFromBase64ToFile() =
-        when {
-            profile != "test" -> {
-                log.info("Loading remote keystore")
+        when (profile) {
+            "test", "local" -> {
+                log.info("Loading $profile keystore")
+                keystoreFile!!
+            }
+            else -> {
+                log.info("Loading $profile keystore")
                 System.setProperty("javax.net.ssl.keyStoreType", "JKS")
                 decodeFile()
             }
-            else -> keystoreFile!!
         }
 
     fun decodeFile() =

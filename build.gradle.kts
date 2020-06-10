@@ -23,6 +23,7 @@ object Version {
     const val prometheus = "0.9.0"
     const val gson = "2.8.6"
     const val javax = "2.0.1.Final"
+    const val mockOAuth2Server = "0.1.34"
 }
 
 val mainClass = "no.nav.gandalf.GandalfApplication"
@@ -78,8 +79,8 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:${Version.prometheus}")
     implementation("com.google.code.gson:gson:${Version.gson}")
 
-
     // test
+    testImplementation("no.nav.security:mock-oauth2-server:${Version.mockOAuth2Server}")
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")
     testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {

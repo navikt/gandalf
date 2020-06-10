@@ -31,11 +31,11 @@ application:
       azuread: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0
     configuration:
       difi:
-        oidc: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
-        maskinporten: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+        oidc: http:localhost:1113/difioidc
+        maskinporten: http:localhost:1113/difimaskinporten
   jwks:
     endpoint:
-      openam: http://localhost:8888/isso/oauth2/connect/jwk_uri
+      openam: http:localhost:1113/openam
       azuread:
 # Truststore & KeyStore
 nav:
@@ -45,3 +45,12 @@ nav:
   keystore:
     file: src/test/resources/keystore.jks
     password: testkeystore1234
+
+management:
+  health.defaults.enabled: false
+  endpoint.prometheus.enabled: true
+  endpoints.web:
+    exposure.include: prometheus
+    path-mapping.prometheus: /prometheus
+    base-path: /
+debug: true
