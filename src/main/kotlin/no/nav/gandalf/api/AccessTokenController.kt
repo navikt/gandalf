@@ -56,10 +56,11 @@ class AccessTokenController(
                     return badRequestResponse("grant_type = $grantType, scope = $scope")
                 }
                 else -> {
-                    val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
-                        .also {
-                            tokenNotOk.inc()
-                        }
+                    val user = requireNotNull(userDetails()) {
+                        return unauthorizedResponse(Throwable(), "Unauthorized")
+                    }.also {
+                        tokenNotOk.inc()
+                    }
                     val oidcToken = try {
                         issuer.issueToken(user)
                     } catch (e: Throwable) {
@@ -118,9 +119,8 @@ class AccessTokenController(
     fun getSAMLToken(): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = requestLatencySAMLToken.startTimer()
         try {
-            val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized").also {
-                samlTokenNotOk.inc()
-            }
+            val user = requireNotNull(userDetails()) { return unauthorizedResponse(Throwable(), "Unauthorized") }
+                .also { samlTokenNotOk.inc() }
             log.debug("Issue SAML token for: $user")
             val samlToken = try {
                 issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
