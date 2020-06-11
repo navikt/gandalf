@@ -23,7 +23,7 @@ class KeyStoreLockRepositoryImpl(
     fun lockKeyStore() {
         val lockedList = keyStoreLockRepository?.findById(1)
         when (profile) {
-            "test" -> {
+            "test", "local" -> {
                 val keyStoreLock = KeyStoreLock(1, false)
                 keyStoreLockRepository!!.save(keyStoreLock)
             }

@@ -18,7 +18,6 @@ internal const val EXCHANGE_DIFI = "$BASE/token/exchangedifi"
 internal const val SAML_TOKEN_VALIDATE = "$BASE/samltoken/validate"
 internal const val OIDC_TOKEN_VALIDATE = "$BASE/token/validate"
 internal const val WS_SAMLTOKEN = "$BASE/ws/samltoken"
-internal const val PORT = 8888
 
 internal const val GRANT_TYPE = "grant_type"
 internal const val SCOPE = "scope"
