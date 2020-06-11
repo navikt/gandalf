@@ -4,10 +4,7 @@ server:
 logging:
   level:
     org.springframework.security: DEBUG
-# Spring
-spring:
-  profiles:
-    active: test
+  # Spring
   # Database
   datasource:
     url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;Mode=Oracle

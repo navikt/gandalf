@@ -45,14 +45,10 @@ class TokenExchangeController {
         try {
             var copyReqTokenType = reqTokenType
             log.debug("Exchange $subTokenType to $copyReqTokenType")
-            val user = userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized").also {
+            val user = requireNotNull(userDetails()) { unauthorizedResponse(Throwable(), "Unauthorized") }.also {
                 exchangeTokenNotOk.inc()
             }
-            if (grantType.isNullOrEmpty() || !grantType.equals(
-                    "urn:ietf:params:oauth:grant-type:token-exchange",
-                    ignoreCase = true
-                )
-            ) {
+            if (grantType.isNullOrEmpty() || grantType != "urn:ietf:params:oauth:grant-type:token-exchange") {
                 exchangeTokenNotOk.inc()
                 return badRequestResponse("Unknown grant_type")
             }
@@ -61,7 +57,7 @@ class TokenExchangeController {
                 return badRequestResponse("Missing subject_token in request")
             }
             when {
-                subTokenType.equals("urn:ietf:params:oauth:token-type:saml2", ignoreCase = true) -> {
+                subTokenType.equals("urn:ietf:params:oauth:token-type:saml2") -> {
                     // exchange SAML token to OIDC token
                     log.debug("Exchange SAML token to OIDC")
                     val oidcToken: SignedJWT?
@@ -78,11 +74,8 @@ class TokenExchangeController {
                         .headers(tokenHeaders)
                         .body(ExchangeTokenService().getResponseFrom(oidcToken!!))
                 }
-                subTokenType.equals("urn:ietf:params:oauth:token-type:access_token", ignoreCase = true)
-                    && (copyReqTokenType == null || copyReqTokenType.equals(
-                    "urn:ietf:params:oauth:token-type:saml2",
-                    ignoreCase = true
-                )) -> {
+                subTokenType.equals("urn:ietf:params:oauth:token-type:access_token")
+                    && (copyReqTokenType == null || copyReqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
                     // exchange OIDC token to SAML token
                     log.debug("Exchange OIDC to SAML token")
                     if (copyReqTokenType == null) {
