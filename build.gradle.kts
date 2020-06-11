@@ -1,9 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-group = "no.nav"
-version = file("version.txt").readText().trim()
-
 object Version {
     const val apacheHttp = "4.5.12"
     const val gradleVersion = "6.5"
@@ -40,6 +37,16 @@ plugins {
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     id("com.github.johnrengelman.shadow") version "5.2.0"
+    id ("net.researchgate.release") version "2.8.1"
+}
+
+// To deploy: ./gradlew release -Prelease.useAutomaticVersion=true -Prelease.releaseVersion=0.0.1
+release {
+    tagTemplate = "'${name}-${version}'"
+    snapshotSuffix = "-SNAPSHOT"
+    pushReleaseVersionBranch = "master"
+    versionPropertyFile = "gradle.properties"
+    buildTasks = mutableListOf("build")
 }
 
 application {
