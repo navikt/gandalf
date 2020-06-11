@@ -5,8 +5,10 @@ import no.nav.gandalf.utils.ControllerUtil
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
+import org.springframework.context.annotation.Profile
 
 @SpringBootApplication
+@Profile("local")
 class GandalfApplicationLocal {
 
     companion object {
@@ -16,11 +18,7 @@ class GandalfApplicationLocal {
             val mockOAuth2Server = MockOAuth2Server()
             mockOAuth2Server.start(port = 1113)
             controllerUtil.runLdap(InMemoryLdap())
-            SpringApplicationBuilder(GandalfApplication::class.java)
-                .profiles("local")
-                .build()
-                .run(*args)
-            // runApplication<GandalfApplicationLocal>(*args)
+            SpringApplicationBuilder(GandalfApplication::class.java).run(*args)
         }
     }
 }
