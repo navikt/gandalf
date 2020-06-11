@@ -53,4 +53,5 @@ management:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
     base-path: /
-debug: true
+
+logging.config: classpath:logback-spring.xml
