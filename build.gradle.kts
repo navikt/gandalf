@@ -5,25 +5,25 @@ group = "no.nav"
 version = file("version.txt").readText().trim()
 
 object Version {
-    const val gradleVersion = "6.5"
-    const val kotlinLoggin = "1.7.9"
-    const val logbackStash = "6.4"
-    const val logback = "1.2.3"
-    const val nimbus = "8.8"
-    const val snake = "1.26"
-    const val hibernate = "5.4.14.Final"
-    const val json = "20200518"
     const val apacheHttp = "4.5.12"
-    const val wiremock = "2.26.3"
-    const val oracle = "19.3.0.0"
-    const val wiremockCloud = "2.2.3.RELEASE"
-    const val jackson = "2.11.0"
-    const val unboundid = "5.1.0"
-    const val micrometer = "1.5.1"
-    const val prometheus = "0.9.0"
+    const val gradleVersion = "6.5"
     const val gson = "2.8.6"
+    const val hibernate = "5.4.14.Final"
+    const val jackson = "2.11.0"
     const val javax = "2.0.1.Final"
+    const val json = "20200518"
+    const val kotlinLoggin = "1.7.9"
+    const val logback = "1.2.3"
+    const val logbackStash = "6.4"
+    const val micrometer = "1.5.1"
     const val mockOAuth2Server = "0.1.34"
+    const val nimbus = "8.8"
+    const val oracle = "19.3.0.0"
+    const val prometheus = "0.9.0"
+    const val snake = "1.26"
+    const val unboundid = "5.1.0"
+    const val wiremock = "2.26.3"
+    const val wiremockCloud = "2.2.3.RELEASE"
 }
 
 val mainClass = "no.nav.gandalf.GandalfApplication"
@@ -54,36 +54,36 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-tomcat")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     // annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("javax.inject:javax.inject:1")
-    implementation("javax.validation:validation-api:${Version.javax}")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Version.jackson}")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${Version.jackson}")
-    implementation("org.json:json:${Version.json}")
-    implementation("org.apache.httpcomponents:httpclient:${Version.apacheHttp}")
-    implementation("io.github.microutils:kotlin-logging:${Version.kotlinLoggin}")
     implementation("ch.qos.logback:logback-classic:${Version.logback}")
-    implementation("net.logstash.logback:logstash-logback-encoder:${Version.logbackStash}")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${Version.jackson}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Version.jackson}")
+    implementation("com.google.code.gson:gson:${Version.gson}")
     implementation("com.nimbusds:oauth2-oidc-sdk:${Version.nimbus}")
-    implementation("org.yaml:snakeyaml:${Version.snake}")
-    implementation("org.hibernate:hibernate-core:${Version.hibernate}")
-    runtimeOnly("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
+    implementation("io.github.microutils:kotlin-logging:${Version.kotlinLoggin}")
     implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
     implementation("io.prometheus:simpleclient_common:${Version.prometheus}")
-    implementation("com.google.code.gson:gson:${Version.gson}")
+    implementation("javax.inject:javax.inject:1")
+    implementation("javax.validation:validation-api:${Version.javax}")
+    implementation("net.logstash.logback:logstash-logback-encoder:${Version.logbackStash}")
+    implementation("org.apache.httpcomponents:httpclient:${Version.apacheHttp}")
+    implementation("org.hibernate:hibernate-core:${Version.hibernate}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.json:json:${Version.json}")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-tomcat")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.yaml:snakeyaml:${Version.snake}")
+    runtimeOnly("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
 
     // test
+    testImplementation("com.h2database:h2")
     testImplementation("no.nav.security:mock-oauth2-server:${Version.mockOAuth2Server}")
     testImplementation("org.hibernate:hibernate-testing:${Version.hibernate}")
-    testImplementation("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "com.vaadin.external.google", module = "android-json")
         exclude(module = "junit")
