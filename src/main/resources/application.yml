@@ -53,3 +53,4 @@ management:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
     base-path: /
+logging.config: classpath:logback-remote.xml
