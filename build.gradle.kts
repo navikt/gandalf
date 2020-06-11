@@ -12,12 +12,12 @@ object Version {
     const val jackson = "2.11.0"
     const val javax = "2.0.1.Final"
     const val json = "20200518"
-    const val kotlinLoggin = "1.7.9"
+    const val kotlinLoggin = "1.7.10"
     const val logback = "1.2.3"
     const val logbackStash = "6.4"
     const val micrometer = "1.5.1"
     const val mockOAuth2Server = "0.1.34"
-    const val nimbus = "8.8"
+    const val nimbus = "8.9"
     const val oracle = "19.3.0.0"
     const val prometheus = "0.9.0"
     const val snake = "1.26"
@@ -33,7 +33,7 @@ plugins {
     java
     val kotlinVersion = "1.3.72"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jmailen.kotlinter") version "2.3.2"
+    id("org.jmailen.kotlinter") version "2.4.0"
     id("com.github.ben-manes.versions") version "0.28.0"
     id("org.springframework.boot") version "2.3.0.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
@@ -54,7 +54,6 @@ repositories {
 }
 
 dependencies {
-    // annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("ch.qos.logback:logback-classic:${Version.logback}")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${Version.jackson}")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${Version.jackson}")
@@ -63,7 +62,6 @@ dependencies {
     implementation("com.unboundid:unboundid-ldapsdk:${Version.unboundid}")
     implementation("io.github.microutils:kotlin-logging:${Version.kotlinLoggin}")
     implementation("io.micrometer:micrometer-registry-prometheus:${Version.micrometer}")
-    implementation("io.prometheus:simpleclient_common:${Version.prometheus}")
     implementation("javax.inject:javax.inject:1")
     implementation("javax.validation:validation-api:${Version.javax}")
     implementation("net.logstash.logback:logstash-logback-encoder:${Version.logbackStash}")
@@ -75,7 +73,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-tomcat")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.yaml:snakeyaml:${Version.snake}")
     runtimeOnly("com.oracle.ojdbc:ojdbc8:${Version.oracle}")
@@ -120,7 +117,7 @@ tasks {
             events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         }
     }
-    "build" {
-        dependsOn("shadowJar")
-    }
+    //  "build" {
+    //      dependsOn("shadowJar")
+    //  }
 }

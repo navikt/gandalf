@@ -1,6 +1,5 @@
 package no.nav.gandalf.api
 
-import io.prometheus.client.Counter
 import mu.KotlinLogging
 import no.nav.gandalf.model.ErrorDescriptiveResponse
 import org.springframework.http.HttpHeaders
