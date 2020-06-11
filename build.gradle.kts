@@ -61,7 +61,7 @@ dependencies {
     }
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    // annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("javax.inject:javax.inject:1")
