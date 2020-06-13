@@ -25,9 +25,11 @@ data class KeyStoreLock(
 
     private fun setLocked(locked: Boolean) {
         this.locked =
-                (when {
+            (
+                when {
                     locked -> 1
                     else -> 0
-                }).toLong()
+                }
+                ).toLong()
     }
 }

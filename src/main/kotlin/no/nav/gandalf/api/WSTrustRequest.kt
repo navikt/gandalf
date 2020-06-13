@@ -39,13 +39,22 @@ class WSTrustRequest(
 ) {
 
     val isIssueSamlFromUNT: Boolean
-        get() = (((reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) &&
-            (onBehalfOf == null || onBehalfOf!!.isEmpty())))
+        get() = (
+            (
+                (reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) &&
+                    (onBehalfOf == null || onBehalfOf!!.isEmpty())
+                )
+            )
 
     val isExchangeOidcToSaml: Boolean
         get() {
-            return (((reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) && (
-                onBehalfOf != null) && !onBehalfOf!!.isEmpty()))
+            return (
+                (
+                    (reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) && (
+                        onBehalfOf != null
+                        ) && !onBehalfOf!!.isEmpty()
+                    )
+                )
         }
 
     val isIssue: Boolean
@@ -123,26 +132,28 @@ class WSTrustRequest(
     }
 
     private fun getResponse(samlToken: String, issueInstant: ZonedDateTime, notOnOrAfter: ZonedDateTime) =
-        ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
-            "<soapenv:Envelope xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n" +
-            "<soapenv:Header>\r\n" + // "<wsa:MessageID>urn:uuid:816f058a-62ca-4b27-9123-c654d35d7fab</wsa:MessageID>\r\n" +
-            "<wsa:Action>http://docs.oasis-open.org/ws-sx/ws-trust/200512/RSTRC/IssueFinal</wsa:Action>\r\n" +
-            "<wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>\r\n" +
-            "</soapenv:Header>\r\n" +
-            "<soapenv:Body>\r\n" +
-            "<wst:RequestSecurityTokenResponseCollection xmlns:wst=\"http://docs.oasis-open.org/ws-sx/ws-trust/200512\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\r\n" +
-            "<wst:RequestSecurityTokenResponse Context=\"supportLater\">\r\n" +
-            "<wst:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0</wst:TokenType>\r\n" +
-            "<wst:RequestedSecurityToken>" + samlToken +
-            "</wst:RequestedSecurityToken>\r\n" +
-            "<wst:Lifetime>\r\n" +
-            "<wsu:Created>" + issueInstant + "</wsu:Created>\r\n" +
-            "<wsu:Expires>" + notOnOrAfter + "</wsu:Expires>\r\n" +
-            "</wst:Lifetime>\r\n" +
-            "</wst:RequestSecurityTokenResponse>\r\n" +
-            "</wst:RequestSecurityTokenResponseCollection>\r\n" +
-            "</soapenv:Body>\r\n" +
-            "</soapenv:Envelope>")
+        (
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                "<soapenv:Envelope xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n" +
+                "<soapenv:Header>\r\n" + // "<wsa:MessageID>urn:uuid:816f058a-62ca-4b27-9123-c654d35d7fab</wsa:MessageID>\r\n" +
+                "<wsa:Action>http://docs.oasis-open.org/ws-sx/ws-trust/200512/RSTRC/IssueFinal</wsa:Action>\r\n" +
+                "<wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>\r\n" +
+                "</soapenv:Header>\r\n" +
+                "<soapenv:Body>\r\n" +
+                "<wst:RequestSecurityTokenResponseCollection xmlns:wst=\"http://docs.oasis-open.org/ws-sx/ws-trust/200512\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">\r\n" +
+                "<wst:RequestSecurityTokenResponse Context=\"supportLater\">\r\n" +
+                "<wst:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0</wst:TokenType>\r\n" +
+                "<wst:RequestedSecurityToken>" + samlToken +
+                "</wst:RequestedSecurityToken>\r\n" +
+                "<wst:Lifetime>\r\n" +
+                "<wsu:Created>" + issueInstant + "</wsu:Created>\r\n" +
+                "<wsu:Expires>" + notOnOrAfter + "</wsu:Expires>\r\n" +
+                "</wst:Lifetime>\r\n" +
+                "</wst:RequestSecurityTokenResponse>\r\n" +
+                "</wst:RequestSecurityTokenResponseCollection>\r\n" +
+                "</soapenv:Body>\r\n" +
+                "</soapenv:Envelope>"
+            )
 
     private fun findChild(pNode: Node?, childName: String, acceptNull: Boolean): Node? {
         if (pNode != null) {

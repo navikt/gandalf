@@ -36,7 +36,8 @@ import javax.annotation.PostConstruct
     properties = [
         "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}/jwk",
         "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}/isso/oauth2/connect/jwk_uri"
-    ], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    ],
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureMockMvc
 @AutoConfigureWireMock(port = 0)

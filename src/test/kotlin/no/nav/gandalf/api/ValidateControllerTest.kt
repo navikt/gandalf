@@ -33,7 +33,8 @@ import javax.annotation.PostConstruct
         "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}/idporten-oidc-provider",
         "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}/jwk",
         "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}/isso/oauth2/connect/jwk_uri"
-    ], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    ],
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureMockMvc
 @AutoConfigureWireMock(port = 0)
@@ -72,7 +73,7 @@ class ValidateControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status").value(false))
-            .andExpect(jsonPath("$.message").value("Validation failed: Invalid SAML token: condition NotOnOrAfter is 2018-10-24T09:58:39Z"))
+            .andExpect(jsonPath("$.message").value("Invalid SAML token: condition NotOnOrAfter is 2018-10-24T09:58:39Z"))
     }
 
     @Test

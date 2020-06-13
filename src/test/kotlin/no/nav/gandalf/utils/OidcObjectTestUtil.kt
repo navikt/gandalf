@@ -22,7 +22,8 @@ internal fun getAlteredOriginalToken() = "eyJraWQiOiIxMGU5ZWQxNi1lYjg3LTQ5NGEtYT
 
 @Throws(ParseException::class)
 internal fun getOriginalJwkSet(): JWKSet {
-    val jwks = """{
+    val jwks =
+        """{
   "keys": [
     {
       "kty": "RSA",

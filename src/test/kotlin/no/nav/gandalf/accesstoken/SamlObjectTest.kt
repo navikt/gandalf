@@ -34,8 +34,7 @@ class SamlObjectTest {
     private lateinit var keyStoreReader: KeyStoreReader
 
     @Test
-    @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
-    fun `Read Saml Token`() {
+    fun `Read SAML Token`() {
         // read saml token
         val samlObj = SamlObject()
         samlObj.read(getSamlToken())
@@ -49,8 +48,7 @@ class SamlObjectTest {
     }
 
     @Test
-    @Throws(ParserConfigurationException::class, SAXException::class, IOException::class, MarshalException::class, XMLSignatureException::class)
-    fun `Read And Validate Saml Token`() {
+    fun `Read And Validate SAML Token`() {
         val notOnOrAfter = ZonedDateTime.parse("2019-05-14T08:47:06.255Z")
         val now = notOnOrAfter.minusSeconds(2)
         try {
@@ -64,8 +62,7 @@ class SamlObjectTest {
     }
 
     @Test
-    @Throws(ParserConfigurationException::class, SAXException::class, IOException::class, MarshalException::class, XMLSignatureException::class)
-    fun `Read And Validate Altered Saml Token`() {
+    fun `Read And Validate Altered SAML Token`() {
         val notOnOrAfter = ZonedDateTime.parse("2019-05-14T08:47:06.255Z")
         val now = notOnOrAfter.minusSeconds(2)
         try {
@@ -83,7 +80,7 @@ class SamlObjectTest {
 
     @Test
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class, MarshalException::class, XMLSignatureException::class)
-    fun `Read And Validate Invalid Saml Token`() {
+    fun `Read And Validate Invalid SAML Token`() {
         try {
             // saml token has notOnOrAfter = "2018-05-07T10:21:59Z"
             val samlObj = SamlObject()
@@ -99,7 +96,7 @@ class SamlObjectTest {
 
     @Test
     @Throws(Exception::class)
-    fun issueSignedSamlToken() {
+    fun `Issue Signed SAML Token`() {
         val samlIssued = SamlObject()
         samlIssued.issuer = "ISO2"
         samlIssued.setDuration(60 * 60)
@@ -124,7 +121,7 @@ class SamlObjectTest {
 
     @Test
     @Throws(Exception::class)
-    fun issueAndValidateSamlToken() {
+    fun `Issue And Validate SAML Token`() {
         var samlObj = SamlObject()
         samlObj.issuer = "ISO2"
         samlObj.setDuration(60 * 60)

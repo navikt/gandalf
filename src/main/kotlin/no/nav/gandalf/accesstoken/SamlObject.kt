@@ -220,7 +220,7 @@ class SamlObject {
 
     override fun toString(): String {
         return "Issuer: " + issuer + " nameID: " + nameID + " notBefore: " + dateNotBefore + " notOnOrAfter: " + notOnOrAfter +
-                " ConsumerId: " + consumerId + " IdentType: " + identType + " Authlevel: " + authenticationLevel
+            " ConsumerId: " + consumerId + " IdentType: " + identType + " Authlevel: " + authenticationLevel
     }
 
     @Throws(Exception::class)
@@ -241,8 +241,10 @@ class SamlObject {
             tList.add(signFac.newTransform(Transform.ENVELOPED, null as TransformParameterSpec?))
             tList.add(signFac.newTransform(CanonicalizationMethod.EXCLUSIVE, null as TransformParameterSpec?))
             val ref = signFac.newReference("#$id", signFac.newDigestMethod(DigestMethod.SHA1, null), tList, null, null)
-            val si = signFac.newSignedInfo(signFac.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE, null as C14NMethodParameterSpec?),
-                    signFac.newSignatureMethod(SignatureMethod.RSA_SHA1, null), listOf(ref))
+            val si = signFac.newSignedInfo(
+                signFac.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE, null as C14NMethodParameterSpec?),
+                signFac.newSignatureMethod(SignatureMethod.RSA_SHA1, null), listOf(ref)
+            )
             val cert: X509Certificate? = keyStoreReader.signingCertificate
             if (cert == null) {
                 log.error("Failed to find signing certificate in keystore")
@@ -285,15 +287,15 @@ class SamlObject {
 
     private val unsignedSaml: String
         get() = "<saml2:Assertion xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" ID=\"" + id + "\"" +
-                " IssueInstant=\"" + issueInstant!!.format(format) + "\" Version=\"2.0\">" +
-                "<saml2:Issuer>" + issuer + "</saml2:Issuer>" +
-                "<saml2:Subject><saml2:NameID Format=\"urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified\">" + nameID +
-                "</saml2:NameID><saml2:SubjectConfirmation Method=\"urn:oasis:names:tc:SAML:2.0:cm:bearer\">" +
-                "<saml2:SubjectConfirmationData NotBefore=\"" + dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" + notOnOrAfter + "\"/></saml2:SubjectConfirmation></saml2:Subject>" +
-                "<saml2:Conditions NotBefore=\"" + dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" + notOnOrAfter!!.format(format) + "\"/><saml2:AttributeStatement>" +
-                "<saml2:Attribute Name=\"identType\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>" + identType + "</saml2:AttributeValue></saml2:Attribute>" +
-                (if (authenticationLevel != null) "<saml2:Attribute Name=\"authenticationLevel\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>$authenticationLevel</saml2:AttributeValue></saml2:Attribute>" else "") +
-                (if (consumerId != null) "<saml2:Attribute Name=\"consumerId\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>$consumerId</saml2:AttributeValue></saml2:Attribute>" else "") +
-                (if (auditTrackingId != null) "<saml2:Attribute Name=\"auditTrackingId\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>$auditTrackingId</saml2:AttributeValue></saml2:Attribute>" else "") +
-                "</saml2:AttributeStatement></saml2:Assertion>"
+            " IssueInstant=\"" + issueInstant!!.format(format) + "\" Version=\"2.0\">" +
+            "<saml2:Issuer>" + issuer + "</saml2:Issuer>" +
+            "<saml2:Subject><saml2:NameID Format=\"urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified\">" + nameID +
+            "</saml2:NameID><saml2:SubjectConfirmation Method=\"urn:oasis:names:tc:SAML:2.0:cm:bearer\">" +
+            "<saml2:SubjectConfirmationData NotBefore=\"" + dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" + notOnOrAfter + "\"/></saml2:SubjectConfirmation></saml2:Subject>" +
+            "<saml2:Conditions NotBefore=\"" + dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" + notOnOrAfter!!.format(format) + "\"/><saml2:AttributeStatement>" +
+            "<saml2:Attribute Name=\"identType\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>" + identType + "</saml2:AttributeValue></saml2:Attribute>" +
+            (if (authenticationLevel != null) "<saml2:Attribute Name=\"authenticationLevel\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>$authenticationLevel</saml2:AttributeValue></saml2:Attribute>" else "") +
+            (if (consumerId != null) "<saml2:Attribute Name=\"consumerId\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>$consumerId</saml2:AttributeValue></saml2:Attribute>" else "") +
+            (if (auditTrackingId != null) "<saml2:Attribute Name=\"auditTrackingId\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>$auditTrackingId</saml2:AttributeValue></saml2:Attribute>" else "") +
+            "</saml2:AttributeStatement></saml2:Assertion>"
 }

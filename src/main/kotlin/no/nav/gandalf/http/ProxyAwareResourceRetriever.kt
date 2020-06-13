@@ -37,8 +37,10 @@ class ProxyAwareResourceRetriever internal constructor(
                 return url
             }
             val port = if (url.port > 0) url.port else 443
-            val newUrl = ("http://" + uri.host + ":" + port + uri.path +
-                if (uri.query != null && uri.query.length > 0) "?" + uri.query else "")
+            val newUrl = (
+                "http://" + uri.host + ":" + port + uri.path +
+                    if (uri.query != null && uri.query.length > 0) "?" + uri.query else ""
+                )
             logger.debug(
                 "using plaintext connection for https url, new url is {}",
                 newUrl

@@ -146,19 +146,19 @@ class OidcObject {
     private val jWTClaimsSetSpec2: JWTClaimsSet
         get() { // kravene for saml til oidc, DISSE MÅ ENES
             val clBuilder: JWTClaimsSet.Builder = JWTClaimsSet.Builder()
-                    .issuer(issuer)
-                    .claim(VERSION_CLAIM, version)
-                    .jwtID(id)
-                    .subject(subject) // 				.audience(audience.get(0))	// spec2 spesifikk
-                    .audience(audience)
-                    .claim(AUTHTIME_CLAIM, issueTime)
-                    .notBeforeTime(issueTime)
-                    .issueTime(issueTime)
-                    .expirationTime(expirationTime)
-                    .claim(AZP_CLAIM, azp)
-                    .claim(RESOURCETYPE_CLAIM, resourceType)
-                    .claim(CONSUMERID_CLAIM, consumerId) // spec2 spesifikk
-                    .claim(UTY_CLAIM, resourceType) // spec2 spesifikk
+                .issuer(issuer)
+                .claim(VERSION_CLAIM, version)
+                .jwtID(id)
+                .subject(subject) // 				.audience(audience.get(0))	// spec2 spesifikk
+                .audience(audience)
+                .claim(AUTHTIME_CLAIM, issueTime)
+                .notBeforeTime(issueTime)
+                .issueTime(issueTime)
+                .expirationTime(expirationTime)
+                .claim(AZP_CLAIM, azp)
+                .claim(RESOURCETYPE_CLAIM, resourceType)
+                .claim(CONSUMERID_CLAIM, consumerId) // spec2 spesifikk
+                .claim(UTY_CLAIM, resourceType) // spec2 spesifikk
             if (authLevel != null) {
                 clBuilder.claim(AUTHLEVEL_CLAIM, authLevel)
             }
@@ -169,8 +169,8 @@ class OidcObject {
         log.info("Sign the jwt with claimSet for issuer: ${claimsSet.issuer}")
         try {
             val header: JWSHeader.Builder = JWSHeader.Builder(alg)
-                    .keyID(key.keyID)
-                    .type(JOSEObjectType.JWT)
+                .keyID(key.keyID)
+                .type(JOSEObjectType.JWT)
             val signedJWT = SignedJWT(header.build(), claimsSet)
             val signer: JWSSigner = RSASSASigner(key.toPrivateKey())
             signedJWT.sign(signer)

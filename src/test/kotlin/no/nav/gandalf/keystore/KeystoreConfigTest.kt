@@ -24,7 +24,8 @@ class KeystoreConfigTest {
         // Decoded file, som blitt lagret på temp uri - skal vare identisk med orginalen
         assert(
             File(keystoreReaderConfig.loadKeyStoreFromBase64ToFile())
-                .readText() == File(file.uri).readText())
+                .readText() == File(file.uri).readText()
+        )
     }
 
     @Test
