@@ -200,10 +200,12 @@ class AccessTokenIssuer(
         }
         samlObj.consumerId = username
         samlObj.identType = getIdentType(samlObj.nameID!!)
-        samlObj.auditTrackingId = (when {
-            oidcObj.auditTrackingId != null -> oidcObj.auditTrackingId
-            else -> oidcObj.id
-        })
+        samlObj.auditTrackingId = (
+            when {
+                oidcObj.auditTrackingId != null -> oidcObj.auditTrackingId
+                else -> oidcObj.id
+            }
+            )
         return samlObj.getSignedSaml(keyStoreReader)
     }
 

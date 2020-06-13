@@ -14,6 +14,9 @@ spring:
       maximum-pool-size: 15
   profiles:
     active: remote
+  main:
+    banner-mode: 'off'
+    mvc.favicon.enabled: false
   # Ldap
   ldap:
     url: <FROM ENV. VARS>

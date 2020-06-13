@@ -36,7 +36,7 @@ class ValidateController {
                 .headers(tokenHeaders)
                 .body(Validation(true, samlObject.toString()))
         } catch (e: Throwable) {
-            val errorMessage = "Validation failed: " + e.message
+            val errorMessage = e.message ?: ""
             log.error(e) { errorMessage }
             ResponseEntity
                 .status(HttpStatus.OK)

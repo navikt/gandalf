@@ -27,7 +27,6 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
     id ("net.researchgate.release") version "2.8.1"
 }
 
@@ -115,7 +114,4 @@ tasks {
             events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         }
     }
-    //  "build" {
-    //      dependsOn("shadowJar")
-    //  }
 }

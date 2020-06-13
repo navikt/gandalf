@@ -43,10 +43,13 @@ private fun diffNode(n1: Node, n2: Node, diff: MutableList<String>): List<String
         return diff
     }
     if (n1.nodeName != "saml2:Assertion" &&
-            n1.nodeName != "saml2:AttributeValue" &&
-            n1.nodeName != "saml2:AttributeStatement" &&
-            (n1.textContent == null && n2.textContent != null ||
-                    n1.textContent != null && n1.textContent != n2.textContent)) {
+        n1.nodeName != "saml2:AttributeValue" &&
+        n1.nodeName != "saml2:AttributeStatement" &&
+        (
+            n1.textContent == null && n2.textContent != null ||
+                n1.textContent != null && n1.textContent != n2.textContent
+            )
+    ) {
         diff.add("Node " + getNodeName(n1) + " token1 has textcontent " + n1.textContent + " token2 has " + n2.textContent)
     }
     diffAttributes(n1, n2, diff)
@@ -70,7 +73,8 @@ private fun diffAttributes(n1: Node, n2: Node, diff: MutableList<String>): List<
     for (i in 0 until map1!!.length) {
         if (j < map2!!.length && map1.item(i).nodeName == map2.item(j).nodeName) {
             if (map1.item(i).textContent == null && map2.item(j).textContent != null ||
-                    map1.item(i).textContent != null && map1.item(i).textContent != map2.item(j).textContent) {
+                map1.item(i).textContent != null && map1.item(i).textContent != map2.item(j).textContent
+            ) {
                 diff.add("Node " + getNodeName(n1) + " Attribute " + map1.item(i).nodeName + " has different content: token1 has " + map1.item(i).textContent + " token2 has " + map2.item(j).textContent)
             }
             j++

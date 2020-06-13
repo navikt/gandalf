@@ -64,9 +64,11 @@ data class RSAKeyStore(
                 for (k in oldJson.keySet()) {
                     if (oldJson.get(k).javaClass == JSONObject::class.java) {
                         val newJson: JSONObject = oldJson.get(k) as JSONObject
-                        newKeyStr += "\"" + k + "\":\"" + (if (newJson.has("value")) newJson.get("value") else newJson.get(
-                            "name"
-                        )) + "\","
+                        newKeyStr += "\"" + k + "\":\"" + (
+                            if (newJson.has("value")) newJson.get("value") else newJson.get(
+                                "name"
+                            )
+                            ) + "\","
                     } else if (oldJson.get(k).javaClass == String::class.java) {
                         newKeyStr += "\"" + k + "\":\"" + (if (oldJson.get(k) == "SIGNATURE") "sig" else oldJson.get(k)) + "\","
                     }

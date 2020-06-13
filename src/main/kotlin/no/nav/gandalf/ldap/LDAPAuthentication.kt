@@ -52,11 +52,12 @@ class LDAPAuthentication(
     private fun authenticated(dn: String, pwd: String, alreadyAuthenticated: Boolean) =
         when {
             alreadyAuthenticated -> true
-            else -> try {
-                (adSetup.ldapConnection.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
-            } catch (e: LDAPException) {
-                ldapException = e
-                false
-            }
+            else ->
+                try {
+                    (adSetup.ldapConnection.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
+                } catch (e: LDAPException) {
+                    ldapException = e
+                    false
+                }
         }
 }

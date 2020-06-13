@@ -60,7 +60,8 @@ private const val ACCESS_TOKEN_TYPE = "bearer"
         "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}$difiOIDCJwksUrl",
         "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}$azureADJwksUrl",
         "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}$openAMJwksUrl"
-    ], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    ],
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
@@ -154,7 +155,6 @@ class AccessTokenIssuerTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun `Exchange Valid SAML To OIDC Token`() {
         val samlToken: String = getSamlToken()
         // get notOnOrAfter Date
@@ -321,11 +321,13 @@ class AccessTokenIssuerTest {
             val realDiff: MutableList<String> = ArrayList()
             diff!!.forEach { line ->
                 // known differences
-                if (!(line.contains("Assertion Attribute ID has different") && line.contains("token2 has SAML-") ||
+                if (!(
+                    line.contains("Assertion Attribute ID has different") && line.contains("token2 has SAML-") ||
                         line.contains("Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z") ||
                         line.contains("Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z") ||
                         line.contains("Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z") ||
-                        line.contains("Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z"))
+                        line.contains("Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z")
+                    )
                 ) {
                     realDiff.add(line)
                     println("#Diff: $line")

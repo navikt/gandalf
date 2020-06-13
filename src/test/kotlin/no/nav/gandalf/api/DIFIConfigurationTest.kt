@@ -28,7 +28,8 @@ import javax.annotation.PostConstruct
     properties = [
         "application.external.configuration.difi.maskinporten=http://localhost:\${wiremock.server.port}$difiMASKINPORTENCConfigurationUrl",
         "application.external.configuration.difi.oidc=http://localhost:\${wiremock.server.port}$difiOIDCConfigurationUrl"
-    ], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    ],
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @EnableConfigurationProperties
 @AutoConfigureWireMock(port = 0)

@@ -24,7 +24,7 @@ class RSAKeyStoreRepositoryImpl {
     @Autowired lateinit var rsaKeyStoreRepository: RSAKeyStoreRepository
 
     fun findAllOrdered() =
-            rsaKeyStoreRepository.findAll().sortedByDescending { it.id }
+        rsaKeyStoreRepository.findAll().sortedByDescending { it.id }
 
     companion object {
         const val minNoofKeys = 2
@@ -41,11 +41,11 @@ class RSAKeyStoreRepositoryImpl {
 
             // Convert to JWK format
             val jwk = RSAKey.Builder(keyPair.public as RSAPublicKey)
-                    .privateKey(keyPair.private as RSAPrivateKey)
-                    .keyID(UUID.randomUUID().toString()) // Give the key some ID (optional)
-                    .keyUse(KeyUse.SIGNATURE)
-                    .algorithm(AccessTokenIssuer.OIDC_SIGNINGALG)
-                    .build()
+                .privateKey(keyPair.private as RSAPrivateKey)
+                .keyID(UUID.randomUUID().toString()) // Give the key some ID (optional)
+                .keyUse(KeyUse.SIGNATURE)
+                .algorithm(AccessTokenIssuer.OIDC_SIGNINGALG)
+                .build()
             return RSAKeyStore(jwk, keyRotationTime)
         }
     }
