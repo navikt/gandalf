@@ -47,3 +47,8 @@ nav:
   keystore:
     file: src/test/resources/keystore.jks
     password: testkeystore1234
+springdoc:
+  api-docs:
+    path: /api/api-doc
+  swagger-ui:
+    path: /api

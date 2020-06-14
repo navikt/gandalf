@@ -9,8 +9,8 @@ import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.ParseException
 import mu.KotlinLogging
-import no.nav.gandalf.config.ExternalIssuerConfig
-import no.nav.gandalf.config.LocalIssuerConfig
+import no.nav.gandalf.config.ExternalIssuer
+import no.nav.gandalf.config.LocalIssuer
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.model.Consumer
 import no.nav.gandalf.model.IdentType
@@ -36,8 +36,8 @@ class AccessTokenIssuer(
     @Autowired private val keySelector: KeySelector,
     @Autowired private val keyStoreReader: KeyStoreReader,
     @Autowired private val difiConfiguration: DIFIConfiguration,
-    @Autowired private val externalIssuersConfig: ExternalIssuerConfig,
-    @Autowired private val localIssuerConfig: LocalIssuerConfig
+    @Autowired private val externalIssuersConfig: ExternalIssuer,
+    @Autowired private val localIssuerConfig: LocalIssuer
 ) : OidcIssuer {
 
     final override val issuer = localIssuerConfig.issuer

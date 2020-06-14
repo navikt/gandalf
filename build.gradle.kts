@@ -9,6 +9,7 @@ object Version {
     const val logbackStash = "6.4"
     const val mockOAuth2Server = "0.1.34"
     const val nimbus = "8.9"
+    const val openapi = "1.2.32"
     const val unboundid = "5.1.0"
     const val wiremock = "2.26.3"
     const val wiremockCloud = "2.2.3.RELEASE"
@@ -71,6 +72,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springdoc:springdoc-openapi-ui:${Version.openapi}")
+    implementation("org.springdoc:springdoc-openapi-data-rest:${Version.openapi}")
     implementation("org.yaml:snakeyaml")
     runtimeOnly("com.oracle.ojdbc:ojdbc8")
 

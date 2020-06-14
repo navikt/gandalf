@@ -1,9 +1,23 @@
 package no.nav.gandalf.api
 
 import io.prometheus.client.Histogram
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
+import no.nav.gandalf.api.Util.Companion.badRequestResponse
+import no.nav.gandalf.api.Util.Companion.serverErrorResponse
+import no.nav.gandalf.api.Util.Companion.tokenHeaders
+import no.nav.gandalf.api.Util.Companion.unauthorizedResponse
+import no.nav.gandalf.api.Util.Companion.userDetails
 import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencySAMLToken
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencyToken
@@ -19,6 +33,8 @@ import no.nav.gandalf.metric.ApplicationMetric.Companion.tokenNotOk
 import no.nav.gandalf.metric.ApplicationMetric.Companion.tokenOK
 import no.nav.gandalf.model.AccessToken2Response
 import no.nav.gandalf.model.AccessTokenResponse
+import no.nav.gandalf.model.ErrorDescriptiveResponse
+import no.nav.gandalf.model.ExchangeTokenResponse
 import no.nav.gandalf.model.User
 import no.nav.gandalf.service.ExchangeTokenService
 import no.nav.gandalf.util.authenticate
@@ -36,6 +52,7 @@ private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
+@Tag(name = "Token", description = "System User to OIDC & SAML Token")
 class AccessTokenController(
     @Autowired val ldapConfig: LdapConfig
 ) {
@@ -43,9 +60,49 @@ class AccessTokenController(
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
+    @Operation(
+        summary = "System User -> OIDC Token",
+        deprecated = true,
+        security = [SecurityRequirement(name = "BasicAuth")]
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200", description = "Issued OIDC Token",
+                content = [
+                    (
+                        Content(
+                            mediaType = "application/json",
+                            schema = Schema(implementation = AccessTokenResponse::class)
+                        )
+                        )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = INVALID_CLIENT,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = INVALID_REQUEST,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = INTERNAL_SERVER_ERROR,
+                content = [Content()]
+            )
+        ]
+    )
     @GetMapping("/token")
     fun getOIDCToken(
-        @RequestParam("grant_type", required = true) grantType: String,
+        @Parameter(description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
+        @RequestParam(
+            "grant_type",
+            required = true
+        ) grantType: String,
+        @Parameter(description = "Indicate that the application intends to use OIDC to verify the user's identity")
         @RequestParam("scope", required = true) scope: String
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = requestLatencyToken.startTimer()
@@ -78,14 +135,82 @@ class AccessTokenController(
     }
 
     // As specified in the Standard
+    @Operation(summary = "System User -> OIDC Token", security = [SecurityRequirement(name = "BasicAuth")])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200", description = "Issued OIDC Token",
+                content = [
+                    (
+                        Content(
+                            mediaType = "application/json",
+                            schema = Schema(implementation = AccessTokenResponse::class)
+                        )
+                        )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = INVALID_CLIENT,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = INVALID_REQUEST,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = INTERNAL_SERVER_ERROR,
+                content = [Content()]
+            )
+        ]
+    )
     @PostMapping("/token")
     fun postOIDCToken(
-        @RequestParam("grant_type", required = true) grantType: String,
-        @RequestParam("scope", required = true) scope: String
+        @Parameter(description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
+        @RequestParam("grant_type", required = true, defaultValue = "client_credentials") grantType: String,
+        @Parameter(description = "Indicate that the application intends to use OIDC to verify the user's identity")
+        @RequestParam("scope", required = true, defaultValue = "openid") scope: String
     ): ResponseEntity<Any> {
         return getOIDCToken(grantType, scope)
     }
 
+    @Operation(summary = "Stormaskin: System User -> OIDC Token")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200", description = "Issued OIDC Token",
+                headers = [
+                    Header(name = "username", description = "Username for Authentication"),
+                    Header(name = "password", description = "Password For Authentication")
+                ],
+                content = [
+                    (
+                        Content(
+                            mediaType = "application/json",
+                            schema = Schema(implementation = AccessToken2Response::class)
+                        )
+                        )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = INVALID_CLIENT,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = INVALID_REQUEST,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = INTERNAL_SERVER_ERROR,
+                content = [Content()]
+            )
+        ]
+    )
     @GetMapping("/token2")
     fun getOIDCToken2(
         @RequestHeader("username") username: String,
@@ -115,6 +240,41 @@ class AccessTokenController(
         }
     }
 
+    @Operation(summary = "System User -> SAML Token", security = [SecurityRequirement(name = "BasicAuth")])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200", description = "Issued OIDC Token",
+                headers = [
+                    Header(name = "username", description = "Username for Authentication"),
+                    Header(name = "password", description = "Password For Authentication")
+                ],
+                content = [
+                    (
+                        Content(
+                            mediaType = "application/json",
+                            schema = Schema(implementation = ExchangeTokenResponse::class)
+                        )
+                        )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = INVALID_CLIENT,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = INVALID_REQUEST,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = INTERNAL_SERVER_ERROR,
+                content = [Content()]
+            )
+        ]
+    )
     @GetMapping("/samltoken")
     fun getSAMLToken(): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = requestLatencySAMLToken.startTimer()

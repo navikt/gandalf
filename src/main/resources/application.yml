@@ -16,7 +16,6 @@ spring:
     active: remote
   main:
     banner-mode: 'off'
-    mvc.favicon.enabled: false
   # Ldap
   ldap:
     url: <FROM ENV. VARS>
@@ -57,3 +56,8 @@ management:
     path-mapping.prometheus: /prometheus
     base-path: /
 logging.config: classpath:logback-remote.xml
+springdoc:
+  api-docs:
+    path: /api/api-doc
+  swagger-ui:
+    path: /api

@@ -2,6 +2,9 @@ package no.nav.gandalf.api
 
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
+import no.nav.gandalf.api.Util.Companion.tokenHeaders
+import no.nav.gandalf.api.Util.Companion.unauthorizedResponse
+import no.nav.gandalf.api.Util.Companion.userDetails
 import no.nav.gandalf.model.Validation
 import org.apache.commons.codec.binary.Base64
 import org.springframework.beans.factory.annotation.Autowired

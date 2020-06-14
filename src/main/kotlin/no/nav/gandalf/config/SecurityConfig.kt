@@ -1,5 +1,9 @@
 package no.nav.gandalf.config
 
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.security.SecurityScheme
 import no.nav.gandalf.ldap.CustomAuthenticationProvider
 import no.nav.gandalf.ldap.RestAuthenticationEntryPoint
 import org.springframework.context.annotation.Bean
@@ -40,7 +44,10 @@ class SecurityConfig(
                 "/rest/v1/sts/jwks",
                 "/isAlive",
                 "/isReady",
-                "/prometheus"
+                "/prometheus",
+                // Swagger
+                "/api/**",
+                "/swagger-ui/**"
             ).permitAll()
             .and()
             .authorizeRequests().anyRequest().authenticated()
@@ -65,5 +72,21 @@ class SecurityConfig(
     @Bean
     fun activeDirectoryLdapAuthenticationProvider(): AuthenticationProvider? {
         return CustomAuthenticationProvider(ldapConfig)
+    }
+
+    @Bean
+    fun openApiSecurity(): OpenAPI? {
+        return OpenAPI()
+            .components(
+                Components()
+                    .addSecuritySchemes(
+                        "BasicAuth",
+                        SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")
+                    )
+            ).info(
+                Info().title("Security-token-service API.").description(
+                    "STS RESTful service."
+                )
+            )
     }
 }

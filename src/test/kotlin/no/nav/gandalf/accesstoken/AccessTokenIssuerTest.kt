@@ -13,7 +13,7 @@ import no.nav.gandalf.accesstoken.OidcObject.Companion.AZP_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.CLIENT_ORGNO_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.RESOURCETYPE_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.VERSION_CLAIM
-import no.nav.gandalf.config.LocalIssuerConfig
+import no.nav.gandalf.config.LocalIssuer
 import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.ExchangeTokenService
@@ -70,7 +70,7 @@ private const val ACCESS_TOKEN_TYPE = "bearer"
 class AccessTokenIssuerTest {
 
     @Autowired
-    private lateinit var env: LocalIssuerConfig
+    private lateinit var env: LocalIssuer
 
     @Autowired
     private lateinit var issuer: AccessTokenIssuer

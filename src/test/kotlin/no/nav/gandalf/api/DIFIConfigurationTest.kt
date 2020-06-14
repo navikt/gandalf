@@ -1,7 +1,7 @@
 package no.nav.gandalf.api
 
 import no.nav.gandalf.accesstoken.DIFIConfiguration
-import no.nav.gandalf.config.ExternalIssuerConfig
+import no.nav.gandalf.config.ExternalIssuer
 import no.nav.gandalf.utils.difiMASKINPORTENCConfigurationUrl
 import no.nav.gandalf.utils.difiMASKINPORTENCJwksUrl
 import no.nav.gandalf.utils.difiMASKINPORTENConfigurationResponseFileName
@@ -38,7 +38,7 @@ import javax.annotation.PostConstruct
 class DIFIConfigurationTest {
 
     @Autowired
-    private lateinit var externalIssuersConfig: ExternalIssuerConfig
+    private lateinit var externalIssuersConfig: ExternalIssuer
 
     @PostConstruct
     fun setupKnownIssuers() {

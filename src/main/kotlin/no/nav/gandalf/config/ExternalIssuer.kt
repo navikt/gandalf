@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-data class ExternalIssuerConfig(
+data class ExternalIssuer(
     @Value("\${application.external.issuer.openam}")
     val issuerOpenAm: String,
     @Value("\${application.jwks.endpoint.openam}")

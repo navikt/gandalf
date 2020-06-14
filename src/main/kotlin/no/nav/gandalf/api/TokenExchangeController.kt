@@ -2,12 +2,26 @@ package no.nav.gandalf.api
 
 import com.nimbusds.jwt.SignedJWT
 import io.prometheus.client.Histogram
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
+import no.nav.gandalf.api.Util.Companion.badRequestResponse
+import no.nav.gandalf.api.Util.Companion.tokenHeaders
+import no.nav.gandalf.api.Util.Companion.unauthorizedResponse
+import no.nav.gandalf.api.Util.Companion.userDetails
 import no.nav.gandalf.metric.ApplicationMetric
 import no.nav.gandalf.model.AccessTokenResponse
+import no.nav.gandalf.model.ErrorDescriptiveResponse
 import no.nav.gandalf.model.ErrorResponse
+import no.nav.gandalf.model.ExchangeTokenResponse
 import no.nav.gandalf.service.ExchangeTokenService
 import org.apache.commons.codec.binary.Base64
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,16 +38,52 @@ private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
+@Tag(name = "Token Exchange", description = "Exchange SAML (Datapower STS) -> OIDC & Exchange OIDC (OpenAm, Azure, IDP) -> SAML")
 class TokenExchangeController {
 
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
+    @Operation(summary = "SAML <-> OIDC", security = [SecurityRequirement(name = "BasicAuth")])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200", description = "Issued OIDC/SAML Token",
+                content = [
+                    (
+                        Content(
+                            mediaType = "application/json",
+                            schema = Schema(implementation = ExchangeTokenResponse::class)
+                        )
+                        )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = INVALID_CLIENT,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = INVALID_REQUEST,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = INTERNAL_SERVER_ERROR,
+                content = [Content()]
+            )
+        ]
+    )
     @PostMapping("/token/exchange")
     fun exchangeSAMLToOIDCToSAMLToken(
+        @Parameter(description = "'grant type' refers to the way an application gets an access token. OAuth 2.0 defines several grant types.", required = true)
         @RequestParam("grant_type") grantType: String?,
-        @RequestParam("requested_token_type") reqTokenType: String?,
+        @Parameter(description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), for the type of the requested security token.", required = false)
+        @RequestParam("requested_token_type", required = false) reqTokenType: String?,
+        @Parameter(description = "Represents the identity of the party on behalf of whom the token is being requested.", required = true)
         @RequestParam("subject_token") subjectToken: String?,
+        @Parameter(description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), that indicates the type of the security token in the 'subject_token' parameter.", required = true)
         @RequestParam("subject_token_type") subTokenType: String?
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
@@ -53,7 +103,6 @@ class TokenExchangeController {
             }
             when {
                 subTokenType.equals("urn:ietf:params:oauth:token-type:saml2") -> {
-                    // exchange SAML token to OIDC token
                     log.debug("Exchange SAML token to OIDC")
                     val oidcToken: SignedJWT?
                     oidcToken = try {
@@ -71,7 +120,6 @@ class TokenExchangeController {
                 }
                 subTokenType.equals("urn:ietf:params:oauth:token-type:access_token")
                     && (copyReqTokenType == null || copyReqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
-                    // exchange OIDC token to SAML token
                     log.debug("Exchange OIDC to SAML token")
                     if (copyReqTokenType == null) {
                         copyReqTokenType = "urn:ietf:params:oauth:token-type:saml2"

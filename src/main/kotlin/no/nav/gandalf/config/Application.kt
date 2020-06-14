@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @ComponentScan("no.nav")
-class ApplicationConfiguration {
+class Application {
 
     @Autowired
     private lateinit var keySelector: KeySelector
