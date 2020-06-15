@@ -1,8 +1,10 @@
 package no.nav.gandalf.keystore
 
+import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
 import no.nav.gandalf.service.RSAKeyStoreService
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -27,11 +29,15 @@ class RSAKeyStoreServiceTest {
         rsaKeyStoreService.resetCache()
     }
 
+    @After
+    fun tearDown() {
+        CollectorRegistry.defaultRegistry.clear()
+    }
+
     @Test
     @Throws(Exception::class)
     fun `Current DBKey With Empty DB`() {
         // DB with no keys
-        println(rsaKeyStoreService.findAllOrdered())
         Assert.assertTrue(rsaKeyStoreService.findAllOrdered().isEmpty())
         val rsaKeyStore: RSAKeyStore? = rsaKeyStoreService.currentDBKeyUpdateIfNeeded // should add one new key to DB
         Assert.assertTrue(rsaKeyStore != null)
@@ -40,6 +46,7 @@ class RSAKeyStoreServiceTest {
         val rsaKeyStore2: RSAKeyStore? = rsaKeyStoreService.currentDBKeyUpdateIfNeeded // should not alter DB
         println(rsaKeyStore)
         println(rsaKeyStore2)
+        println("all" + rsaKeyStoreService.findAllOrdered())
         Assert.assertTrue(rsaKeyStoreService.findAllOrdered().size == 1)
         Assert.assertTrue(rsaKeyStore2 != null && rsaKeyStore2.rSAKey == rsaKeyStore.rSAKey)
     }

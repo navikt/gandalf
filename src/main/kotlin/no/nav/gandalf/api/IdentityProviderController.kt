@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(produces = ["application/json"])
-@Tag(name = "Identity Provider", description = "Retrieve metadata")
+@Tag(name = "Identity Provider Metadata", description = "Retrieve metadata")
 class IdentityProviderController {
 
     @Autowired

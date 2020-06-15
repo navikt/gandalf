@@ -1,5 +1,6 @@
 package no.nav.gandalf.api
 
+import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.ldap.InMemoryLdap
 import no.nav.gandalf.utils.ControllerUtil
@@ -61,6 +62,7 @@ class ValidateControllerTest {
     @After
     fun clear() {
         controllerUtil.stopLdap(inMemoryLdap)
+        CollectorRegistry.defaultRegistry.clear()
     }
 
     @Test

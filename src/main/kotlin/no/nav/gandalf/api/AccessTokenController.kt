@@ -52,7 +52,7 @@ private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
-@Tag(name = "Token", description = "System User to OIDC & SAML Token")
+@Tag(name = "System OIDC Token", description = "System User to OIDC & SAML Token")
 class AccessTokenController(
     @Autowired val ldapConfig: LdapConfig
 ) {

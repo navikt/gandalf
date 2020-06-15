@@ -1,5 +1,6 @@
 package no.nav.gandalf.api
 
+import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
@@ -64,6 +65,7 @@ class AccessTokenControllerTest {
     @After
     fun clear() {
         controllerUtil.stopLdap(inMemoryLdap)
+        CollectorRegistry.defaultRegistry.clear()
     }
 
     // GET Path: /token

@@ -55,7 +55,9 @@ management:
     exposure.include: prometheus
     path-mapping.prometheus: /prometheus
     base-path: /
+# Logging
 logging.config: classpath:logback-remote.xml
+# Swagger
 springdoc:
   api-docs:
     path: /api/api-doc

@@ -4,12 +4,12 @@ import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
+import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import java.security.NoSuchAlgorithmException
 import no.nav.gandalf.domain.RSAKeyStore
-import no.nav.gandalf.repository.KeyStoreLockRepositoryImpl
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
 import org.json.JSONException
+import org.junit.After
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
+import java.security.NoSuchAlgorithmException
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -28,8 +29,10 @@ class RSAKeyStoreRepositoryImplTest {
     @Autowired
     private lateinit var rsaKeyStoreRepositoryImpl: RSAKeyStoreRepositoryImpl
 
-    @Autowired
-    private lateinit var keyStoreRepositoryImpl: KeyStoreLockRepositoryImpl
+    @After
+    fun tearDown() {
+        CollectorRegistry.defaultRegistry.clear()
+    }
 
     @Test
     @Throws(NoSuchAlgorithmException::class, JOSEException::class)

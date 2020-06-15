@@ -1,9 +1,11 @@
 package no.nav.gandalf.api
 
+import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.JWKS
 import no.nav.gandalf.utils.WELL_KNOWN
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,6 +48,11 @@ class IdentityProviderControllerTest {
     @PostConstruct
     fun setupKnownIssuers() {
         ControllerUtil().setupKnownIssuers()
+    }
+
+    @After
+    fun tearDown() {
+        CollectorRegistry.defaultRegistry.clear()
     }
 
     // Path: /jwks

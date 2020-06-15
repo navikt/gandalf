@@ -38,7 +38,7 @@ private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
-@Tag(name = "Token Exchange", description = "Exchange SAML (Datapower STS) -> OIDC & Exchange OIDC (OpenAm, Azure, IDP) -> SAML")
+@Tag(name = "OIDC/SAML Token Exchange", description = "Exchange SAML (Datapower STS) -> OIDC & Exchange OIDC (OpenAm, Azure, IDP) -> SAML")
 class TokenExchangeController {
 
     @Autowired
