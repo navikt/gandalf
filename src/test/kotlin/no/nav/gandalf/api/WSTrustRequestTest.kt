@@ -1,11 +1,13 @@
 package no.nav.gandalf.api
 
+import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.SamlObject
 import no.nav.gandalf.utils.getOidcToSamlRequest
 import no.nav.gandalf.utils.getSamlRequest
 import no.nav.gandalf.utils.getValidateSamlRequest
+import org.junit.After
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -33,6 +35,11 @@ class WSTrustRequestTest {
 
     private val username = "srvsecurity-token-"
     private val password = "tull"
+
+    @After
+    fun clear() {
+        CollectorRegistry.defaultRegistry.clear()
+    }
 
     @Test
     fun `SAML Request`() {
