@@ -29,7 +29,10 @@ private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
-@Tag(name = "OIDC/SAML Token Validation", description = "Validate tokens, SAML & OIDC (Datapower, IDP & IDP, AZURE, OPENAM)")
+@Tag(
+    name = "OIDC/SAML Token Validation",
+    description = "Validate tokens, SAML & OIDC (Datapower, IDP & IDP, AZURE, OPENAM)"
+)
 class ValidateController {
 
     @Autowired
@@ -116,7 +119,7 @@ class ValidateController {
         @Parameter(description = "Base64Encoded OIDC Token to Validate", required = true)
         @RequestParam("token", required = true) oidcToken: String?
     ): ResponseEntity<Any> {
-        userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
+        requireNotNull(userDetails()) { return unauthorizedResponse(Throwable(), "Unauthorized") }
         log.debug("Validate oidc token")
         return try {
             val oidcObject = issuer.validateOidcToken(oidcToken)

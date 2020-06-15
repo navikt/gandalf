@@ -38,7 +38,10 @@ private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
-@Tag(name = "OIDC/SAML Token Exchange", description = "Exchange SAML (Datapower STS) -> OIDC & Exchange OIDC (OpenAm, Azure, IDP) -> SAML")
+@Tag(
+    name = "OIDC/SAML Token Exchange",
+    description = "Exchange SAML (Datapower STS) -> OIDC & Exchange OIDC (OpenAm, Azure, IDP) -> SAML"
+)
 class TokenExchangeController {
 
     @Autowired
@@ -77,21 +80,34 @@ class TokenExchangeController {
     )
     @PostMapping("/token/exchange")
     fun exchangeSAMLToOIDCToSAMLToken(
-        @Parameter(description = "'grant type' refers to the way an application gets an access token. OAuth 2.0 defines several grant types.", required = true)
+        @Parameter(
+            description = "'grant type' refers to the way an application gets an access token. OAuth 2.0 defines several grant types.",
+            required = true
+        )
         @RequestParam("grant_type") grantType: String?,
-        @Parameter(description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), for the type of the requested security token.", required = false)
+        @Parameter(
+            description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), for the type of the requested security token.",
+            required = false
+        )
         @RequestParam("requested_token_type", required = false) reqTokenType: String?,
-        @Parameter(description = "Represents the identity of the party on behalf of whom the token is being requested.", required = true)
+        @Parameter(
+            description = "Represents the identity of the party on behalf of whom the token is being requested.",
+            required = true
+        )
         @RequestParam("subject_token") subjectToken: String?,
-        @Parameter(description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), that indicates the type of the security token in the 'subject_token' parameter.", required = true)
+        @Parameter(
+            description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), that indicates the type of the security token in the 'subject_token' parameter.",
+            required = true
+        )
         @RequestParam("subject_token_type") subTokenType: String?
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
         try {
             var copyReqTokenType = reqTokenType
             log.debug("Exchange $subTokenType to $copyReqTokenType")
-            val user = requireNotNull(userDetails()) { unauthorizedResponse(Throwable(), "Unauthorized") }.also {
+            val user = requireNotNull(userDetails()) {
                 ApplicationMetric.exchangeTokenNotOk.inc()
+                return unauthorizedResponse(Throwable(), "Unauthorized")
             }
             if (grantType.isNullOrEmpty() || grantType != "urn:ietf:params:oauth:grant-type:token-exchange") {
                 ApplicationMetric.exchangeTokenNotOk.inc()
