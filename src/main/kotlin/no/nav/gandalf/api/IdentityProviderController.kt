@@ -125,6 +125,10 @@ class IdentityProviderController {
                     token_endpoint = toTokenPath(accessTokenIssuer.issuer),
                     exchange_token_endpoint = toExchangePath(accessTokenIssuer.issuer),
                     jwks_uri = toJwksPath(accessTokenIssuer.issuer),
+                    grant_types_supported = ConfigurationResponse.GRANT_TYPES,
+                    token_endpoint_auth_methods_supported = ConfigurationResponse.TOKEN_ENDPOINT_AUTH,
+                    scopes_supported = ConfigurationResponse.SCOPES,
+                    response_types_supported = ConfigurationResponse.RESPONSE_TYPES,
                     subject_types_supported = listOf("public")
                 )
             )

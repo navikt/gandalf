@@ -41,7 +41,7 @@ import javax.annotation.PostConstruct
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("test")
 @DirtiesContext
-class ValidateControllerTest {
+class TokenInfoControllerTest {
 
     @Autowired
     private lateinit var mvc: MockMvc

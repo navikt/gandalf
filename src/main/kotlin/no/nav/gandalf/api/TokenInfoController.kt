@@ -35,7 +35,7 @@ class ValidateController {
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
-    @Operation(summary = "Validate SAML Token", security = [SecurityRequirement(name = "BasicAuth")])
+    @Operation(summary = "Validate SAML Token", security = [SecurityRequirement(name = "BasicAuth")], hidden = true)
     @ApiResponses(
         value = [
             ApiResponse(
@@ -61,7 +61,7 @@ class ValidateController {
             )
         ]
     )
-    @PostMapping("/samltoken/validate")
+    @PostMapping("/samltoken/tokeninfo")
     fun validateSAMLToken(
         @Parameter(description = "Base64Encoded SAML Token to Validate", required = true)
         @RequestParam("token", required = true) samlToken: String
@@ -85,7 +85,7 @@ class ValidateController {
         }
     }
 
-    @Operation(summary = "Validate OIDC Token", security = [SecurityRequirement(name = "BasicAuth")])
+    @Operation(summary = "Validate OIDC Token", security = [SecurityRequirement(name = "BasicAuth")], hidden = true)
     @ApiResponses(
         value = [
             ApiResponse(
@@ -111,7 +111,7 @@ class ValidateController {
             )
         ]
     )
-    @PostMapping("/token/validate")
+    @PostMapping("/token/tokeninfo")
     fun validateOIDCToken(
         @Parameter(description = "Base64Encoded OIDC Token to Validate", required = true)
         @RequestParam("token", required = true) oidcToken: String?
