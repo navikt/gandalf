@@ -136,7 +136,7 @@ class KeyStoreReader(
         val certCount: Counter = Counter.build()
             .help("Count days until expiry.")
             .namespace("keystore")
-            .name("_cert_count")
+            .name("cert_count")
             .register()
     }
 }
