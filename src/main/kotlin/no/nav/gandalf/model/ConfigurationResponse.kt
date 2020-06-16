@@ -17,7 +17,7 @@ data class ConfigurationResponse(
         const val BASE_PATH = "/rest/v1/sts"
         const val TOKEN_PATH = "$BASE_PATH/token"
         const val EXCHANGE_PATH = "$BASE_PATH/token/exchange"
-        const val JWKS_PATH = "$BASE_PATH/jwks"
+        const val JWKS_PATH = "/jwks"
         val GRANT_TYPES = listOf("urn:ietf:params:oauth:grant-type:token-exchange", GrantType.CLIENT_CREDENTIALS.value)
         val TOKEN_ENDPOINT_AUTH = listOf("client_secret_basic")
         val SCOPES = listOf("openid")

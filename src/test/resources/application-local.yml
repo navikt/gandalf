@@ -20,7 +20,7 @@ spring:
     timeout: 1000
 # Application
 application:
-  oidc.issuer: https://security-token-service.nais.preprod.local
+  oidc.issuer: http://localhost:8080
   service:
     username: srvsecurity-token-
     passoword: password
