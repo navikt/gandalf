@@ -1,7 +1,6 @@
 package no.nav.gandalf.api
 
 import io.prometheus.client.CollectorRegistry
-import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.JWKS
 import no.nav.gandalf.utils.WELL_KNOWN
@@ -42,9 +41,6 @@ class IdentityProviderControllerTest {
     @Autowired
     private lateinit var mvc: MockMvc
 
-    @Autowired
-    private lateinit var issuer: AccessTokenIssuer
-
     @PostConstruct
     fun setupKnownIssuers() {
         ControllerUtil().setupKnownIssuers()
@@ -80,7 +76,7 @@ class IdentityProviderControllerTest {
             .andExpect(jsonPath("$.issuer").value(stsEndpoint))
             .andExpect(jsonPath("$.token_endpoint").value("$stsEndpoint/rest/v1/sts/token"))
             .andExpect(jsonPath("$.exchange_token_endpoint").value("$stsEndpoint/rest/v1/sts/token/exchange"))
-            .andExpect(jsonPath("$.jwks_uri").value("$stsEndpoint/rest/v1/sts/jwks"))
+            .andExpect(jsonPath("$.jwks_uri").value("$stsEndpoint/jwks"))
             .andExpect(jsonPath("$.subject_types_supported").isArray)
     }
 }
