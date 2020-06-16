@@ -2,9 +2,7 @@ package no.nav.gandalf.ldap
 
 import com.unboundid.ldap.sdk.LDAPException
 import com.unboundid.ldap.sdk.ResultCode
-import io.prometheus.client.Histogram
 import mu.KotlinLogging
-import no.nav.gandalf.metric.ApplicationMetric.Companion.ldapDuration
 import no.nav.gandalf.model.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -51,9 +49,8 @@ class LDAPAuthentication(
         srvAccounts.map { srvAccount -> "$dnPrefix,$srvAccount,$dnPostfix" }
     }
 
-    private fun authenticated(dn: String, pwd: String, alreadyAuthenticated: Boolean): Boolean {
-        val requestTimer: Histogram.Timer = ldapDuration.startTimer()
-        return when {
+    private fun authenticated(dn: String, pwd: String, alreadyAuthenticated: Boolean) =
+        when {
             alreadyAuthenticated -> true
             else ->
                 try {
@@ -61,9 +58,6 @@ class LDAPAuthentication(
                 } catch (e: LDAPException) {
                     ldapException = e
                     false
-                } finally {
-                    requestTimer.observeDuration()
                 }
         }
-    }
 }
