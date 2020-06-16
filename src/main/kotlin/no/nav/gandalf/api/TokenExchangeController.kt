@@ -173,15 +173,50 @@ class TokenExchangeController {
         }
     }
 
+    @Operation(summary = "DIFI Mmaskinporten TOKEN -> OIDC", security = [SecurityRequirement(name = "BasicAuth")])
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200", description = "Issued OIDC Token",
+                content = [
+                    (
+                        Content(
+                            mediaType = "application/json",
+                            schema = Schema(implementation = AccessTokenResponse::class)
+                        )
+                        )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = INVALID_CLIENT,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = INVALID_REQUEST,
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = INTERNAL_SERVER_ERROR,
+                content = [Content()]
+            )
+        ]
+    )
     @PostMapping("/token/exchangedifi")
     fun exchangeDIFIOIDCToken(
-        @RequestHeader("token") difiToken: String?
+        @Parameter(
+            description = "Base64Encoded DIFI Access Token.",
+            required = true
+        )
+        @RequestHeader("token", required = true) difiToken: String?
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchangeDIFI.startTimer()
         try {
             log.debug("Exchange difi token to oidc token")
             try {
-                require(userDetails() == "srvDatapower") { "Client is unauthorized for this endpoint" }
+                require(userDetails() == "srvDatapower") { "Client is Unauthorized for this endpoint" }
             } catch (e: Throwable) {
                 ApplicationMetric.exchangeDIFINotOk.inc()
                 return unauthorizedResponse(e, e.message!!)
@@ -196,7 +231,7 @@ class TokenExchangeController {
                 issuer.exchangeDifiTokenToOidc(difiToken)
             } catch (e: Throwable) {
                 ApplicationMetric.exchangeDIFINotOk.inc()
-                return badRequestResponse("Failed to exchange difi oidc token to oidc token: " + e.message)
+                return badRequestResponse("Failed to exchange difi token to oidc token: " + e.message)
             }
             ApplicationMetric.exchangeDIFIOk.inc()
             return ResponseEntity.status(HttpStatus.OK)

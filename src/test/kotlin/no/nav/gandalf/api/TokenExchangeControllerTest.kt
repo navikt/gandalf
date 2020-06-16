@@ -142,7 +142,7 @@ class TokenExchangeControllerTest {
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
-            .andExpect(jsonPath("$.error_description").value("Client is unauthorized for this endpoint"))
+            .andExpect(jsonPath("$.error_description").value("Client is Unauthorized for this endpoint"))
     }
 
     @Test
@@ -155,6 +155,6 @@ class TokenExchangeControllerTest {
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
-            .andExpect(jsonPath("$.error_description").value("Failed to exchange difi oidc token to oidc token: Validation failed: token has expired"))
+            .andExpect(jsonPath("$.error_description").value("Failed to exchange difi token to oidc token: Validation failed: token has expired"))
     }
 }

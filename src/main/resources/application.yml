@@ -12,6 +12,8 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       maximum-pool-size: 15
+  jpa:
+    open-in-view: false
   profiles:
     active: remote
   main:
