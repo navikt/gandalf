@@ -9,7 +9,8 @@ object Version {
     const val logbackStash = "6.4"
     const val mockOAuth2Server = "0.1.34"
     const val nimbus = "8.9"
-    const val openapi = "1.4.1"
+    // Newest ver 1.4.1 brings an issue: https://github.com/springdoc/springdoc-openapi/issues/729
+    const val openapi = "1.2.32"
     const val unboundid = "5.1.0"
     const val wiremock = "2.26.3"
     const val wiremockCloud = "2.2.3.RELEASE"
