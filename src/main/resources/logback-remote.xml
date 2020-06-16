@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%green(%d{HH:mm:ss}){faint} %cyan([%15t]){faint} %highlight(%0.-5p) %yellow(%-40.40logger{39}){cyan}: [%mdc] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
-    <logger name="no.nav.gandalf" level="DEBUG"/>
+    <logger name="no.nav.gandalf" level="INFO"/>
+    <logger name="org.springframework" level="WARN"/>
 
     <root level="INFO">
-        <appender-ref ref="stdout_json"/>
+        <appender-ref ref="STDOUT_JSON"/>
     </root>
-
 </configuration>

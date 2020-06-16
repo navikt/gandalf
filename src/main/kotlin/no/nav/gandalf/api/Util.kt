@@ -2,6 +2,7 @@ package no.nav.gandalf.api
 
 import mu.KotlinLogging
 import no.nav.gandalf.model.ErrorDescriptiveResponse
+import org.slf4j.MDC
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -55,7 +56,7 @@ class Util {
                     val auth = SecurityContextHolder.getContext().authentication as UsernamePasswordAuthenticationToken
                     auth.principal as String
                 }
-            }
+            }.also { client -> MDC.put("client_id", client) }
         }
     }
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-            <pattern>%green(%d{HH:mm:ss}){faint} %cyan([%-5.5t]){faint} %cyan(%0.-5p) %yellow(%-40.40logger{39}){cyan}: %m%n</pattern>
-		</encoder>
-	</appender>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%green(%d{HH:mm:ss}){faint} %cyan([%15t]){faint} %highlight(%0.-5p) %yellow(%-40.40logger{39}){cyan}: [%mdc] %m%n</pattern>
+        </encoder>
+    </appender>
 
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
