@@ -33,6 +33,7 @@ class ApplicationMetric {
             .namespace(latencyMetricPrefix)
             .name("seconds_token")
             .register(default)
+
         // path: **/token2
         internal val token2Ok = Counter.build()
             .help("Issued OIDC tokens (grensesnitt for stormaskin) OK.")
@@ -54,6 +55,7 @@ class ApplicationMetric {
             .namespace(latencyMetricPrefix)
             .name("seconds_token_2")
             .register(default)
+
         // path: **/samltoken
         internal val samlTokenOk = Counter.build()
             .help("Issued saml token OK.")
@@ -75,12 +77,14 @@ class ApplicationMetric {
             .namespace(latencyMetricPrefix)
             .name("seconds_samltoken")
             .register(default)
+
         // path: **/jwks
         internal val requestLatencyJwks = Histogram.build()
             .help("Request latency in seconds /jwks.")
             .namespace(latencyMetricPrefix)
             .name("seconds_jwks")
             .register(default)
+
         // path: **/token/exchangedifi
         internal val exchangeDIFIOk = Counter.build()
             .help("Exchange difi token OK.")
@@ -97,6 +101,7 @@ class ApplicationMetric {
             .namespace(latencyMetricPrefix)
             .name("token_exchangedifi")
             .register(default)
+
         // path: **/token/exchange
         internal val exchangeSAMLTokenOk = Counter.build()
             .namespace(metricPrefix)
@@ -116,6 +121,7 @@ class ApplicationMetric {
             .namespace(latencyMetricPrefix)
             .name("seconds_token_exchange")
             .register(default)
+
         // path: **/ws/samltoken
         internal val wsSAMLTokenOk = Counter.build()
             .namespace(metricPrefix)
@@ -137,6 +143,18 @@ class ApplicationMetric {
             .help("Request latency in seconds /ws/samltoken.")
             .namespace(latencyMetricPrefix)
             .name("seconds_ws_samltoken")
+            .register(default)
+        // Cert
+        internal val certCount: Counter = Counter.build()
+            .help("Count days until expiry.")
+            .namespace("keystore")
+            .name("cert_count")
+            .register(default)
+        // Ldap
+        internal val ldapDuration: Histogram = Histogram.build()
+            .help("AD - time for checking.")
+            .namespace(latencyMetricPrefix)
+            .name("ldap")
             .register(default)
     }
 }

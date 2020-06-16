@@ -1,6 +1,7 @@
 package no.nav.gandalf.ldap
 
 import com.unboundid.ldap.sdk.LDAPException
+import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
 import org.junit.After
@@ -25,6 +26,7 @@ class LdapTest {
     @After
     fun clean() {
         inMemoryLdap.stop()
+        CollectorRegistry.defaultRegistry.clear()
     }
 
     private val ldapConfig = LdapConfig(

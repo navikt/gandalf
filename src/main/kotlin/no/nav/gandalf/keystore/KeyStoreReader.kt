@@ -1,8 +1,8 @@
 package no.nav.gandalf.keystore
 
-import io.prometheus.client.Counter
 import mu.KotlinLogging
 import no.nav.gandalf.config.KeystoreReaderConfig
+import no.nav.gandalf.metric.ApplicationMetric.Companion.certCount
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.FileInputStream
@@ -130,13 +130,5 @@ class KeyStoreReader(
             log.error("Failed to load keytstore" + e.message)
             throw RuntimeException("Failed to load keystore", e)
         }
-    }
-
-    companion object {
-        val certCount: Counter = Counter.build()
-            .help("Count days until expiry.")
-            .namespace("keystore")
-            .name("cert_count")
-            .register()
     }
 }
