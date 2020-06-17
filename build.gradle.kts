@@ -29,17 +29,6 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
-    id ("net.researchgate.release") version "2.8.1"
-}
-
-// To deploy: ./gradlew release -Prelease.useAutomaticVersion=true -Prelease.releaseVersion=0.0.1
-release {
-    tagTemplate = "'${name}-${version}'"
-    snapshotSuffix = "-SNAPSHOT"
-    pushReleaseVersionBranch = "master"
-    versionPropertyFile = "gradle.properties"
-    failOnUnversionedFiles = false
-    buildTasks = mutableListOf("build")
 }
 
 application {
