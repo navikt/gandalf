@@ -127,9 +127,11 @@ class IdentityProviderController {
                     jwks_uri = toJwksPath(accessTokenIssuer.issuer),
                     grant_types_supported = ConfigurationResponse.GRANT_TYPES,
                     token_endpoint_auth_methods_supported = ConfigurationResponse.TOKEN_ENDPOINT_AUTH,
-                    scopes_supported = ConfigurationResponse.SCOPES,
-                    response_types_supported = ConfigurationResponse.RESPONSE_TYPES,
-                    subject_types_supported = listOf("public")
+                    scopes_supported = ConfigurationResponse.SCOPES_SUPPORTED,
+                    response_types_supported = ConfigurationResponse.RESPONSE_TYPES_SUPPORTED,
+                    response_modes_supported = ConfigurationResponse.RESPONSE_MODE_SUPPORTED,
+                    id_token_signing_alg_values_supported = ConfigurationResponse.ID_TOKEN_SIGNING_ALG,
+                    subject_types_supported = ConfigurationResponse.SUBJECT_TYPES_SUPPORTED
                 )
             )
     }

@@ -104,7 +104,7 @@ class TokenExchangeController {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
         try {
             var copyReqTokenType = reqTokenType
-            log.debug("Exchange $subTokenType to $copyReqTokenType")
+            log.info("Exchange $subTokenType to $copyReqTokenType")
             val user = requireNotNull(userDetails()) {
                 ApplicationMetric.exchangeTokenNotOk.inc()
                 return unauthorizedResponse(Throwable(), "Unauthorized")
@@ -119,7 +119,7 @@ class TokenExchangeController {
             }
             when {
                 subTokenType.equals("urn:ietf:params:oauth:token-type:saml2") -> {
-                    log.debug("Exchange SAML token to OIDC")
+                    log.info("Exchange SAML token to OIDC")
                     val oidcToken: SignedJWT?
                     oidcToken = try {
                         val decodedSaml = Base64.decodeBase64(subjectToken.toByteArray())
@@ -136,7 +136,7 @@ class TokenExchangeController {
                 }
                 subTokenType.equals("urn:ietf:params:oauth:token-type:access_token")
                     && (copyReqTokenType == null || copyReqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
-                    log.debug("Exchange OIDC to SAML token")
+                    log.info("Exchange OIDC to SAML token")
                     if (copyReqTokenType == null) {
                         copyReqTokenType = "urn:ietf:params:oauth:token-type:saml2"
                     }
@@ -214,7 +214,7 @@ class TokenExchangeController {
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchangeDIFI.startTimer()
         try {
-            log.debug("Exchange difi token to oidc token")
+            log.info("Exchange difi token to oidc token")
             try {
                 require(userDetails() == "srvDatapower") { "Client is Unauthorized for this endpoint" }
             } catch (e: Throwable) {

@@ -64,13 +64,13 @@ class ValidateController {
             )
         ]
     )
-    @PostMapping("/samltoken/tokeninfo")
+    @PostMapping("/samltoken/validate")
     fun validateSAMLToken(
         @Parameter(description = "Base64Encoded SAML Token to Validate", required = true)
         @RequestParam("token", required = true) samlToken: String
     ): ResponseEntity<Any> {
         userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
-        log.debug("Validate SAML token")
+        log.info("Validate SAML token")
         return try {
             val samlObject =
                 issuer.validateSamlToken(String(Base64.decodeBase64(samlToken.toByteArray()), StandardCharsets.UTF_8))
@@ -114,13 +114,13 @@ class ValidateController {
             )
         ]
     )
-    @PostMapping("/token/tokeninfo")
+    @PostMapping("/token/validate")
     fun validateOIDCToken(
         @Parameter(description = "Base64Encoded OIDC Token to Validate", required = true)
         @RequestParam("token", required = true) oidcToken: String?
     ): ResponseEntity<Any> {
         requireNotNull(userDetails()) { return unauthorizedResponse(Throwable(), "Unauthorized") }
-        log.debug("Validate oidc token")
+        log.info("Validate oidc token")
         return try {
             val oidcObject = issuer.validateOidcToken(oidcToken)
             ResponseEntity

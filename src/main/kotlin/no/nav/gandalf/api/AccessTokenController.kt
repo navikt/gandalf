@@ -282,7 +282,7 @@ class AccessTokenController(
                 samlTokenNotOk.inc()
                 return unauthorizedResponse(Throwable(), "Unauthorized")
             }
-            log.debug("Issue SAML token for: $user")
+            log.info("Issue SAML token for: $user")
             val samlToken = try {
                 issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
             } catch (e: Throwable) {
