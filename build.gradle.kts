@@ -38,6 +38,7 @@ release {
     snapshotSuffix = "-SNAPSHOT"
     pushReleaseVersionBranch = "master"
     versionPropertyFile = "gradle.properties"
+    failOnUnversionedFiles = false
     buildTasks = mutableListOf("build")
 }
 
