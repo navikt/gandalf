@@ -31,10 +31,10 @@ spec:
   resources:
     limits:
       cpu: 1000m
-      memory: 2048Mi
+      memory: 3Gi
     requests:
       cpu: 1000m
-      memory: 1024Mi
+      memory: 3Gi
   cpuThresholdPercentage: 80
   vault:
     enabled: true
