@@ -23,7 +23,7 @@ spring:
     url: <FROM ENV. VARS>
     base: dc=test,dc=local
     port: <FROM ENV. VARS>
-    timeout: 3000
+    timeout: 5000
 # Application
 application:
   oidc.issuer: <FROM ENV. VARS>

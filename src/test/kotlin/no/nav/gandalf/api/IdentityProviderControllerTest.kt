@@ -10,6 +10,8 @@ import no.nav.gandalf.utils.WELL_KNOWN
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -46,10 +48,12 @@ class IdentityProviderControllerTest {
     private lateinit var mvc: MockMvc
 
     @PostConstruct
+    @BeforeAll
     fun setupKnownIssuers() {
         ControllerUtil().setupKnownIssuers()
     }
 
+    @AfterAll
     @After
     fun tearDown() {
         CollectorRegistry.defaultRegistry.clear()

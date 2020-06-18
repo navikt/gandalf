@@ -1,12 +1,10 @@
 package no.nav.gandalf.api
 
 import io.prometheus.client.CollectorRegistry
-import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.EXCHANGE
 import no.nav.gandalf.utils.EXCHANGE_DIFI
 import no.nav.gandalf.utils.GRANT_TYPE
-import no.nav.gandalf.ldap.InMemoryLdap
 import no.nav.gandalf.utils.REQUESTED_TOKEN_TYPE
 import no.nav.gandalf.utils.SUBJECT_TOKEN
 import no.nav.gandalf.utils.SUBJECT_TOKEN_TYPE
@@ -16,6 +14,8 @@ import no.nav.gandalf.utils.getDifiOidcToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import org.junit.After
 import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -49,23 +49,17 @@ class TokenExchangeControllerTest {
     @Autowired
     private lateinit var mvc: MockMvc
 
-    @Autowired
-    private lateinit var issuer: AccessTokenIssuer
-
-    private val inMemoryLdap = InMemoryLdap()
-
-    private val controllerUtil = ControllerUtil()
-
     @PostConstruct
+    @BeforeAll
     fun setup() {
-        controllerUtil.runLdap(inMemoryLdap)
+        val controllerUtil = ControllerUtil()
         controllerUtil.setupKnownIssuers()
         controllerUtil.setupOverride()
     }
 
+    @AfterAll
     @After
     fun clear() {
-        controllerUtil.stopLdap(inMemoryLdap)
         CollectorRegistry.defaultRegistry.clear()
     }
 

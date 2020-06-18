@@ -1,8 +1,6 @@
 package no.nav.gandalf.api
 
 import io.prometheus.client.CollectorRegistry
-import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.ldap.InMemoryLdap
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.OIDC_TOKEN_VALIDATE
 import no.nav.gandalf.utils.SAML_TOKEN_VALIDATE
@@ -11,6 +9,8 @@ import no.nav.gandalf.utils.getDatapowerSAMLBase64Encoded
 import no.nav.gandalf.utils.getOpenAmOIDC
 import org.junit.After
 import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -46,22 +46,17 @@ class TokenInfoControllerTest {
     @Autowired
     private lateinit var mvc: MockMvc
 
-    @Autowired
-    private lateinit var issuer: AccessTokenIssuer
-
     private val controllerUtil = ControllerUtil()
 
-    private val inMemoryLdap = InMemoryLdap()
-
     @PostConstruct
+    @BeforeAll
     fun setupKnownIssuers() {
         controllerUtil.setupKnownIssuers()
-        controllerUtil.runLdap(inMemoryLdap)
     }
 
+    @AfterAll
     @After
     fun clear() {
-        controllerUtil.stopLdap(inMemoryLdap)
         CollectorRegistry.defaultRegistry.clear()
     }
 

@@ -22,20 +22,18 @@ class LDAPConnectionSetup(
         connectTimeoutMillis = ldapConfig.timeout
     }
 
-    var ldapConnection = LDAPConnection(
+    final var ldapConnection = LDAPConnection(
         SSLUtil(TrustAllTrustManager()).createSSLSocketFactory(),
         connectOptions
     )
 
     init {
         try {
-            ldapConnection.run {
-                connect(ldapConfig.url, ldapConfig.port)
-            }
+            with(ldapConnection) { connect(ldapConfig.url, ldapConfig.port) }
             log.debug { "Successfully connected to $ldapConfig" }
         } catch (e: LDAPException) {
             log.error { "LDAP operations against $ldapConfig will fail - $e" }
-            ldapConnection.run {
+            with(ldapConnection) {
                 setDisconnectInfo(
                     DisconnectType.IO_ERROR,
                     "Error when connecting to LDAPS $ldapConfig", e

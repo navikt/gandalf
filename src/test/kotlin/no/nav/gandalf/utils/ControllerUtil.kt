@@ -29,6 +29,8 @@ internal const val SUBJECT_TOKEN_TYPE = "subject_token_type"
 
 open class ControllerUtil {
 
+    private val inMemoryLdap = InMemoryLdap()
+
     fun setupKnownIssuers() {
         endpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
         endpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
@@ -48,11 +50,11 @@ open class ControllerUtil {
         SecurityContextHolder.getContext().authentication = token
     }
 
-    fun runLdap(inMemoryLdap: InMemoryLdap) {
+    fun runLdap() {
         inMemoryLdap.start()
     }
 
-    fun stopLdap(inMemoryLdap: InMemoryLdap) {
+    fun stopLdap() {
         inMemoryLdap.stop()
     }
 }
