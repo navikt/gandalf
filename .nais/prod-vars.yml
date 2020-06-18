@@ -25,7 +25,7 @@ envs:
   - name: SPRING_LDAP_PORT
     value: 636
   - name: SPRING_LDAP_BASE
-    value: dc=adeo,dc=no
+    value: DC=adeo,DC=no
 replicas:
   min: 2
   max: 4

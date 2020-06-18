@@ -13,7 +13,7 @@ data class LdapConfig(
     val remote: String,
     @Value("\${spring.ldap.port}")
     val port: Int,
-    @Value("\${spring.ldap.timeout: 3000}")
+    @Value("\${spring.ldap.timeout: 5000}")
     val timeout: Int
 ) {
 

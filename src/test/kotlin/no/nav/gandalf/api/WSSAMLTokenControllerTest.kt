@@ -65,7 +65,7 @@ class WSSAMLTokenControllerTest {
 
     @Test
     fun `SAML - WS - User Not In Ldap`() {
-        val xmlReq = setupValidateRequest("srvPD", "password")
+        val xmlReq = setupValidateRequest("srvPD", "password", issuer)
         mvc.perform(
             MockMvcRequestBuilders.post(WS_SAMLTOKEN)
                 .with(SecurityMockMvcRequestPostProcessors.anonymous())
@@ -93,7 +93,7 @@ class WSSAMLTokenControllerTest {
 
     @Test
     fun `SAML - WS - isExchangeOidcToSaml`() {
-        val xmlReq = setupOIDCtoSAMLRequest("srvPDP", "password")
+        val xmlReq = setupOIDCtoSAMLRequest("srvPDP", "password", issuer)
         mvc.perform(
             MockMvcRequestBuilders.post(WS_SAMLTOKEN)
                 .with(SecurityMockMvcRequestPostProcessors.anonymous())
@@ -108,7 +108,7 @@ class WSSAMLTokenControllerTest {
 
     @Test
     fun `SAML - WS - isValidateSaml`() {
-        val xmlReq = setupValidateRequest("srvPDP", "password")
+        val xmlReq = setupValidateRequest("srvPDP", "password", issuer)
         mvc.perform(
             MockMvcRequestBuilders.post(WS_SAMLTOKEN)
                 .with(SecurityMockMvcRequestPostProcessors.anonymous())
@@ -120,14 +120,14 @@ class WSSAMLTokenControllerTest {
         // TODO Validate response
         // .andExpect(MockMvcResultMatchers.xpath("/*/soapenv:Body/").exists())
     }
+}
 
-    private fun setupValidateRequest(username: String, password: String): String {
-        val samlToken: String? = issuer.issueSamlToken(username, username, "0")
-        return getValidateSamlRequest(username, password, samlToken!!)
-    }
+internal fun setupValidateRequest(username: String, password: String, issuer: AccessTokenIssuer): String {
+    val samlToken: String? = issuer.issueSamlToken(username, username, "0")
+    return getValidateSamlRequest(username, password, samlToken!!)
+}
 
-    private fun setupOIDCtoSAMLRequest(username: String, password: String): String {
-        val oidcToken: String? = issuer.issueToken(username)!!.serialize()
-        return getOidcToSamlRequest(username, password, oidcToken!!)
-    }
+internal fun setupOIDCtoSAMLRequest(username: String, password: String, issuer: AccessTokenIssuer): String {
+    val oidcToken: String? = issuer.issueToken(username)!!.serialize()
+    return getOidcToSamlRequest(username, password, oidcToken!!)
 }

@@ -1,9 +1,13 @@
 package no.nav.gandalf.api
 
+import com.nimbusds.jose.jwk.JWKSet
 import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.utils.ControllerUtil
+import no.nav.gandalf.utils.EXCHANGE
 import no.nav.gandalf.utils.JWKS
+import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.WELL_KNOWN
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,14 +57,21 @@ class IdentityProviderControllerTest {
 
     // Path: /jwks
     @Test
-    fun `Get JWKS`() {
-        mvc.perform(
+    fun `Get JWKS Should only return Public keys`() {
+        val response = mvc.perform(
             MockMvcRequestBuilders.get(JWKS)
                 .with(SecurityMockMvcRequestPostProcessors.anonymous())
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$..keys").isNotEmpty)
             .andExpect(jsonPath("$..keys").isArray)
+            .andReturn()
+
+        val jwkSet: JWKSet = JWKSet.parse(response.response.contentAsString)
+        jwkSet.keys.forEach {
+            assertThat(it.isPrivate).isEqualTo(false)
+        }
     }
 
     // Path: /.well-known/openid-configuration
@@ -74,9 +85,9 @@ class IdentityProviderControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.issuer").value(stsEndpoint))
-            .andExpect(jsonPath("$.token_endpoint").value("$stsEndpoint/rest/v1/sts/token"))
-            .andExpect(jsonPath("$.exchange_token_endpoint").value("$stsEndpoint/rest/v1/sts/token/exchange"))
-            .andExpect(jsonPath("$.jwks_uri").value("$stsEndpoint/jwks"))
+            .andExpect(jsonPath("$.token_endpoint").value("$stsEndpoint$TOKEN"))
+            .andExpect(jsonPath("$.exchange_token_endpoint").value("$stsEndpoint$EXCHANGE"))
+            .andExpect(jsonPath("$.jwks_uri").value("$stsEndpoint$JWKS"))
             .andExpect(jsonPath("$.subject_types_supported").isArray)
     }
 }

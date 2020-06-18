@@ -218,6 +218,7 @@ class AccessTokenController(
         val requestTimer: Histogram.Timer = requestLatencyToken2.startTimer()
         try {
             try {
+                log.info { "/token2 - Username: $username and ${if(password.isNotEmpty()) password.length else "password is empty"} try Authenticate" }
                 authenticate(ldapConfig, User(username, password))
             } catch (e: Throwable) {
                 token2NotOk.inc()
@@ -243,11 +244,7 @@ class AccessTokenController(
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Issued OIDC Token",
-                headers = [
-                    Header(name = "username", description = "Username for Authentication"),
-                    Header(name = "password", description = "Password For Authentication")
-                ],
+                responseCode = "200", description = "Issued SAML Token",
                 content = [
                     (
                         Content(

@@ -117,8 +117,25 @@ class TokenExchangeControllerTest {
             .andExpect(jsonPath("$.error_description").value("Missing subject_token in request"))
     }
 
+    // TODO
+    // Generate token, and jwk to sign token, prep /jwks with same keys, send inn oidc token.
     @Test
-    fun `OIDC - Token Exchange - OIDC to SAML`() {
+    fun `OIDC to SAML Exchange Successfully`() {
+        mvc.perform(
+            MockMvcRequestBuilders.post(EXCHANGE)
+                .param(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange")
+                .param(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token")
+                .param(SUBJECT_TOKEN, getOpenAmAndDPSamlExchangePair()[0])
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
+            .andExpect(jsonPath("$.error_description").value("Validation failed: token has expired"))
+    }
+
+    @Test
+    fun `OIDC to SAML Exchange - Validation Faild with exipred token`() {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE)
                 .param(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange")
