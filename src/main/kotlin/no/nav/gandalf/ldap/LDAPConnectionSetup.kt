@@ -30,7 +30,7 @@ class LDAPConnectionSetup(
     init {
         try {
             with(ldapConnection) { connect(ldapConfig.url, ldapConfig.port) }
-            log.debug { "Successfully connected to $ldapConfig" }
+            log.info { "Successfully connected to $ldapConfig" }
         } catch (e: LDAPException) {
             log.error { "LDAP operations against $ldapConfig will fail - $e" }
             with(ldapConnection) {
