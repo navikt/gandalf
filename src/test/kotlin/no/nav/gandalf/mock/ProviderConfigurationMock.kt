@@ -1,6 +1,6 @@
 package no.nav.gandalf.mock
 
-data class ProviderConfigurationMokk(
+data class ProviderConfigurationMock(
     val issuer: String,
     val token_endpoint: String,
     val jwks_uri: String,

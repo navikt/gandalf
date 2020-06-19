@@ -1,6 +1,5 @@
 package no.nav.gandalf.accesstoken
 
-import io.prometheus.client.CollectorRegistry
 import java.io.IOException
 import java.time.ZonedDateTime
 import javax.xml.crypto.KeySelector
@@ -11,7 +10,6 @@ import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.utils.getAlteredSamlToken
 import no.nav.gandalf.utils.getSamlToken
-import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -34,11 +32,6 @@ class SamlObjectTest {
 
     @Autowired
     private lateinit var keyStoreReader: KeyStoreReader
-
-    @After
-    fun tearDown() {
-        CollectorRegistry.defaultRegistry.clear()
-    }
 
     @Test
     fun `Read SAML Token`() {

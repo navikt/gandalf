@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @Primary
-class MockDIFIConfiguration : DIFIConfiguration() {
+class DIFIConfigurationMock : DIFIConfiguration() {
 
     @Value("\${wiremock.server.port: 0}")
     private var port: Int = 0
@@ -19,7 +19,7 @@ class MockDIFIConfiguration : DIFIConfiguration() {
             wellknownUrl.contains("/oauth-authorization-server") -> {
                 AuthorizationServerMetadata.parse(
                     jacksonObjectMapper().writeValueAsString(
-                        ProviderConfigurationMokk(
+                        ProviderConfigurationMock(
                             issuer = "https://ver2.maskinporten.no/",
                             jwks_uri = "http://localhost:$port/jwk",
                             token_endpoint = "http://localhost:$port/token",
@@ -32,7 +32,7 @@ class MockDIFIConfiguration : DIFIConfiguration() {
             else -> {
                 AuthorizationServerMetadata.parse(
                     jacksonObjectMapper().writeValueAsString(
-                        ProviderConfigurationMokk(
+                        ProviderConfigurationMock(
                             issuer = "https://oidc-ver2.difi.no/idporten-oidc-provider/",
                             jwks_uri = "http://localhost:$port/idporten-oidc-provider/jwk",
                             token_endpoint = "http://localhost:$port/idporten-oidc-provider/token",

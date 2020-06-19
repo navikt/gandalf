@@ -2,14 +2,12 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
-import io.prometheus.client.CollectorRegistry
 import java.util.Date
 import no.nav.gandalf.service.RSAKeyStoreService
 import no.nav.gandalf.utils.compare
 import no.nav.gandalf.utils.getAlteredOriginalToken
 import no.nav.gandalf.utils.getOriginalJwkSet
 import no.nav.gandalf.utils.getOriginalToken
-import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -36,11 +34,6 @@ class OIDCObjectTest {
     @Before
     fun init() {
         rsaKeyStoreService.resetRepository()
-    }
-
-    @After
-    fun tearDown() {
-        CollectorRegistry.defaultRegistry.clear()
     }
 
     @Test

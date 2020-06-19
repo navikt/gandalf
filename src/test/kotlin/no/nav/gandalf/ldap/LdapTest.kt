@@ -6,8 +6,6 @@ import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
 import org.junit.After
 import org.junit.Test
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -17,12 +15,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest
 class LdapTest {
 
-    @BeforeAll
-    fun setup() {}
-
     @After
-    @AfterAll
-    fun clean() {
+    fun clear() {
         CollectorRegistry.defaultRegistry.clear()
     }
 

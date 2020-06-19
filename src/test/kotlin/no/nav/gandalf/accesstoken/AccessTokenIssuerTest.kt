@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.nimbusds.jwt.SignedJWT
-import io.prometheus.client.CollectorRegistry
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_DURATION_TIME
@@ -35,7 +34,6 @@ import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.gandalf.utils.getSamlToken
 import no.nav.gandalf.utils.openAMJwksUrl
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -89,11 +87,6 @@ class AccessTokenIssuerTest {
     fun setup() {
         rsaKeyStoreService.resetRepository()
         rsaKeyStoreService.resetCache()
-    }
-
-    @After
-    fun tearDown() {
-        CollectorRegistry.defaultRegistry.clear()
     }
 
     @Test

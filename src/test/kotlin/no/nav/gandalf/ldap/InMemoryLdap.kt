@@ -11,7 +11,7 @@ import com.unboundid.util.ssl.TrustAllTrustManager
 import com.unboundid.util.ssl.TrustStoreTrustManager
 import mu.KotlinLogging
 
-class InMemoryLdap {
+class InMemoryLdap : AutoCloseable {
     private val LPORT = 11389
     private val log = KotlinLogging.logger { }
     private val LNAME = "LDAPS"
@@ -60,5 +60,7 @@ class InMemoryLdap {
 
     fun start() = imDS.startListening(LNAME)
 
-    fun stop() = imDS.shutDown(true)
+    fun isAlive() = imDS.connection.isConnected
+
+    override fun close() = imDS.shutDown(true)
 }

@@ -1,6 +1,5 @@
 package no.nav.gandalf.api
 
-import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
 import no.nav.gandalf.utils.SAML_TOKEN
@@ -8,10 +7,7 @@ import no.nav.gandalf.utils.SCOPE
 import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN2
 import no.nav.gandalf.utils.TOKEN_TYPE
-import org.junit.After
 import org.junit.Test
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -48,17 +44,10 @@ class AccessTokenControllerTest {
     private lateinit var mvc: MockMvc
 
     @PostConstruct
-    @BeforeAll
     fun setup() {
         val controllerUtil = ControllerUtil()
         controllerUtil.setupKnownIssuers()
         controllerUtil.setupOverride()
-    }
-
-    @AfterAll
-    @After
-    fun clear() {
-        CollectorRegistry.defaultRegistry.clear()
     }
 
     // GET Path: /token

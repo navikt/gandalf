@@ -1,6 +1,5 @@
 package no.nav.gandalf.api
 
-import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.EXCHANGE
 import no.nav.gandalf.utils.EXCHANGE_DIFI
@@ -12,10 +11,7 @@ import no.nav.gandalf.utils.TOKEN_SUBJECT
 import no.nav.gandalf.utils.getDatapowerSAMLBase64Encoded
 import no.nav.gandalf.utils.getDifiOidcToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
-import org.junit.After
 import org.junit.Test
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -50,17 +46,10 @@ class TokenExchangeControllerTest {
     private lateinit var mvc: MockMvc
 
     @PostConstruct
-    @BeforeAll
     fun setup() {
         val controllerUtil = ControllerUtil()
         controllerUtil.setupKnownIssuers()
         controllerUtil.setupOverride()
-    }
-
-    @AfterAll
-    @After
-    fun clear() {
-        CollectorRegistry.defaultRegistry.clear()
     }
 
     // Path: /token/exchange

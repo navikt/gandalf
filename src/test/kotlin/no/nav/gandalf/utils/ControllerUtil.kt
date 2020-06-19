@@ -53,8 +53,4 @@ open class ControllerUtil {
     fun runLdap() {
         inMemoryLdap.start()
     }
-
-    fun stopLdap() {
-        inMemoryLdap.stop()
-    }
 }
