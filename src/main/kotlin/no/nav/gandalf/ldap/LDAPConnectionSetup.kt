@@ -3,6 +3,7 @@ package no.nav.gandalf.ldap
 import com.unboundid.ldap.sdk.DisconnectType
 import com.unboundid.ldap.sdk.LDAPConnection
 import com.unboundid.ldap.sdk.LDAPConnectionOptions
+import com.unboundid.ldap.sdk.LDAPConnectionPool
 import com.unboundid.ldap.sdk.LDAPException
 import com.unboundid.util.ssl.SSLUtil
 import com.unboundid.util.ssl.TrustAllTrustManager
@@ -20,7 +21,6 @@ class LDAPConnectionSetup(
 
     private val connectOptions = LDAPConnectionOptions().apply {
         connectTimeoutMillis = ldapConfig.timeout
-        this.useKeepAlive()
     }
 
     final var ldapConnection = LDAPConnection(
@@ -43,10 +43,14 @@ class LDAPConnectionSetup(
         }
     }
 
+    final var ldapConnectionPool = LDAPConnectionPool(ldapConnection, 1, 100)
+
     override fun close() {
         log.debug { "Closing ldap connection $ldapConfig" }
         ldapConnection.close()
     }
 
     val connectionOk = ldapConnection.isConnected
+
+    val pool = ldapConnectionPool
 }

@@ -19,7 +19,7 @@ class LDAPAuthentication(
 
     fun result(user: User) =
         when {
-            !ldapConnection() -> {
+            !ldap.connectionOk -> {
                 throw LDAPException(ldapException).also { log.error { "Cannot authenticate, connection to ldap is down" } }
             }
             else -> {
@@ -42,23 +42,6 @@ class LDAPAuthentication(
             }
         }
 
-    private fun ldapConnection() =
-        when {
-            !ldap.connectionOk -> {
-                try {
-                    ldap.ldapConnection.reconnect()
-                    log.debug { "Successful reconnect to ldap with config: ${ldap.ldapConfig}" }
-                    true
-                } catch (e: LDAPException) {
-                    ldapException = e
-                    false
-                }
-            }
-            else -> {
-                ldap.connectionOk
-            }
-        }
-
     private fun resolveDNs(user: String): List<String> = user.let { username ->
         val dnPrefix = "$attributeName=$username"
         val dnPostfix = ldap.ldapConfig.base
@@ -71,7 +54,7 @@ class LDAPAuthentication(
             alreadyAuthenticated -> true
             else ->
                 try {
-                    (ldap.ldapConnection.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
+                    (ldap.pool.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
                 } catch (e: LDAPException) {
                     ldapException = e
                     false
