@@ -1,16 +1,12 @@
 package no.nav.gandalf.api
 
-import io.prometheus.client.CollectorRegistry
-import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
-import no.nav.gandalf.ldap.InMemoryLdap
 import no.nav.gandalf.utils.SAML_TOKEN
 import no.nav.gandalf.utils.SCOPE
 import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN2
 import no.nav.gandalf.utils.TOKEN_TYPE
-import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,25 +43,11 @@ class AccessTokenControllerTest {
     @Autowired
     private lateinit var mvc: MockMvc
 
-    @Autowired
-    private lateinit var issuer: AccessTokenIssuer
-
-    private val inMemoryLdap = InMemoryLdap()
-
-    private val controllerUtil = ControllerUtil()
-
     @PostConstruct
     fun setup() {
         val controllerUtil = ControllerUtil()
-        controllerUtil.runLdap(inMemoryLdap)
         controllerUtil.setupKnownIssuers()
         controllerUtil.setupOverride()
-    }
-
-    @After
-    fun clear() {
-        controllerUtil.stopLdap(inMemoryLdap)
-        CollectorRegistry.defaultRegistry.clear()
     }
 
     // GET Path: /token

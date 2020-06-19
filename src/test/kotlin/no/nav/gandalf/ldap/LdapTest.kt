@@ -5,7 +5,6 @@ import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
 import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -16,16 +15,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest
 class LdapTest {
 
-    private val inMemoryLdap = InMemoryLdap()
-
-    @Before
-    fun setup() {
-        inMemoryLdap.start()
-    }
-
     @After
-    fun clean() {
-        inMemoryLdap.stop()
+    fun clear() {
         CollectorRegistry.defaultRegistry.clear()
     }
 

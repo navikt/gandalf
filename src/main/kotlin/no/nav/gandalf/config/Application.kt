@@ -4,10 +4,10 @@ import io.prometheus.client.CollectorRegistry
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import javax.xml.crypto.KeySelector
 
 @Configuration
-// @ComponentScan("no.nav")
 class Application {
 
     @Autowired
@@ -19,6 +19,7 @@ class Application {
     }
 
     @Bean
+    @Profile("remote")
     fun prometheusCollector(): CollectorRegistry? {
         return CollectorRegistry.defaultRegistry
     }

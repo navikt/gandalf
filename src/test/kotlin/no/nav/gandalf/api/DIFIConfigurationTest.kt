@@ -1,6 +1,5 @@
 package no.nav.gandalf.api
 
-import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.accesstoken.DIFIConfiguration
 import no.nav.gandalf.config.ExternalIssuer
 import no.nav.gandalf.utils.difiMASKINPORTENCConfigurationUrl
@@ -13,7 +12,6 @@ import no.nav.gandalf.utils.difiOIDCJwksUrl
 import no.nav.gandalf.utils.difiOIDCResponseFileName
 import no.nav.gandalf.utils.endpointStub
 import org.apache.http.HttpStatus
-import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -64,11 +62,6 @@ class DIFIConfigurationTest {
             difiOIDCJwksUrl,
             difiOIDCResponseFileName
         )
-    }
-
-    @After
-    fun tearDown() {
-        CollectorRegistry.defaultRegistry.clear()
     }
 
     @Test

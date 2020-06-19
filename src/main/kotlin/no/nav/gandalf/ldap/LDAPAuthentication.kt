@@ -13,13 +13,13 @@ private const val attributeName = "cn"
 
 @Component
 class LDAPAuthentication(
-    @Autowired val adSetup: LDAPConnectionSetup
+    @Autowired val ldap: LDAPConnectionSetup
 ) {
     var ldapException: LDAPException? = null
 
     fun result(user: User) =
         when {
-            !adSetup.connectionOk -> {
+            !ldap.connectionOk -> {
                 throw LDAPException(ldapException).also { log.error { "Cannot authenticate, connection to ldap is down" } }
             }
             else -> {
@@ -32,8 +32,8 @@ class LDAPAuthentication(
                         )
                     }.also {
                         when (it) {
-                            true -> log.info { "Successful bind of ${user.username} to ${adSetup.ldapConfig}" }
-                            false -> throw LDAPException(ldapException).also { log.error { "Could not bind ${user.username} to ${adSetup.ldapConfig}. Error message: ${ldapException?.message ?: "no message"}" } }
+                            true -> log.info { "Successful bind of ${user.username} to ${ldap.ldapConfig}" }
+                            false -> throw LDAPException(ldapException).also { log.error { "Could not bind ${user.username} to ${ldap.ldapConfig}. Error message: ${ldapException?.message ?: "no message"}" } }
                         }
                     }
                 } catch (t: Throwable) {
@@ -44,7 +44,7 @@ class LDAPAuthentication(
 
     private fun resolveDNs(user: String): List<String> = user.let { username ->
         val dnPrefix = "$attributeName=$username"
-        val dnPostfix = adSetup.ldapConfig.base
+        val dnPostfix = ldap.ldapConfig.base
         val srvAccounts = listOf("OU=ApplAccounts,OU=ServiceAccounts", "OU=ServiceAccounts")
         srvAccounts.map { srvAccount -> "$dnPrefix,$srvAccount,$dnPostfix" }
     }
@@ -54,7 +54,7 @@ class LDAPAuthentication(
             alreadyAuthenticated -> true
             else ->
                 try {
-                    (adSetup.ldapConnection.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
+                    (ldap.pool.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
                 } catch (e: LDAPException) {
                     ldapException = e
                     false

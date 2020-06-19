@@ -1,10 +1,8 @@
 package no.nav.gandalf.keystore
 
-import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
 import no.nav.gandalf.service.RSAKeyStoreService
-import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -27,11 +25,6 @@ class RSAKeyStoreServiceTest {
     fun init() {
         rsaKeyStoreService.resetRepository()
         rsaKeyStoreService.resetCache()
-    }
-
-    @After
-    fun tearDown() {
-        CollectorRegistry.defaultRegistry.clear()
     }
 
     @Test

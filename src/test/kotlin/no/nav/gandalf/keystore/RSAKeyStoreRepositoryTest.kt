@@ -4,13 +4,11 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyType
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
-import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import java.time.LocalDateTime
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
 import no.nav.gandalf.service.RSAKeyStoreService
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -37,11 +35,6 @@ class RSAKeyStoreRepositoryTest {
     fun init() {
         rsaKeyStoreService.resetRepository()
         rsaKeyStoreService.resetCache()
-    }
-
-    @After
-    fun tearDown() {
-        CollectorRegistry.defaultRegistry.clear()
     }
 
     @Test

@@ -18,7 +18,7 @@ import no.nav.gandalf.api.Util.Companion.serverErrorResponse
 import no.nav.gandalf.api.Util.Companion.tokenHeaders
 import no.nav.gandalf.api.Util.Companion.unauthorizedResponse
 import no.nav.gandalf.api.Util.Companion.userDetails
-import no.nav.gandalf.config.LdapConfig
+import no.nav.gandalf.ldap.LDAPConnectionSetup
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencySAMLToken
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencyToken
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencyToken2
@@ -54,7 +54,7 @@ private val log = KotlinLogging.logger { }
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
 @Tag(name = "System OIDC Token", description = "System User to OIDC & SAML Token")
 class AccessTokenController(
-    @Autowired val ldapConfig: LdapConfig
+    @Autowired val ldapConnectionSetup: LDAPConnectionSetup
 ) {
 
     @Autowired
@@ -218,8 +218,7 @@ class AccessTokenController(
         val requestTimer: Histogram.Timer = requestLatencyToken2.startTimer()
         try {
             try {
-                log.info { "/token2 - Username: $username and ${if(password.isNotEmpty()) password.length else "password is empty"} try Authenticate" }
-                authenticate(ldapConfig, User(username, password))
+                authenticate(ldapConnectionSetup, User(username, password))
             } catch (e: Throwable) {
                 token2NotOk.inc()
                 return unauthorizedResponse(e, "Could Not Authenticate username: $username")

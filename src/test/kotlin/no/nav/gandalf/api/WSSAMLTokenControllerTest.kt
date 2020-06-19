@@ -1,15 +1,12 @@
 package no.nav.gandalf.api
 
-import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.ldap.InMemoryLdap
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.WS_SAMLTOKEN
 import no.nav.gandalf.utils.getOidcToSamlRequest
 import no.nav.gandalf.utils.getSamlRequest
 import no.nav.gandalf.utils.getValidateSamlRequest
 import org.apache.http.entity.ContentType
-import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,20 +44,9 @@ class WSSAMLTokenControllerTest {
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
-    private val controllerUtil = ControllerUtil()
-
-    private val inMemoryLdap = InMemoryLdap()
-
     @PostConstruct
     fun setupKnownIssuers() {
-        controllerUtil.setupKnownIssuers()
-        controllerUtil.runLdap(inMemoryLdap)
-    }
-
-    @After
-    fun clear() {
-        controllerUtil.stopLdap(inMemoryLdap)
-        CollectorRegistry.defaultRegistry.clear()
+        ControllerUtil().setupKnownIssuers()
     }
 
     @Test

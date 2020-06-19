@@ -4,12 +4,10 @@ import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
-import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.domain.RSAKeyStore
 import no.nav.gandalf.repository.RSAKeyStoreRepositoryImpl
 import org.json.JSONException
-import org.junit.After
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,11 +26,6 @@ class RSAKeyStoreRepositoryImplTest {
 
     @Autowired
     private lateinit var rsaKeyStoreRepositoryImpl: RSAKeyStoreRepositoryImpl
-
-    @After
-    fun tearDown() {
-        CollectorRegistry.defaultRegistry.clear()
-    }
 
     @Test
     @Throws(NoSuchAlgorithmException::class, JOSEException::class)
