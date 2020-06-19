@@ -43,9 +43,7 @@ class LDAPConnectionSetup(
         }
     }
 
-    final var ldapConnectionPool = LDAPConnectionPool(ldapConnection, NUM_CONNECTIONS).apply {
-        this.maxWaitTimeMillis = MAX_WAIT_POOL_CONNECTION
-    }
+    final var ldapConnectionPool = LDAPConnectionPool(ldapConnection, NUM_CONNECTIONS)
 
     override fun close() {
         log.debug { "Closing ldap connection $ldapConfig" }
@@ -57,7 +55,6 @@ class LDAPConnectionSetup(
     val pool = ldapConnectionPool
 
     companion object {
-        const val NUM_CONNECTIONS = 100
-        const val MAX_WAIT_POOL_CONNECTION = 2000.toLong()
+        const val NUM_CONNECTIONS = 30
     }
 }
