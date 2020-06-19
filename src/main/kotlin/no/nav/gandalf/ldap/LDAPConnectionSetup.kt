@@ -20,6 +20,7 @@ class LDAPConnectionSetup(
 
     private val connectOptions = LDAPConnectionOptions().apply {
         connectTimeoutMillis = ldapConfig.timeout
+        this.useKeepAlive()
     }
 
     final var ldapConnection = LDAPConnection(
