@@ -23,7 +23,7 @@ class LDAPConnectionSetup(
         connectTimeoutMillis = ldapConfig.timeout
     }
 
-    final var ldapConnection = LDAPConnection(
+    private final var ldapConnection = LDAPConnection(
         SSLUtil(TrustAllTrustManager()).createSSLSocketFactory(),
         connectOptions
     )
@@ -43,7 +43,9 @@ class LDAPConnectionSetup(
         }
     }
 
-    final var ldapConnectionPool = LDAPConnectionPool(ldapConnection, 1, 100)
+    final var ldapConnectionPool = LDAPConnectionPool(ldapConnection, NUM_CONNECTIONS).apply {
+        this.maxWaitTimeMillis = MAX_WAIT_POOL_CONNECTION
+    }
 
     override fun close() {
         log.debug { "Closing ldap connection $ldapConfig" }
@@ -53,4 +55,9 @@ class LDAPConnectionSetup(
     val connectionOk = ldapConnection.isConnected
 
     val pool = ldapConnectionPool
+
+    companion object {
+        const val NUM_CONNECTIONS = 100
+        const val MAX_WAIT_POOL_CONNECTION = 2000.toLong()
+    }
 }
