@@ -81,7 +81,7 @@ jobs:
   deploy-dev:
     name: Deploy to NAIS dev
     needs: deploy-dev-t4
-    if: "github.ref == 'refs/heads/master'"
+    # if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

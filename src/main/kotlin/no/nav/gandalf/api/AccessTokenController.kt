@@ -218,7 +218,6 @@ class AccessTokenController(
         val requestTimer: Histogram.Timer = requestLatencyToken2.startTimer()
         try {
             try {
-                log.info { "/token2 - Username: $username and ${if (password.isNotEmpty()) password.length.toString() else "password is empty"} try Authenticate" }
                 authenticate(ldapConnectionSetup, User(username, password))
             } catch (e: Throwable) {
                 token2NotOk.inc()
