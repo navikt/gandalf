@@ -14,6 +14,8 @@ spring:
       maximum-pool-size: 15
   jpa:
     open-in-view: false
+    # For debugging
+    show-sql: true
   profiles:
     active: remote
   main:
@@ -65,3 +67,9 @@ springdoc:
     path: /api/api-doc
   swagger-ui:
     path: /api
+# For debugging Batch error-logging
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
