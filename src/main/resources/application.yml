@@ -67,9 +67,3 @@ springdoc:
     path: /api/api-doc
   swagger-ui:
     path: /api
-# For debugging Batch error-logging
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG

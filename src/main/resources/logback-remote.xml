@@ -12,6 +12,7 @@
 
     <logger name="no.nav.gandalf" level="INFO"/>
     <logger name="org.springframework" level="WARN"/>
+    <logger name="org.hibernate.sql" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT_JSON"/>
