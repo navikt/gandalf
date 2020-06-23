@@ -1,15 +1,16 @@
 ![Build, push, and deploy](https://github.com/navikt/gandalf/workflows/Build,%20push,%20and%20deploy/badge.svg?branch=master)
 
 # About
-REST-STS is available in FSS, users are authenticated to onprem-AD, but no additional access control / role check performed.
+REST-STS is available in FSS, users are authenticated to onprem-AD.  
+REST-STS won't do any additional access control or role check.  
 The service definitions based on specifications in these references:  
 [The OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749)  
 [Starting point for .well-known endpoint](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)  
 
 ### Ingress
-Test: `https://security-token-service-t4.nais.preprod.local`  
-Development: `https://security-token-service.nais.preprod.local`  
-Prod: `https://security-token-service.nais.adeo.no`  
+**Test:** `https://security-token-service-t4.nais.preprod.local`  
+**Development:** `https://security-token-service.nais.preprod.local`  
+**Prod:** `https://security-token-service.nais.adeo.no`  
 
 ### Openapi
 `/api`  
@@ -17,8 +18,8 @@ Prod: `https://security-token-service.nais.adeo.no`
 ### Identity Provider Metadata
 | Type              | Endpoint              |
 |-----------------------|-----------------------|
-| retrieve public keys for validating the oidc token issued by security-token service    | `/jwks`                  |
-| configuration info    | `/.well-known/openid-configuration`                  |
+| Retrieve public keys for validating the oidc token issued by STS    | `/jwks`                  |
+| Configuration info    | `/.well-known/openid-configuration`                  |
 
 ### Overview of token issuance and token conversions on REST interface
 | From              | To                  | Endpoint              | Extra                                            |
@@ -26,8 +27,8 @@ Prod: `https://security-token-service.nais.adeo.no`
 | client_credentials               | OIDC                | `/rest/v1/sts/token`                  |                             |
 | client_credentials        | OIDC                | `/rest/v1/sts/token2`                   | For Stormaskin   |
 | client_credentials          | SAML               |  `/rest/v1/sts/samltoken`             | 
-| OIDC (Issued by OpenAm, REST-STS, AzureAD)      |  SAML     | `/rest/v1/sts/token/exchange`                   |                          |
-| SAML token (Issued by av STS eller REST-STS)                   | OIDC     | `/rest/v1/sts/token/exchange`                   |           |
+| OIDC (Issued by OpenAm, `This` STS, AzureAD)      |  SAML     | `/rest/v1/sts/token/exchange`                   |                          |
+| SAML token (Issued by STS(Datapower) or `This` STS)                   | OIDC     | `/rest/v1/sts/token/exchange`                   |           |
 
 ### Example Request. For more info check out: `/api`
 `/rest/v1/sts/token`  
@@ -37,7 +38,8 @@ Prod: `https://security-token-service.nais.adeo.no`
 
 **Request:**
 ```json
-POST /rest/v1/sts/token HTTP/1.1
+POST /rest/v1/sts/token 
+HTTP/1.1
 Accept: application/json
 Content-Type: application/x-www-form-urlencoded
 Authorization: Basic aGVsbG86eW91
@@ -65,3 +67,26 @@ Content-Type: application/json
     "error": "invalid_client",
     "error_description": "Unauthorised: Full authentication is required to access this resource"
 }
+```
+
+## To Run
+Run GandalfApplicationLocal in `test/kotlin/no/nav/gandalf`  
+Runnable endpoint:
+`/rest/v1/sts/token`  
+`/rest/v1/sts/token2`  
+`/.well-known/openid-configuration`  
+`/jwks`  
+
+## Tools n stuff
+Kotlin
+Nimbus
+Spring Boot and all its dependencies.
+
+## Contact
+Plattformsikkerhet: `youssef.bel.mekki@nav.no` ++
+Slack: `pig_sikkerhet`
+
+## TODO
+- [ ] Add more endpoints to be run local testing  
+- [ ] Describe the Swagger Objects and values
+- [ ] Refactoring of code for better readability

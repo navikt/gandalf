@@ -5,6 +5,8 @@ on:
     branches:
       - master
       - "release/**"
+    paths-ignore:
+      - "README.md"
 
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/gandalf-security-token-service:${{ github.sha }}
