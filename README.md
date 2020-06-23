@@ -70,21 +70,21 @@ Content-Type: application/json
 ```
 
 ## To Run
-Run GandalfApplicationLocal in `test/kotlin/no/nav/gandalf`  
-Runnable endpoint:
+Run _GandalfApplicationLocal_ in `test/kotlin/no/nav/gandalf`  
+Runnable endpoints:  
 `/rest/v1/sts/token`  
 `/rest/v1/sts/token2`  
 `/.well-known/openid-configuration`  
 `/jwks`  
 
 ## Tools n stuff
-Kotlin
-Nimbus
-Spring Boot and all its dependencies.
+* Kotlin  
+* Nimbus  
+* Spring Boot and all its dependencies.
 
 ## Contact
-Plattformsikkerhet: `youssef.bel.mekki@nav.no` ++
-Slack: `pig_sikkerhet`
+Plattformsikkerhet: `youssef.bel.mekki@nav.no` ++  
+Slack: `#pig_sikkerhet`
 
 ## TODO
 - [ ] Add more endpoints to be run local testing  

@@ -2,11 +2,11 @@ name: Build, push, and deploy
 
 on:
   push:
+    paths-ignore:
+      - "README.md"
     branches:
       - master
       - "release/**"
-    paths-ignore:
-      - "README.md"
 
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/gandalf-security-token-service:${{ github.sha }}
