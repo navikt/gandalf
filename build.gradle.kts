@@ -5,12 +5,11 @@ object Version {
     const val apacheHttp = "4.5.12"
     const val gradleVersion = "6.5"
     const val json = "20200518"
-    const val kotlinLoggin = "1.7.10"
+    const val kotlinLoggin = "1.8.0.1"
     const val logbackStash = "6.4"
     const val mockOAuth2Server = "0.1.34"
     const val nimbus = "8.9"
-    // Newest ver 1.4.1 brings an issue: https://github.com/springdoc/springdoc-openapi/issues/729
-    const val openapi = "1.2.32"
+    const val openapi = "1.4.1"
     const val unboundid = "5.1.0"
     const val wiremock = "2.26.3"
     const val wiremockCloud = "2.2.3.RELEASE"
@@ -64,7 +63,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-ui:${Version.openapi}")
-    implementation("org.springdoc:springdoc-openapi-data-rest:${Version.openapi}")
+    // implementation("org.springdoc:springdoc-openapi-kotlin:${Version.openapi}")
     implementation("org.yaml:snakeyaml")
     runtimeOnly("com.oracle.ojdbc:ojdbc8")
 
