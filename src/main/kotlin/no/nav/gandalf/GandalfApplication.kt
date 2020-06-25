@@ -8,7 +8,7 @@ class GandalfApplication {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            // System.setProperty("oracle.jdbc.fanEnabled", "false")
+            System.setProperty("oracle.jdbc.fanEnabled", "false")
             SpringApplicationBuilder(GandalfApplication::class.java)
                 .profiles("remote").run(*args)
         }

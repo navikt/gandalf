@@ -85,8 +85,8 @@ class SecurityConfig(
                         SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")
                     )
             ).info(
-                Info().title("Security-token-service API.").description(
-                    "STS RESTful service."
+                Info().title("Security-Token-Service API.").description(
+                    "STS RESTful service description."
                 )
             )
     }
