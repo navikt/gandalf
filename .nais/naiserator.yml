@@ -13,18 +13,18 @@ spec:
      {{/each}}
   liveness:
     path: /isAlive
-    initialDelay: 30
-    timeout: 1
-    periodSeconds: 10
-    failureThreshold: 3
+    initialDelay: 20
+    periodSeconds: 5
+    failureThreshold: 30
   port: 8080
   prometheus:
     enabled: true
     path: /prometheus
   readiness:
     path: /isReady
-    initialDelay: 30
-    timeout: 1
+    initialDelay: 20
+    periodSeconds: 5
+    failureThreshold: 30
   replicas:
     min: {{replicas.min}}
     max: {{replicas.max}}
