@@ -17,7 +17,6 @@ import no.nav.gandalf.config.LocalIssuer
 import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.ExchangeTokenService
-import no.nav.gandalf.service.RSAKeyStoreService
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.azureADJwksUrl
 import no.nav.gandalf.utils.diffTokens
@@ -37,7 +36,6 @@ import no.nav.gandalf.utils.openAMJwksUrl
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
@@ -75,18 +73,9 @@ class AccessTokenIssuerTest {
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
-    @Autowired
-    private lateinit var rsaKeyStoreService: RSAKeyStoreService
-
     @PostConstruct
     fun setupKnownIssuers() {
         ControllerUtil().setupKnownIssuers()
-    }
-
-    @Before
-    fun setup() {
-        rsaKeyStoreService.resetRepository()
-        rsaKeyStoreService.resetCache()
     }
 
     @Test

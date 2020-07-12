@@ -132,14 +132,19 @@ class SamlObject {
         var attrName: String
         for (i in 0 until nList.length) {
             attrName = nList.item(i).attributes.getNamedItem("Name").nodeValue
-            if (attrName == "authenticationLevel") {
-                authenticationLevel = vList.item(i).textContent
-            } else if (attrName == "consumerId") {
-                consumerId = vList.item(i).textContent
-            } else if (attrName == "identType") {
-                identType = vList.item(i).textContent
-            } else if (attrName == "auditTrackingId") {
-                auditTrackingId = vList.item(i).textContent
+            when (attrName) {
+                "authenticationLevel" -> {
+                    authenticationLevel = vList.item(i).textContent
+                }
+                "consumerId" -> {
+                    consumerId = vList.item(i).textContent
+                }
+                "identType" -> {
+                    identType = vList.item(i).textContent
+                }
+                "auditTrackingId" -> {
+                    auditTrackingId = vList.item(i).textContent
+                }
             }
         }
 

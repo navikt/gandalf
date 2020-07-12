@@ -10,7 +10,6 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import mu.KotlinLogging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.text.ParseException
@@ -18,8 +17,6 @@ import java.time.ZonedDateTime
 import java.util.Date
 import java.util.UUID
 import kotlin.collections.ArrayList
-
-private val log = KotlinLogging.logger { }
 
 class OidcObject {
     var issuer: String? = null
@@ -35,7 +32,7 @@ class OidcObject {
     var notBeforeTime: Date?
     var issueTime: Date
     var expirationTime: Date
-    var authTime: Date?
+    private var authTime: Date?
     var auditTrackingId: String? = null
     private var signedJWT: SignedJWT? = null
     private val log: Logger = LoggerFactory.getLogger(javaClass)
@@ -137,7 +134,7 @@ class OidcObject {
                 .claim(RESOURCETYPE_CLAIM, resourceType)
 
             if (orgno != null) {
-                clBuilder.claim(OidcObject.CLIENT_ORGNO_CLAIM, orgno)
+                clBuilder.claim(CLIENT_ORGNO_CLAIM, orgno)
             }
             return clBuilder.build()
         }
@@ -183,7 +180,7 @@ class OidcObject {
 
     @Throws(ParseException::class)
     fun getClaim(claimName: String?): Any? {
-        return (if (signedJWT != null) signedJWT!!.jwtClaimsSet.claims.get(claimName) else null)
+        return (if (signedJWT != null) signedJWT!!.jwtClaimsSet.claims[claimName] else null)
     }
 
     @Throws(ParseException::class)
