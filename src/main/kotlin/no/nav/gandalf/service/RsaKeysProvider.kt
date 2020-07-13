@@ -14,10 +14,10 @@ class RsaKeysProvider {
     private var rsaKeys: RsaKeys? = null
 
     @Autowired
-    private val repository: RsaKeysRepository? = null
+    private lateinit var repository: RsaKeysRepository
 
     fun setKeyRotationTimeSeconds(keyRotationTimeSeconds: Long) {
-        repository!!.setKeyRotationTimeSeconds(keyRotationTimeSeconds)
+        repository.setKeyRotationTimeSeconds(keyRotationTimeSeconds)
     }
 
     val currentRSAKey: RSAKey
@@ -35,7 +35,7 @@ class RsaKeysProvider {
     private val keys: RsaKeys
         get() {
             if (rsaKeys == null || rsaKeys!!.expired(LocalDateTime.now())) {
-                rsaKeys = repository!!.keys
+                rsaKeys = repository.keys
             }
             return rsaKeys!!
         }

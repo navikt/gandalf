@@ -2,7 +2,6 @@ package no.nav.gandalf.keystore
 
 import com.nimbusds.jose.jwk.RSAKey
 import no.nav.gandalf.service.RsaKeysProvider
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,7 +45,7 @@ class RsaKeysProviderTest {
     }
 
     @Test
-    //@Ignore // Denne bør kjøres manuelt, siden verifikasjonen sees i det som logges (istedenfor å lage uønskede innsyns-/get-metoder for å hente ut innholdet i keys.
+    // @Ignore // Denne bør kjøres manuelt, siden verifikasjonen sees i det som logges (istedenfor å lage uønskede innsyns-/get-metoder for å hente ut innholdet i keys.
     @Throws(Exception::class)
     fun concurrentExpiry() {
 

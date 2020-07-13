@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import javax.persistence.TypedQuery
@@ -24,7 +24,7 @@ private val log = KotlinLogging.logger { }
 class RsaKeysRepository {
 
     @PersistenceContext
-    private val entityManager: EntityManager? = null
+    private lateinit var entityManager: EntityManager
     private var keyRotationTimeSeconds = DEFAULT_KEY_ROTATION
 
     fun setKeyRotationTimeSeconds(keyRotationTimeSeconds: Long) {
@@ -51,7 +51,7 @@ class RsaKeysRepository {
         .keyID} N ${r.getNextKey().keyID} exp ${r.expiry}"
 
     private fun read(): RsaKeys {
-        val query: TypedQuery<RsaKeys> = entityManager!!.createQuery("FROM RsaKeys", RsaKeys::class.java)
+        val query: TypedQuery<RsaKeys> = entityManager.createQuery("FROM RsaKeys", RsaKeys::class.java)
         // Denne skal alltid inneholde 1 record, men ta høyde for initielt kall
         val resultList: List<RsaKeys>? = query.resultList
         return when {
@@ -70,7 +70,7 @@ class RsaKeysRepository {
         val key3: RSAKey = generateNewRSAKey()
         val expiry = LocalDateTime.now().plusSeconds(keyRotationTimeSeconds)
         val initKeys = RsaKeys(1L, key1, key2, key3, expiry)
-        entityManager!!.persist(initKeys)
+        entityManager.persist(initKeys)
         log.info("RSA KEY DB initialised, next expiry: $expiry")
         return initKeys
     }

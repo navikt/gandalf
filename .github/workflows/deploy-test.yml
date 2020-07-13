@@ -76,3 +76,16 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/naiserator.yml
           VARS: .nais/test-vars.yml
+
+  deploy-dev-t4:
+    name: Deploy to NAIS dev (t4)
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: .nais/naiserator.yml
+          VARS: .nais/t4-vars.yml
