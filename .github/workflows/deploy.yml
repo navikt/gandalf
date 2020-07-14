@@ -107,4 +107,3 @@ jobs:
           CLUSTER: prod-fss
           RESOURCE: .nais/naiserator.yml
           VARS: .nais/prod-vars.yml
-
