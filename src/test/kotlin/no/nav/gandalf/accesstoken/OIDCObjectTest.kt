@@ -2,15 +2,13 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
-import java.util.Date
-import no.nav.gandalf.service.RSAKeyStoreService
+import no.nav.gandalf.service.RsaKeysProvider
 import no.nav.gandalf.utils.compare
 import no.nav.gandalf.utils.getAlteredOriginalToken
 import no.nav.gandalf.utils.getOriginalJwkSet
 import no.nav.gandalf.utils.getOriginalToken
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
+import java.util.Date
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -29,12 +28,7 @@ class OIDCObjectTest {
     private lateinit var tokenIssuer: AccessTokenIssuer
 
     @Autowired
-    private lateinit var rsaKeyStoreService: RSAKeyStoreService
-
-    @Before
-    fun init() {
-        rsaKeyStoreService.resetRepository()
-    }
+    private lateinit var rsaKeyStoreProvider: RsaKeysProvider
 
     @Test
     fun `Compare Generated Token To Original Token ver1`() {
@@ -44,7 +38,10 @@ class OIDCObjectTest {
             val username = jwtOriginal.subject
             // test constructor
             // get token based on values from original token for comparison
-            val oidcObj = OidcObject(AccessTokenIssuer.toZonedDateTime(jwtOriginal.issueTime), AccessTokenIssuer.OIDC_DURATION_TIME)
+            val oidcObj = OidcObject(
+                AccessTokenIssuer.toZonedDateTime(jwtOriginal.issueTime),
+                AccessTokenIssuer.OIDC_DURATION_TIME
+            )
             oidcObj.id = jwtOriginal.jwtid
             oidcObj.subject = username
             oidcObj.issuer = jwtOriginal.issuer
@@ -69,7 +66,10 @@ class OIDCObjectTest {
             val username = jwtOriginal.subject
             // Use test constructor
             // get token based on values from original token for comparison
-            var oidcObj = OidcObject(AccessTokenIssuer.toZonedDateTime(jwtOriginal.issueTime), AccessTokenIssuer.toZonedDateTime(jwtOriginal.expirationTime))
+            var oidcObj = OidcObject(
+                AccessTokenIssuer.toZonedDateTime(jwtOriginal.issueTime),
+                AccessTokenIssuer.toZonedDateTime(jwtOriginal.expirationTime)
+            )
             oidcObj.id = jwtOriginal.jwtid
             oidcObj.subject = username
             oidcObj.issuer = jwtOriginal.issuer
@@ -153,7 +153,11 @@ class OIDCObjectTest {
             val oidcObj = OidcObject(originalToken)
             oidcObj.getSignedToken(getCurrentRSAKey()!!, AccessTokenIssuer.OIDC_SIGNINGALG)
             val jwk = getOriginalJwkSet().getKeyByKeyId(oidcObj.keyId) as RSAKey
-            oidcObj.validate(tokenIssuer.issuer, Date(oidcObj.notBeforeTime!!.time - 2), jwk) // now is before notBeforeTime
+            oidcObj.validate(
+                tokenIssuer.issuer,
+                Date(oidcObj.notBeforeTime!!.time - 2),
+                jwk
+            ) // now is before notBeforeTime
         } catch (e: Exception) {
             assertTrue(e.message!!.indexOf("notBeforeTime") >= 0)
         }
@@ -168,7 +172,7 @@ class OIDCObjectTest {
             oidcObj.validate(tokenIssuer, oidcObj.issueTime)
         } catch (e: Exception) {
             println(e.message)
-            assertTrue(e.message!!.indexOf("Failed to get keys from by issuer") >= 0)
+            assertTrue(e.message!!.indexOf("Validation failed: failed to find key 10e9ed16-eb87-494a-a4ff-351651d4b98e in keys provided by issuer https://security-token-service.nais.preprod.local") >= 0)
         }
     }
 
@@ -197,6 +201,6 @@ class OIDCObjectTest {
     }
 
     private fun getCurrentRSAKey(): RSAKey? {
-        return rsaKeyStoreService.currentRSAKey
+        return rsaKeyStoreProvider.currentRSAKey
     }
 }

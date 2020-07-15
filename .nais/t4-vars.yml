@@ -27,8 +27,8 @@ envs:
   - name: SPRING_LDAP_BASE
     value: DC=test,DC=local
 replicas:
-  min: 1
-  max: 1
+  min: 2
+  max: 2
 vault-paths:
   - kvPath: serviceuser/data/test/srvsecurity-token-service
     mountPath: /secrets/serviceuser

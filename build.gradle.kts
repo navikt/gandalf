@@ -8,10 +8,10 @@ object Version {
     const val kotlinLoggin = "1.8.0.1"
     const val logbackStash = "6.4"
     const val mockOAuth2Server = "0.1.34"
-    const val nimbus = "8.9"
-    const val openapi = "1.4.1"
+    const val nimbus = "8.16"
+    const val openapi = "1.4.3"
     const val unboundid = "5.1.0"
-    const val wiremock = "2.26.3"
+    const val wiremock = "2.27.1"
     const val wiremockCloud = "2.2.3.RELEASE"
 }
 

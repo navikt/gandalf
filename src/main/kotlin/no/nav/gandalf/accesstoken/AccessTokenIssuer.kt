@@ -14,7 +14,7 @@ import no.nav.gandalf.config.LocalIssuer
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.model.Consumer
 import no.nav.gandalf.model.IdentType
-import no.nav.gandalf.service.RSAKeyStoreService
+import no.nav.gandalf.service.RsaKeysProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.xml.sax.SAXException
@@ -32,7 +32,7 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class AccessTokenIssuer(
-    @Autowired private val keyStore: RSAKeyStoreService,
+    @Autowired private val keyStore: RsaKeysProvider,
     @Autowired private val keySelector: KeySelector,
     @Autowired private val keyStoreReader: KeyStoreReader,
     @Autowired private val difiConfiguration: DIFIConfiguration,
@@ -250,11 +250,11 @@ class AccessTokenIssuer(
 
     override fun getKeyByKeyId(keyId: String?): RSAKey? {
         return when {
-            keyStore.publicJWKSet == null || keyStore.publicJWKSet != null && keyStore.publicJWKSet!!.keys.isEmpty() -> {
+            keyStore.publicJWKSet.keys.isEmpty() -> {
                 throw IllegalArgumentException("Failed to get keys from by issuer: $issuer")
             }
             else -> {
-                val keyIdResult: JWK? = keyStore.publicJWKSet!!.getKeyByKeyId(keyId)
+                val keyIdResult: JWK? = keyStore.publicJWKSet.getKeyByKeyId(keyId)
                 when {
                     keyIdResult != null -> keyIdResult as RSAKey
                     else -> keyIdResult
