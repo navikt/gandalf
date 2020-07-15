@@ -80,6 +80,7 @@ Runnable endpoints:
 ## Tools n stuff
 * Kotlin  
 * Nimbus  
+* Snyk
 * Spring Boot and all its dependencies.
 
 ## Contact
