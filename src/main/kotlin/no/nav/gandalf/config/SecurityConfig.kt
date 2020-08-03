@@ -45,6 +45,7 @@ class SecurityConfig(
                 "/rest/v1/sts/jwks",
                 "/isAlive",
                 "/isReady",
+                "ping",
                 "/prometheus",
                 // Swagger
                 "/api/**",

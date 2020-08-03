@@ -5,14 +5,14 @@ object Version {
     const val apacheHttp = "4.5.12"
     const val gradleVersion = "6.5"
     const val json = "20200518"
-    const val kotlinLoggin = "1.8.0.1"
+    const val kotlinLoggin = "1.8.3"
     const val logbackStash = "6.4"
     const val mockOAuth2Server = "0.1.34"
-    const val nimbus = "8.16"
+    const val nimbus = "8.19"
     const val openapi = "1.4.3"
     const val unboundid = "5.1.0"
     const val wiremock = "2.27.1"
-    const val wiremockCloud = "2.2.3.RELEASE"
+    const val wiremockCloud = "2.2.4.RELEASE"
 }
 
 val mainClass = "no.nav.gandalf.GandalfApplication"
@@ -23,8 +23,8 @@ plugins {
     val kotlinVersion = "1.3.72"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jmailen.kotlinter") version "2.4.1"
-    id("com.github.ben-manes.versions") version "0.28.0"
-    id("org.springframework.boot") version "2.3.1.RELEASE"
+    id("com.github.ben-manes.versions") version "0.29.0"
+    id("org.springframework.boot") version "2.3.2.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
