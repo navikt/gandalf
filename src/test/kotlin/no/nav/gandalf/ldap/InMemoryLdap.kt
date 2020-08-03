@@ -1,4 +1,4 @@
-package no.nav.gandalf
+package no.nav.gandalf.ldap
 
 import com.unboundid.ldap.listener.InMemoryDirectoryServer
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig
