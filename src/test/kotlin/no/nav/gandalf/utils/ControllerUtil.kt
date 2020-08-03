@@ -1,6 +1,6 @@
 package no.nav.gandalf.utils
 
-import no.nav.gandalf.ldap.InMemoryLdap
+import no.nav.gandalf.InMemoryLdap
 import org.apache.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

@@ -1,8 +1,10 @@
-package no.nav.gandalf.ldap
+package no.nav.gandalf
 
 import com.unboundid.ldap.sdk.LDAPException
 import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.config.LdapConfig
+import no.nav.gandalf.ldap.LDAPAuthentication
+import no.nav.gandalf.ldap.LDAPConnectionSetup
 import no.nav.gandalf.model.User
 import org.junit.After
 import org.junit.Test
@@ -16,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 class LdapTest {
 
     @After
-    fun clear() {
+    fun clean() {
         CollectorRegistry.defaultRegistry.clear()
     }
 
@@ -30,21 +32,27 @@ class LdapTest {
 
     @Test
     fun `Authenticated User Under OU=ServiceAccounts`() {
-        val ldap = LDAPAuthentication(LDAPConnectionSetup(ldapConfig = ldapConfig))
+        val ldap = LDAPAuthentication(
+            LDAPConnectionSetup(ldapConfig = ldapConfig)
+        )
         val authenticatedUser = User("srvPDP", "password")
         assert(ldap.result(user = authenticatedUser))
     }
 
     @Test
     fun `Authenticated User Under OU=ApplAccounts,OU=ServiceAccounts`() {
-        val ldap = LDAPAuthentication(LDAPConnectionSetup(ldapConfig = ldapConfig))
+        val ldap = LDAPAuthentication(
+            LDAPConnectionSetup(ldapConfig = ldapConfig)
+        )
         val authenticatedUser = User("srvaltutkanal", "password")
         assert(ldap.result(user = authenticatedUser))
     }
 
     @Test
     fun `UnAuthorized User`() {
-        val ldap = LDAPAuthentication(LDAPConnectionSetup(ldapConfig = ldapConfig))
+        val ldap = LDAPAuthentication(
+            LDAPConnectionSetup(ldapConfig = ldapConfig)
+        )
         val unauthorized = User("srvPDS", "password")
         assertThrows<LDAPException> { ldap.result(user = unauthorized) }
     }

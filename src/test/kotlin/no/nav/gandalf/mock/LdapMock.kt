@@ -1,7 +1,7 @@
 package no.nav.gandalf.mock
 
 import mu.KotlinLogging
-import no.nav.gandalf.ldap.InMemoryLdap
+import no.nav.gandalf.InMemoryLdap
 import org.springframework.context.annotation.Configuration
 
 private val log = KotlinLogging.logger { }
