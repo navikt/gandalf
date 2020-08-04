@@ -9,7 +9,7 @@ private val log = KotlinLogging.logger { }
 @Configuration
 class LdapMock {
 
-    private final val inMemoryLdap = InMemoryLdap()
+    final val inMemoryLdap = InMemoryLdap()
 
     init {
         log.info { "Setting up LDAP" }
