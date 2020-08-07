@@ -54,6 +54,10 @@ class LDAPConnectionSetup(
 
     val pool = ldapConnectionPool
 
+    val testUsername = ldapConfig.srvTestUsername
+
+    val testPassword = ldapConfig.srvTestPassword
+
     companion object {
         const val NUM_CONNECTIONS = 30
     }

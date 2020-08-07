@@ -25,7 +25,9 @@ class LdapTest {
         base = "dc=test,dc=local",
         port = 11389,
         remote = "false",
-        timeout = 1_000
+        timeout = 1_000,
+        srvTestPassword = "password",
+        srvTestUsername = "srvPDP"
     )
 
     @Test
