@@ -14,7 +14,11 @@ data class LdapConfig(
     @Value("\${spring.ldap.port}")
     val port: Int,
     @Value("\${spring.ldap.timeout: 5000}")
-    val timeout: Int
+    val timeout: Int,
+    @Value("\${srvtest.password: password}")
+    var srvTestPassword: String,
+    @Value("\${srvtest.username: srvPDP}")
+    var srvTestUsername: String
 ) {
 
     override fun toString() =

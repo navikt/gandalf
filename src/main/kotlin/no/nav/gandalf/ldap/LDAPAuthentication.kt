@@ -54,10 +54,27 @@ class LDAPAuthentication(
             alreadyAuthenticated -> true
             else ->
                 try {
+                    testSrvUserPassBeforeBind(dn, pwd)
                     (ldap.pool.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
                 } catch (e: LDAPException) {
                     ldapException = e
                     false
                 }
         }
+
+    private fun testSrvUserPassBeforeBind(dn: String, pwd: String) {
+        if (ldap.testUsername.isNotEmpty() && dn.contains(ldap.testUsername, ignoreCase = true)) {
+            val lengthOfPassword = pwd.length
+            log.info { "Username in Vault: ${ldap.testUsername}" }
+            log.info { "Got password from request with length: $lengthOfPassword to match Vault password length: ${ldap.testPassword.length} for: $dn" }
+            when (pwd) {
+                ldap.testPassword -> {
+                    log.info { "Password in Vault for: $dn MATCH password in request" }
+                }
+                else -> {
+                    log.info { "Password in Vault for: $dn do NOT match password in request" }
+                }
+            }
+        }
+    }
 }
