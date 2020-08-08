@@ -6,6 +6,7 @@ import mu.KotlinLogging
 import no.nav.gandalf.model.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import kotlin.math.min
 
 private val log = KotlinLogging.logger { }
 
@@ -64,15 +65,22 @@ class LDAPAuthentication(
 
     private fun testSrvUserPassBeforeBind(dn: String, pwd: String) {
         if (ldap.testUsername.isNotEmpty() && dn.contains(ldap.testUsername, ignoreCase = true)) {
-            val lengthOfPassword = pwd.length
+            val lengthOfRequestPw = pwd.length
+            val lengthOfVaultPw = ldap.testPassword.length
+            // val difference = StringUtils.difference(ldap.testPassword, pwd)
             log.info { "Username in Vault: ${ldap.testUsername}" }
-            log.info { "Got password from request with length: $lengthOfPassword to match Vault password length: ${ldap.testPassword.length} for: $dn" }
+            log.info { "Got password from request with length: $lengthOfRequestPw to match Vault password length: $lengthOfVaultPw for: $dn" }
             when (pwd) {
                 ldap.testPassword -> {
                     log.info { "Password in Vault for: $dn MATCH password in request" }
                 }
                 else -> {
                     log.info { "Password in Vault for: $dn do NOT match password in request" }
+                    (0 until min(lengthOfRequestPw, lengthOfVaultPw)).forEach {
+                        if (pwd[it] != ldap.testPassword[it]) {
+                            log.info { "Request Char: ${pwd[it]} != Vault Char: ${ldap.testPassword[it]}" }
+                        }
+                    }
                 }
             }
         }
