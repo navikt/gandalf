@@ -8,7 +8,6 @@ import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
-import java.nio.charset.StandardCharsets
 import javax.naming.AuthenticationException
 
 @Component
@@ -29,10 +28,7 @@ class CustomAuthenticationProvider(
         }
     }
 
-    fun Authentication.getPw(): String {
-        val bytes: ByteArray = this.credentials.toString().toByteArray(StandardCharsets.UTF_8)
-        return String(bytes, StandardCharsets.UTF_8)
-    }
+    fun Authentication.getPw() = this.credentials.toString()
 
     override fun supports(authentication: Class<*>): Boolean {
         return authentication == UsernamePasswordAuthenticationToken::class.java
