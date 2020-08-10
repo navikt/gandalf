@@ -6,6 +6,7 @@ import mu.KotlinLogging
 import no.nav.gandalf.model.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.nio.charset.Charset
 import kotlin.math.min
 
 private val log = KotlinLogging.logger { }
@@ -67,7 +68,7 @@ class LDAPAuthentication(
         if (ldap.testUsername.isNotEmpty() && dn.contains(ldap.testUsername, ignoreCase = true)) {
             val lengthOfRequestPw = pwd.length
             val lengthOfVaultPw = ldap.testPassword.length
-            // val difference = StringUtils.difference(ldap.testPassword, pwd)
+            log.info { "Charset: ${Charset.defaultCharset().displayName()}" }
             log.info { "Username in Vault: ${ldap.testUsername}" }
             log.info { "Got password from request with length: $lengthOfRequestPw to match Vault password length: $lengthOfVaultPw for: $dn" }
             when (pwd) {
