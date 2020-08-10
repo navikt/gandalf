@@ -1,10 +1,10 @@
 server:
   port: 8080
-  servlet:
-    encoding:
-      charset: utf-8
-      enabled: true
-      force: true
+ # servlet:
+ #   encoding:
+ #     charset: utf-8
+ #     enabled: true
+ #     force: true
 # Only in Test
 logging:
   level:

@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import javax.inject.Inject
 
 @Configuration
@@ -58,6 +59,8 @@ class SecurityConfig(
             .authenticationEntryPoint(authenticationEntryPoint())
             .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilterBefore(CharacterSetFilter(), BasicAuthenticationFilter::class.java)
     }
 
     @Bean
