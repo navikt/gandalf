@@ -6,8 +6,6 @@ import mu.KotlinLogging
 import no.nav.gandalf.model.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.nio.charset.Charset
-import kotlin.math.min
 
 private val log = KotlinLogging.logger { }
 
@@ -56,34 +54,12 @@ class LDAPAuthentication(
             alreadyAuthenticated -> true
             else ->
                 try {
-                    testSrvUserPassBeforeBind(dn, pwd)
+                    // Inactivated, can be used for debugging if client have problems with login.
+                    // testSrvUserPassBeforeBind(ldap, dn, pwd)
                     (ldap.pool.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
                 } catch (e: LDAPException) {
                     ldapException = e
                     false
                 }
         }
-
-    private fun testSrvUserPassBeforeBind(dn: String, pwd: String) {
-        if (ldap.testUsername.isNotEmpty() && dn.contains(ldap.testUsername, ignoreCase = true)) {
-            val lengthOfRequestPw = pwd.length
-            val lengthOfVaultPw = ldap.testPassword.length
-            log.info { "Charset: ${Charset.defaultCharset().displayName()}" }
-            log.info { "Username in Vault: ${ldap.testUsername}" }
-            log.info { "Got password from request with length: $lengthOfRequestPw to match Vault password length: $lengthOfVaultPw for: $dn" }
-            when (pwd) {
-                ldap.testPassword -> {
-                    log.info { "Password in Vault for: $dn MATCH password in request" }
-                }
-                else -> {
-                    log.info { "Password in Vault for: $dn do NOT match password in request" }
-                    (0 until min(lengthOfRequestPw, lengthOfVaultPw)).forEach {
-                        if (pwd[it] != ldap.testPassword[it]) {
-                            log.info { "Request Char: ${pwd[it]} != Vault Char: ${ldap.testPassword[it]}" }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

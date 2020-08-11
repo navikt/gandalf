@@ -30,11 +30,11 @@ The service definitions based on specifications in these references:
 | OIDC (Issued by OpenAm, `This` STS, AzureAD)      |  SAML     | `/rest/v1/sts/token/exchange`                   |                          |
 | SAML token (Issued by STS(Datapower) or `This` STS)                   | OIDC     | `/rest/v1/sts/token/exchange`                   |           |
 
-### Example Request. For more info check out: `/api`
-`/rest/v1/sts/token`  
+### Example Request. For more info check out: `../api`
+`../rest/v1/sts/token`  
 #### Get System OIDC
-**You send:**  Your srvUser credentials i Authorization header
-**You get:** An `OIDC-Token` with which you can make further actions.
+**You send:**  Your srvUser credentials i Authorization header  
+**You get:** An `OIDC-Token` with which you can make further actions.  
 
 **Request:**
 ```json
