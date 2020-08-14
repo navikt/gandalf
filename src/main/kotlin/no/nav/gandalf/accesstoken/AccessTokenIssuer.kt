@@ -190,9 +190,13 @@ class AccessTokenIssuer(
         samlObj.issuer = SAML_ISSUER
         samlObj.setDuration((oidcObj.expirationTime.time - now.time) / 1000 + EXCHANGE_TOKEN_EXTENDED_TIME)
         samlObj.nameID = oidcObj.subject
+        val idpIssoIssuer = filterIssoInternIssuer()
         when {
             oidcObj.authLevel != null -> {
                 samlObj.authenticationLevel = oidcObj.authLevel
+            }
+            !oidcObj.issuer.isNullOrEmpty() && idpIssoIssuer != null && idpIssoIssuer.issuer == oidcObj.issuer -> {
+                samlObj.authenticationLevel = DEFAULT_INTERN_SAML_AUTHLEVEL
             }
             else -> {
                 samlObj.authenticationLevel = DEFAULT_SAML_AUTHLEVEL
@@ -208,6 +212,8 @@ class AccessTokenIssuer(
             )
         return samlObj.getSignedSaml(keyStoreReader)
     }
+
+    fun filterIssoInternIssuer() = knownIssuers.singleOrNull { it.issuer.contains(ISSO_OIDC_ISSUER) }
 
     @JvmOverloads
     @Throws(Exception::class)
@@ -287,6 +293,8 @@ class AccessTokenIssuer(
         var SAML_DURATION_TIME = 60 * 60.toLong()
         var EXCHANGE_TOKEN_EXTENDED_TIME: Long = 30 // seconds
         var DEFAULT_SAML_AUTHLEVEL = "0"
+        var DEFAULT_INTERN_SAML_AUTHLEVEL = "4"
+        var ISSO_OIDC_ISSUER = "isso"
 
         fun getDomainFromIssuerURL(issuer: String?): String {
             val domainPrefix = "nais."
