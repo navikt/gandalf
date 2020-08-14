@@ -1,4 +1,4 @@
-![PROD - Build, push, and deploy](https://github.com/navikt/gandalf/workflows/PROD%20-%20Build,%20push,%20and%20deploy/badge.svg?branch=master)
+![PROD- Build, push, and deploy](https://github.com/navikt/gandalf/workflows/PROD-%20Build,%20push,%20and%20deploy/badge.svg)
 
 # About
 REST-STS is available in FSS, users are authenticated to onprem-AD.  
