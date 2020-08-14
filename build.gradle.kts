@@ -24,10 +24,10 @@ plugins {
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jmailen.kotlinter") version "2.4.1"
     id("com.github.ben-manes.versions") version "0.29.0"
-    id("org.springframework.boot") version "2.3.2.RELEASE"
+    id("org.springframework.boot") version "2.3.3.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
+    id("io.spring.dependency-management") version "1.0.10.RELEASE"
 }
 
 application {

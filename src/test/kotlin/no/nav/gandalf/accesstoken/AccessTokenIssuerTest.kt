@@ -349,6 +349,13 @@ class AccessTokenIssuerTest {
     }
 
     @Test
+    fun `Filter Isso Issuer from others to make compare`() {
+        val isso = issuer.filterIssoInternIssuer()
+        assert(isso != null)
+        assert(isso!!.issuer.contains(AccessTokenIssuer.ISSO_OIDC_ISSUER))
+    }
+
+    @Test
     fun `Exchange OpenAm OIDC To SAML Token`() {
         val l: List<String> = getOpenAmAndDPSamlExchangePair()
         val oidcToken = l[0]
