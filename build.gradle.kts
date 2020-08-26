@@ -10,7 +10,7 @@ object Version {
     const val mockOAuth2Server = "0.1.34"
     const val nimbus = "8.19"
     const val openapi = "1.4.4"
-    const val unboundid = "5.1.0"
+    const val unboundid = "5.1.1"
     const val wiremock = "2.27.1"
     const val wiremockCloud = "2.2.4.RELEASE"
 }
