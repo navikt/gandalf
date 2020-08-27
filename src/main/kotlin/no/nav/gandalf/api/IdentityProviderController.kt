@@ -37,7 +37,8 @@ class IdentityProviderController {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "JWKS Keys",
+                responseCode = "200",
+                description = "JWKS Keys",
                 content = [
                     (
                         Content(
@@ -71,7 +72,8 @@ class IdentityProviderController {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "JWKS Keys",
+                responseCode = "200",
+                description = "JWKS Keys",
                 content = [
                     (
                         Content(
@@ -97,7 +99,8 @@ class IdentityProviderController {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Metadata",
+                responseCode = "200",
+                description = "Metadata",
                 content = [
                     (
                         Content(
@@ -140,7 +143,8 @@ class IdentityProviderController {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Meatadata",
+                responseCode = "200",
+                description = "Meatadata",
                 content = [
                     (
                         Content(

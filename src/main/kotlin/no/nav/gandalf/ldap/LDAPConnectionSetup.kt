@@ -37,7 +37,8 @@ class LDAPConnectionSetup(
             with(ldapConnection) {
                 setDisconnectInfo(
                     DisconnectType.IO_ERROR,
-                    "Error when connecting to LDAPS $ldapConfig", e
+                    "Error when connecting to LDAPS $ldapConfig",
+                    e
                 )
             }
         }

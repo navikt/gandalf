@@ -51,7 +51,8 @@ class TokenExchangeController {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Issued OIDC/SAML Token",
+                responseCode = "200",
+                description = "Issued OIDC/SAML Token",
                 content = [
                     (
                         Content(
@@ -177,7 +178,8 @@ class TokenExchangeController {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Issued OIDC Token",
+                responseCode = "200",
+                description = "Issued OIDC Token",
                 content = [
                     (
                         Content(

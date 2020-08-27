@@ -42,7 +42,8 @@ class ValidateController {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Validated Response",
+                responseCode = "200",
+                description = "Validated Response",
                 content = [
                     (
                         Content(
@@ -92,7 +93,8 @@ class ValidateController {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Validated Response",
+                responseCode = "200",
+                description = "Validated Response",
                 content = [
                     (
                         Content(

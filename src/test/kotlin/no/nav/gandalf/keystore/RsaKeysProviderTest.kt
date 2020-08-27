@@ -69,12 +69,14 @@ class RsaKeysProviderTest {
 
     private fun readKeysInTransaction() {
         val tmpl = TransactionTemplate(txManager!!)
-        tmpl.execute(object : TransactionCallbackWithoutResult() {
-            override fun doInTransactionWithoutResult(status: TransactionStatus) {
-                val key: RSAKey = provider!!.currentRSAKey
-                println(key.toJSONString())
+        tmpl.execute(
+            object : TransactionCallbackWithoutResult() {
+                override fun doInTransactionWithoutResult(status: TransactionStatus) {
+                    val key: RSAKey = provider!!.currentRSAKey
+                    println(key.toJSONString())
+                }
             }
-        })
+        )
     }
 
     private fun startThreadsThatReadInSeparateTransaction(numberOfThreads: Int) {

@@ -25,7 +25,8 @@ class Observability {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Ping",
+                responseCode = "200",
+                description = "Ping",
                 content = [
                     (
                         Content(

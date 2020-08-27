@@ -361,7 +361,7 @@ class AccessTokenIssuerTest {
         val oidcToken = l[0]
         val dpSamlToken = l[1]
         try {
-            val signedJwt = SignedJWT.parse(oidcToken)
+            // val signedJwt = SignedJWT.parse(oidcToken)
             val oidcObj = OidcObject(oidcToken)
             val samlObj = SamlObject()
             samlObj.read(dpSamlToken)

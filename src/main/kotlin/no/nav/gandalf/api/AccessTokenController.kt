@@ -68,7 +68,8 @@ class AccessTokenController(
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Issued OIDC Token",
+                responseCode = "200",
+                description = "Issued OIDC Token",
                 content = [
                     (
                         Content(
@@ -138,7 +139,8 @@ class AccessTokenController(
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Issued OIDC Token",
+                responseCode = "200",
+                description = "Issued OIDC Token",
                 content = [
                     (
                         Content(
@@ -179,7 +181,8 @@ class AccessTokenController(
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Issued OIDC Token",
+                responseCode = "200",
+                description = "Issued OIDC Token",
                 headers = [
                     Header(name = "username", description = "Username for Authentication"),
                     Header(name = "password", description = "Password For Authentication")
@@ -243,7 +246,8 @@ class AccessTokenController(
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Issued SAML Token",
+                responseCode = "200",
+                description = "Issued SAML Token",
                 content = [
                     (
                         Content(

@@ -31,7 +31,9 @@ class InMemoryLdap : AutoCloseable {
                 InMemoryListenerConfig.createLDAPSConfig(
                     LNAME,
                     null,
-                    LPORT, tlsSF, tlsCF
+                    LPORT,
+                    tlsSF,
+                    tlsCF
                 )
             )
 
