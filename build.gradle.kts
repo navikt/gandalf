@@ -20,9 +20,9 @@ val mainClass = "no.nav.gandalf.GandalfApplication"
 plugins {
     application
     java
-    val kotlinVersion = "1.3.72"
+    val kotlinVersion = "1.4.0"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jmailen.kotlinter") version "2.4.1"
+    id("org.jmailen.kotlinter") version "3.0.0"
     id("com.github.ben-manes.versions") version "0.29.0"
     id("org.springframework.boot") version "2.3.3.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion

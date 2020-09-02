@@ -56,7 +56,7 @@ class WSTrustRequestTest {
         val xmlReq: String = getOidcToSamlRequest(username, password, oidcToken!!)
         val wsReq = WSTrustRequest()
         wsReq.read(xmlReq)
-        oidcToken = wsReq.decodedOidcToken
+        // oidcToken = wsReq.decodedOidcToken
         // val signedJWT = SignedJWT.parse(oidcToken)
         // val claimSet = signedJWT.jwtClaimsSet
         Assert.assertTrue(wsReq.isExchangeOidcToSaml)

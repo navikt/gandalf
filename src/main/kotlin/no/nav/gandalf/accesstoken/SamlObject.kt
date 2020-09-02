@@ -248,7 +248,8 @@ class SamlObject {
             val ref = signFac.newReference("#$id", signFac.newDigestMethod(DigestMethod.SHA1, null), tList, null, null)
             val si = signFac.newSignedInfo(
                 signFac.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE, null as C14NMethodParameterSpec?),
-                signFac.newSignatureMethod(SignatureMethod.RSA_SHA1, null), listOf(ref)
+                signFac.newSignatureMethod(SignatureMethod.RSA_SHA1, null),
+                listOf(ref)
             )
             val cert: X509Certificate? = keyStoreReader.signingCertificate
             if (cert == null) {
