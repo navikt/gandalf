@@ -19,6 +19,7 @@ import no.nav.gandalf.api.Util.Companion.tokenHeaders
 import no.nav.gandalf.api.Util.Companion.unauthorizedResponse
 import no.nav.gandalf.api.Util.Companion.userDetails
 import no.nav.gandalf.ldap.LDAPConnectionSetup
+import no.nav.gandalf.metric.ApplicationMetric.Companion.issuedTokenCounterUnique
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencySAMLToken
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencyToken
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencyToken2
@@ -125,6 +126,7 @@ class AccessTokenController(
                         return serverErrorResponse(e)
                     }
                     tokenOK.inc()
+                    issuedTokenCounterUnique.labels(user)
                     return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders)
                         .body(AccessTokenResponse(oidcToken!!))
                 }
