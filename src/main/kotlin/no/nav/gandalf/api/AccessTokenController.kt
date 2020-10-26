@@ -126,7 +126,7 @@ class AccessTokenController(
                         return serverErrorResponse(e)
                     }
                     tokenOK.inc()
-                    issuedTokenCounterUnique.labels(user)
+                    issuedTokenCounterUnique.labels(user).inc()
                     return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders)
                         .body(AccessTokenResponse(oidcToken!!))
                 }
