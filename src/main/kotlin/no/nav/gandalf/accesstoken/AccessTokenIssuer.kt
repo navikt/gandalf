@@ -71,7 +71,7 @@ class AccessTokenIssuer(
     }
 
     @Throws(Exception::class)
-    fun issueToken(username: String?): SignedJWT? {
+    fun issueToken(username: String?): SignedJWT {
         log.info("issueToken for $username")
         require(!(username == null || username.isEmpty())) { "Failed to issue oidc token, username is null" }
         val oidcObj = OidcObject(ZonedDateTime.now(), OIDC_DURATION_TIME)
@@ -150,7 +150,7 @@ class AccessTokenIssuer(
 
     @JvmOverloads
     @Throws(Exception::class)
-    fun exchangeSamlToOidcToken(samlToken: String, now: ZonedDateTime? = ZonedDateTime.now()): SignedJWT? {
+    fun exchangeSamlToOidcToken(samlToken: String, now: ZonedDateTime? = ZonedDateTime.now()): SignedJWT {
         log.info("Issuing OIDC token from SAML: exchangeSamlToOidcToken")
 
         // read Saml token

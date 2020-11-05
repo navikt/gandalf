@@ -12,6 +12,9 @@ The service definitions based on specifications in these references:
 **Development:** `https://security-token-service.nais.preprod.local`  
 **Prod:** `https://security-token-service.nais.adeo.no`  
 
+### Developers
+For local Development `https://security-token-service.dev.adeo.no` is exposed in [naisdevice](https://doc.nais.io/device)
+
 ### Openapi
 `/api`  
 
@@ -32,7 +35,7 @@ The service definitions based on specifications in these references:
 
 ### Example Request. For more info check out: `../api`
 `../rest/v1/sts/token`  
-#### Get System OIDC
+### Issue System OIDC
 **You send:**  Your srvUser credentials i Authorization header  
 **You get:** An `OIDC-Token` with which you can make further actions.  
 
@@ -58,7 +61,10 @@ Content-Type: application/json
    "expires_in": 3600
 }
 ```
-**Failed Response:**
+
+The validity period of the token is specified in seconds. The OIDC token is a B64 URL-encoded JWT.
+
+**Failed Responses:**
 ```json
 HTTP/1.1 401 Unauthorized
 Content-Type: application/json
@@ -69,11 +75,108 @@ Content-Type: application/json
 }
 ```
 
+**Failed Response:**
+```json
+HTTP/1.1 400 BadRequest
+Content-Type: application/json
+
+{
+    "error": "invalid_request",
+    "error_description": "Some message"
+}
+```
+
+### Issue OIDC token based on SAML token
+`...rest/v1/sts/token/exchange`
+
+The service validates the received SAML token, generates a new OIDC token with content retrieved from the SAML token.
+
+**Request:**
+```json
+POST /rest/v1/sts/token/exchange 
+HTTP/1.1
+Accept: application/x-www-form-urlencoded
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic aGVsbG86eW91
+
+grant_type=urn:ietf:params:oauth:grant-type:token-exchange&
+requested_token_type=urn:ietf:params:oauth:token-type:access_token&
+subject_token_type=urn:ietf:params:oauth:token-type:saml2&
+subject_token=BASE64URL encoded SAML token
+```
+
+**Successful Response:**
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "access_token": <oidc-token>,
+   "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
+   "token_type": "Bearer",
+   "expires_in": <30 sek more then expiry for SAML-tokenet>
+}
+```
+
+```json
+HTTP/1.1 400 BadRequest
+Content-Type: application/json
+
+{
+    "error": "invalid_request",
+    "error_description": "Some message"
+}
+```
+
+The validity period of the token is specified in seconds. The OIDC token is a B64 URL-encoded JWT.
+
+### Issue SAML token based on OIDC token
+`...rest/v1/sts/token/exchange`
+
+**Request:**
+```json
+POST /rest/v1/sts/token/exchange 
+HTTP/1.1
+Accept: application/x-www-form-urlencoded
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic aGVsbG86eW91
+
+grant_type=urn:ietf:params:oauth:grant-type:token-exchange&
+requested_token_type=urn:ietf:params:oauth:token-type:saml2&
+subject_token_type=urn:ietf:params:oauth:token-type:access_token&
+subject_token=BASE64URL encoded OIDC token
+```
+
+**Successful Response:**
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+   "access_token": <saml-token>,
+   "issued_token_type": "urn:ietf:params:oauth:token-type:saml2",
+   "token_type": "Bearer",
+   "expires_in": <expiry for SAML-token>
+}
+```
+
+```json
+HTTP/1.1 400 BadRequest
+Content-Type: application/json
+
+{
+    "error": "invalid_request",
+    "error_description": "Some message"
+}
+```
+
 ## To Run
 Run _GandalfApplicationLocal_ in `test/kotlin/no/nav/gandalf`  
 Runnable endpoints:  
 `/rest/v1/sts/token`  
 `/rest/v1/sts/token2`  
+`/rest/v1/sts/token/exchange`  
+`/rest/v1/sts/samltoken`  
 `/.well-known/openid-configuration`  
 `/jwks`  
 
@@ -81,13 +184,15 @@ Runnable endpoints:
 * Kotlin  
 * Nimbus  
 * Snyk
-* Spring Boot and all its dependencies.
+* Spring Boot
 
 ## Contact
 Plattformsikkerhet: `youssef.bel.mekki@nav.no` ++  
 Slack: `#pig_sikkerhet`
 
 ## TODO
-- [ ] Add more endpoints to be run local testing  
+- [x] Add more endpoints to be run local testing  
+- [x] Expose `dev.adeo.no` for local development  
 - [ ] Describe the Swagger Objects and values
 - [ ] Refactoring of code for better readability
+

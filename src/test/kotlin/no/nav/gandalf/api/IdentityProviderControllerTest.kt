@@ -83,4 +83,21 @@ class IdentityProviderControllerTest {
             .andExpect(jsonPath("$.jwks_uri").value("$stsEndpoint$JWKS"))
             .andExpect(jsonPath("$.subject_types_supported").isArray)
     }
+
+    // Path: /.well-known/openid-configuration
+    @Test
+    fun `Get WELL_KNOWN Deprecated`() {
+        val stsEndpoint = "https://security-token-service.nais.preprod.local"
+        mvc.perform(
+            MockMvcRequestBuilders.get("/rest/v1/sts/.well-known/openid-configuration")
+                .with(SecurityMockMvcRequestPostProcessors.anonymous())
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.issuer").value(stsEndpoint))
+            .andExpect(jsonPath("$.token_endpoint").value("$stsEndpoint$TOKEN"))
+            .andExpect(jsonPath("$.exchange_token_endpoint").value("$stsEndpoint$EXCHANGE"))
+            .andExpect(jsonPath("$.jwks_uri").value("$stsEndpoint$JWKS"))
+            .andExpect(jsonPath("$.subject_types_supported").isArray)
+    }
 }
