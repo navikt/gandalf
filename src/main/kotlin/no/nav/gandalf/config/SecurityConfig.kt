@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.security.SecurityScheme
+import io.swagger.v3.oas.models.servers.Server
 import no.nav.gandalf.ldap.CustomAuthenticationProvider
 import no.nav.gandalf.ldap.LDAPConnectionSetup
 import no.nav.gandalf.ldap.RestAuthenticationEntryPoint
@@ -81,20 +82,27 @@ class SecurityConfig(
 
     @Bean
     fun openApiSecurity(): OpenAPI? {
-        return OpenAPI()
-            .components(
-                Components()
-                    .addSecuritySchemes(
-                        "BasicAuth",
-                        SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")
-                    )
-            ).info(
-                Info()
-                    .title("Security-Token-Service API.")
-                    .version("2.0")
-                    .description(
-                        "STS RESTful service description."
-                    )
+        val openApi = OpenAPI()
+        if (ldapConfig.url.contains("preprod.local")) {
+            openApi.servers = mutableListOf(
+                Server().url("https://security-token-service.nais.preprod.local"),
+                Server().url("https://security-token-service.dev.adeo.no")
             )
+        }
+        openApi.components(
+            Components()
+                .addSecuritySchemes(
+                    "BasicAuth",
+                    SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")
+                )
+        ).info(
+            Info()
+                .title("Security-Token-Service API.")
+                .version("2.0")
+                .description(
+                    "STS RESTful service description."
+                )
+        )
+        return openApi
     }
 }
