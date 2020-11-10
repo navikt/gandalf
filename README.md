@@ -111,10 +111,10 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-   "access_token": <oidc-token>,
+   "access_token": "eY........",
    "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
    "token_type": "Bearer",
-   "expires_in": <30 sek more then expiry for SAML-tokenet>
+   "expires_in": "30 sek more then expiry for SAML-tokenet"
 }
 ```
 
@@ -153,10 +153,10 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-   "access_token": <saml-token>,
+   "access_token": "eY........",
    "issued_token_type": "urn:ietf:params:oauth:token-type:saml2",
    "token_type": "Bearer",
-   "expires_in": <expiry for SAML-token>
+   "expires_in": "expiry for SAML-token"
 }
 ```
 
