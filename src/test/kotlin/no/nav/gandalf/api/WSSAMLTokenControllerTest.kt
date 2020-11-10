@@ -114,6 +114,6 @@ internal fun setupValidateRequest(username: String, password: String, issuer: Ac
 }
 
 internal fun setupOIDCtoSAMLRequest(username: String, password: String, issuer: AccessTokenIssuer): String {
-    val oidcToken: String? = issuer.issueToken(username)!!.serialize()
+    val oidcToken: String? = issuer.issueToken(username).serialize()
     return getOidcToSamlRequest(username, password, oidcToken!!)
 }

@@ -119,16 +119,18 @@ class AccessTokenController(
                         tokenNotOk.inc()
                         return unauthorizedResponse(Throwable(), "Unauthorized")
                     }
-                    val oidcToken = try {
-                        issuer.issueToken(user)
+                    return try {
+                        val oidcToken = issuer.issueToken(user)
+                        tokenOK.inc()
+                        issuedTokenCounterUnique.labels(user).inc()
+                        ResponseEntity
+                            .status(HttpStatus.OK)
+                            .headers(tokenHeaders)
+                            .body(AccessTokenResponse(oidcToken))
                     } catch (e: Throwable) {
                         tokenError.inc()
-                        return serverErrorResponse(e)
+                        serverErrorResponse(e)
                     }
-                    tokenOK.inc()
-                    issuedTokenCounterUnique.labels(user).inc()
-                    return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders)
-                        .body(AccessTokenResponse(oidcToken!!))
                 }
             }
         } finally {
@@ -229,16 +231,16 @@ class AccessTokenController(
                 return unauthorizedResponse(e, "Could Not Authenticate username: $username")
             }
             log.info("Issue OIDC token2 for user: $username")
-            val oidcToken = try {
-                issuer.issueToken(username)
+            return try {
+                val oidcToken = issuer.issueToken(username)
+                token2Ok.inc()
+                return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(AccessToken2Response(oidcToken))
             } catch (e: Throwable) {
                 token2Error.inc()
-                return serverErrorResponse(e)
+                serverErrorResponse(e)
             }
-            token2Ok.inc()
-            return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(AccessToken2Response(oidcToken!!))
         } finally {
             requestTimer.observeDuration()
         }
@@ -285,28 +287,28 @@ class AccessTokenController(
                 return unauthorizedResponse(Throwable(), "Unauthorized")
             }
             log.info("Issue SAML token for: $user")
-            val samlToken = try {
-                issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
+            return try {
+                val samlToken = issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
+                val samlObj = SamlObject().apply {
+                    this.read(samlToken)
+                }
+                samlTokenOk.inc()
+                return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .headers(tokenHeaders)
+                    .body(
+                        ExchangeTokenService().constructResponse(
+                            samlToken,
+                            "Bearer",
+                            "urn:ietf:params:oauth:token-type:saml2",
+                            samlObj.expiresIn,
+                            false
+                        )
+                    )
             } catch (e: Throwable) {
                 samlTokenError.inc()
-                return serverErrorResponse(e)
+                serverErrorResponse(e)
             }
-            val samlObj = SamlObject().apply {
-                this.read(samlToken)
-            }
-            samlTokenOk.inc()
-            return ResponseEntity
-                .status(HttpStatus.OK)
-                .headers(tokenHeaders)
-                .body(
-                    ExchangeTokenService().constructResponse(
-                        samlToken,
-                        "Bearer",
-                        "urn:ietf:params:oauth:token-type:saml2",
-                        samlObj.expiresIn,
-                        false
-                    )
-                )
         } finally {
             requestTimer.observeDuration()
         }

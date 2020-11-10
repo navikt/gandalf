@@ -1,16 +1,23 @@
 package no.nav.gandalf.api
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.EXCHANGE
 import no.nav.gandalf.utils.EXCHANGE_DIFI
 import no.nav.gandalf.utils.GRANT_TYPE
 import no.nav.gandalf.utils.REQUESTED_TOKEN_TYPE
+import no.nav.gandalf.utils.SAML_TOKEN
+import no.nav.gandalf.utils.SCOPE
 import no.nav.gandalf.utils.SUBJECT_TOKEN
 import no.nav.gandalf.utils.SUBJECT_TOKEN_TYPE
+import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN_SUBJECT
+import no.nav.gandalf.utils.TOKEN_TYPE
 import no.nav.gandalf.utils.getDatapowerSAMLBase64Encoded
 import no.nav.gandalf.utils.getDifiOidcToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
+import no.nav.security.mock.oauth2.http.objectMapper
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,9 +60,36 @@ class TokenExchangeControllerTest {
     }
 
     // Path: /token/exchange
-    // This test is a 400, token is outdated, this is only to test the api.
     @Test
-    fun `Get Token Exchange SAML to OIDC`() {
+    fun `Get Valid SAML and Exchange to OIDC`() {
+        val result = mvc.perform(
+            MockMvcRequestBuilders.get(SAML_TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.access_token").isString).andReturn()
+
+        val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
+
+        mvc.perform(
+            MockMvcRequestBuilders.post(EXCHANGE)
+                .param(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange")
+                .param(REQUESTED_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token")
+                .param(SUBJECT_TOKEN, mockedToken.access_token)
+                .param(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.access_token").isString)
+            .andExpect(jsonPath("$.token_type").value("Bearer"))
+            .andExpect(jsonPath("$.expires_in").isNumber)
+            .andExpect(jsonPath("$.issued_token_type").value("urn:ietf:params:oauth:token-type:access_token"))
+    }
+
+    @Test
+    fun `Get Token Exchange SAML to OIDC fail with bad-request with expired token`() {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE)
                 .param(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange")
@@ -100,21 +134,37 @@ class TokenExchangeControllerTest {
             .andExpect(jsonPath("$.error_description").value("Missing subject_token in request"))
     }
 
-    // TODO
-    // Generate token, and jwk to sign token, prep /jwks with same keys, send inn oidc token.
     @Test
     fun `OIDC to SAML Exchange Successfully`() {
+        val result = mvc.perform(
+            MockMvcRequestBuilders.get(TOKEN)
+                .param(GRANT_TYPE, "client_credentials")
+                .param(SCOPE, "openid")
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
+            .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
+            .andExpect(jsonPath("$.access_token").isString)
+            .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
+            .andExpect(jsonPath("$.expires_in").value(3600)).andReturn()
+
+        val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
+
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE)
                 .param(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange")
                 .param(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token")
-                .param(SUBJECT_TOKEN, getOpenAmAndDPSamlExchangePair()[0])
+                .param(SUBJECT_TOKEN, mockedToken.access_token)
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
         )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
-            .andExpect(jsonPath("$.error_description").value("Validation failed: token has expired"))
+            .andExpect(jsonPath("$.access_token").isString)
+            .andExpect(jsonPath("$.token_type").value("Bearer"))
+            .andExpect(jsonPath("$.expires_in").isNumber)
+            .andExpect(jsonPath("$.issued_token_type").value("urn:ietf:params:oauth:token-type:saml2"))
     }
 
     @Test
@@ -158,3 +208,8 @@ class TokenExchangeControllerTest {
             .andExpect(jsonPath("$.error_description").value("Failed to exchange difi token to oidc token: Validation failed: token has expired"))
     }
 }
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class MockTokenTest(
+    val access_token: String
+)

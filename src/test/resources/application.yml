@@ -59,3 +59,4 @@ springdoc:
     path: /api/api-doc
   swagger-ui:
     path: /api
+  writer-with-default-pretty-printer: true

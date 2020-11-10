@@ -52,7 +52,7 @@ class WSTrustRequestTest {
     @Test
     @Throws(Exception::class)
     fun `OIDC To SAML Request`() {
-        var oidcToken: String? = issuer.issueToken(username)!!.serialize()
+        val oidcToken: String? = issuer.issueToken(username).serialize()
         val xmlReq: String = getOidcToSamlRequest(username, password, oidcToken!!)
         val wsReq = WSTrustRequest()
         wsReq.read(xmlReq)

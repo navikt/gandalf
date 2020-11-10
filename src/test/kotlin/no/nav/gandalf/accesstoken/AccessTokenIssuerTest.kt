@@ -84,7 +84,7 @@ class AccessTokenIssuerTest {
         val username = "testuser"
         val token = issuer.issueToken(username)
         TestCase.assertNotNull(token)
-        val jwt = token!!.jwtClaimsSet
+        val jwt = token.jwtClaimsSet
         TestCase.assertEquals(jwt.subject, username)
         TestCase.assertEquals(jwt.getClaim(AZP_CLAIM), username)
         TestCase.assertEquals(jwt.issuer, issuer.issuer)
@@ -154,8 +154,7 @@ class AccessTokenIssuerTest {
         val subject: String? = samlObj.nameID
         // exchangeToken med valid date
         val token = issuer.exchangeSamlToOidcToken(samlToken, now)
-        assertTrue(token != null)
-        assertTrue(token!!.jwtClaimsSet.expirationTime != null)
+        assertTrue(token.jwtClaimsSet.expirationTime != null)
         assertTrue(token.jwtClaimsSet.subject == subject)
         // Test response
         val response = ExchangeTokenService().getResponseFrom(token)
@@ -171,8 +170,7 @@ class AccessTokenIssuerTest {
         val now = notOnOrAfter.minusSeconds(beforeAfter)
         // exchangeToken med valid date
         val token = issuer.exchangeSamlToOidcToken(getIDASelvutstedtSaml(), now)
-        assertTrue(token != null)
-        assertTrue(token!!.jwtClaimsSet.expirationTime != null)
+        assertTrue(token.jwtClaimsSet.expirationTime != null)
         assertTrue(token.jwtClaimsSet.subject == "Z991643")
         // Test response
         val response = ExchangeTokenService().getResponseFrom(token)
@@ -332,7 +330,7 @@ class AccessTokenIssuerTest {
     fun `Exchange OIDC To SAML Token`() {
         try {
             val signedJWT = issuer.issueToken(env.issuerUsername)
-            val oidcToken = signedJWT!!.serialize()
+            val oidcToken = signedJWT.serialize()
             val samlToken = issuer.exchangeOidcToSamlToken(oidcToken, env.issuerUsername)
             val samlObj = SamlObject()
             samlObj.read(samlToken)

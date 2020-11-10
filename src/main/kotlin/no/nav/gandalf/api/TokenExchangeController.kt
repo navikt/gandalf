@@ -104,8 +104,7 @@ class TokenExchangeController {
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
         try {
-            var copyReqTokenType = reqTokenType
-            log.info("Exchange $subTokenType to $copyReqTokenType")
+            log.info("Exchange $subTokenType to $reqTokenType")
             val user = requireNotNull(userDetails()) {
                 ApplicationMetric.exchangeTokenNotOk.inc()
                 return unauthorizedResponse(Throwable(), "Unauthorized")
@@ -121,48 +120,44 @@ class TokenExchangeController {
             when {
                 subTokenType.equals("urn:ietf:params:oauth:token-type:saml2") -> {
                     log.info("Exchange SAML token to OIDC")
-                    val oidcToken: SignedJWT?
-                    oidcToken = try {
+                    return try {
                         val decodedSaml = Base64.decodeBase64(subjectToken.toByteArray())
-                        issuer.exchangeSamlToOidcToken(String(decodedSaml, StandardCharsets.UTF_8))
+                        val oidcToken: SignedJWT =
+                            issuer.exchangeSamlToOidcToken(String(decodedSaml, StandardCharsets.UTF_8))
+                        ApplicationMetric.exchangeSAMLTokenOk.inc()
+                        ResponseEntity
+                            .status(HttpStatus.OK)
+                            .headers(tokenHeaders)
+                            .body(ExchangeTokenService().getResponseFrom(oidcToken))
                     } catch (e: Throwable) {
                         ApplicationMetric.exchangeTokenNotOk.inc()
-                        return badRequestResponse(e.message!!)
+                        badRequestResponse(e.message ?: "")
                     }
-                    ApplicationMetric.exchangeSAMLTokenOk.inc()
-                    return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .headers(tokenHeaders)
-                        .body(ExchangeTokenService().getResponseFrom(oidcToken!!))
                 }
                 subTokenType.equals("urn:ietf:params:oauth:token-type:access_token")
-                    && (copyReqTokenType == null || copyReqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
+                    && (reqTokenType.isNullOrEmpty() || reqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
                     log.info("Exchange OIDC to SAML token")
-                    if (copyReqTokenType == null) {
-                        copyReqTokenType = "urn:ietf:params:oauth:token-type:saml2"
-                    }
-
-                    val saml = try {
+                    return try {
                         val samlToken = issuer.exchangeOidcToSamlToken(subjectToken, user)
                         val samlObj = SamlObject()
                         samlObj.read(samlToken)
                         Pair(samlToken, samlObj)
+                        ApplicationMetric.exchangeOIDCTokenOk.inc()
+                        ResponseEntity.status(HttpStatus.OK)
+                            .headers(tokenHeaders)
+                            .body(
+                                ExchangeTokenService().constructResponse(
+                                    samlToken,
+                                    "Bearer",
+                                    if (reqTokenType.isNullOrEmpty()) "urn:ietf:params:oauth:token-type:saml2" else reqTokenType,
+                                    samlObj.expiresIn,
+                                    true
+                                )
+                            )
                     } catch (e: Throwable) {
                         ApplicationMetric.exchangeTokenNotOk.inc()
-                        return badRequestResponse(e.message!!)
+                        return badRequestResponse(e.message ?: "")
                     }
-                    ApplicationMetric.exchangeOIDCTokenOk.inc()
-                    return ResponseEntity.status(HttpStatus.OK)
-                        .headers(tokenHeaders)
-                        .body(
-                            ExchangeTokenService().constructResponse(
-                                saml.first,
-                                "Bearer",
-                                copyReqTokenType,
-                                saml.second.expiresIn,
-                                true
-                            )
-                        )
                 }
                 else -> {
                     ApplicationMetric.exchangeTokenNotOk.inc()
@@ -229,16 +224,16 @@ class TokenExchangeController {
                 ApplicationMetric.exchangeDIFINotOk.inc()
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse(errorMessage))
             }
-            val oidcToken = try {
-                issuer.exchangeDifiTokenToOidc(difiToken)
+            return try {
+                val oidcToken = issuer.exchangeDifiTokenToOidc(difiToken)
+                ApplicationMetric.exchangeDIFIOk.inc()
+                ResponseEntity.status(HttpStatus.OK)
+                    .headers(tokenHeaders)
+                    .body(AccessTokenResponse(oidcToken))
             } catch (e: Throwable) {
                 ApplicationMetric.exchangeDIFINotOk.inc()
-                return badRequestResponse("Failed to exchange difi token to oidc token: " + e.message)
+                badRequestResponse("Failed to exchange difi token to oidc token: " + e.message)
             }
-            ApplicationMetric.exchangeDIFIOk.inc()
-            return ResponseEntity.status(HttpStatus.OK)
-                .headers(tokenHeaders)
-                .body(AccessTokenResponse(oidcToken))
         } finally {
             requestTimer.observeDuration()
         }
