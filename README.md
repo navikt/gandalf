@@ -33,13 +33,13 @@ For local Development `https://security-token-service.dev.adeo.no` is exposed in
 | OIDC (Issued by OpenAm, `This` STS, AzureAD)      |  SAML     | `/rest/v1/sts/token/exchange`                   |                          |
 | SAML token (Issued by STS(Datapower) or `This` STS)                   | OIDC     | `/rest/v1/sts/token/exchange`                   |           |
 
-### Example Request. For more info check out: `../api`
-`../rest/v1/sts/token`  
 ### Issue System OIDC
-**You send:**  Your srvUser credentials i Authorization header  
+`../rest/v1/sts/token`  
+**You send:**  Your system credentials i Authorization header  
 **You get:** An `OIDC-Token` with which you can make further actions.  
 
 **Request:**
+
 ```json
 POST /rest/v1/sts/token 
 HTTP/1.1
@@ -50,7 +50,9 @@ Authorization: Basic aGVsbG86eW91
 grant_type=client_credentials&
 scope=openid
 ```
+
 **Successful Response:**
+
 ```json
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -74,8 +76,6 @@ Content-Type: application/json
     "error_description": "Unauthorised: Full authentication is required to access this resource"
 }
 ```
-
-**Failed Response:**
 ```json
 HTTP/1.1 400 BadRequest
 Content-Type: application/json
@@ -92,6 +92,7 @@ Content-Type: application/json
 The service validates the received SAML token, generates a new OIDC token with content retrieved from the SAML token.
 
 **Request:**
+
 ```json
 POST /rest/v1/sts/token/exchange 
 HTTP/1.1
@@ -106,6 +107,7 @@ subject_token=BASE64URL encoded SAML token
 ```
 
 **Successful Response:**
+
 ```json
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -117,6 +119,8 @@ Content-Type: application/json
    "expires_in": "30 sek more then expiry for SAML-tokenet"
 }
 ```
+
+**Failed Response:**
 
 ```json
 HTTP/1.1 400 BadRequest
@@ -134,6 +138,7 @@ The validity period of the token is specified in seconds. The OIDC token is a B6
 `...rest/v1/sts/token/exchange`
 
 **Request:**
+
 ```json
 POST /rest/v1/sts/token/exchange 
 HTTP/1.1
@@ -148,17 +153,20 @@ subject_token=BASE64URL encoded OIDC token
 ```
 
 **Successful Response:**
+
 ```json
 HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-   "access_token": "eY........",
+   "access_token": "RE........",
    "issued_token_type": "urn:ietf:params:oauth:token-type:saml2",
    "token_type": "Bearer",
    "expires_in": "expiry for SAML-token"
 }
 ```
+
+**Failed Response:**
 
 ```json
 HTTP/1.1 400 BadRequest
