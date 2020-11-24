@@ -30,6 +30,7 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -78,19 +79,15 @@ class TokenExchangeControllerTest {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .content(
-                    EntityUtils.toString(
-                        UrlEncodedFormEntity(
-                            listOf(
-                                BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
-                                BasicNameValuePair(
-                                    REQUESTED_TOKEN_TYPE,
-                                    "urn:ietf:params:oauth:token-type:access_token"
-                                ),
-                                BasicNameValuePair(SUBJECT_TOKEN, mockedToken.access_token),
-                                BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
-                            )
-                        )
+                .formPostBody(
+                    listOf(
+                        BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
+                        BasicNameValuePair(
+                            REQUESTED_TOKEN_TYPE,
+                            "urn:ietf:params:oauth:token-type:access_token"
+                        ),
+                        BasicNameValuePair(SUBJECT_TOKEN, mockedToken.access_token),
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
                     )
                 )
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
@@ -131,19 +128,15 @@ class TokenExchangeControllerTest {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .content(
-                    EntityUtils.toString(
-                        UrlEncodedFormEntity(
-                            listOf(
-                                BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
-                                BasicNameValuePair(
-                                    REQUESTED_TOKEN_TYPE,
-                                    "urn:ietf:params:oauth:token-type:access_token"
-                                ),
-                                BasicNameValuePair(SUBJECT_TOKEN, getDatapowerSAMLBase64Encoded),
-                                BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
-                            )
-                        )
+                .formPostBody(
+                    listOf(
+                        BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
+                        BasicNameValuePair(
+                            REQUESTED_TOKEN_TYPE,
+                            "urn:ietf:params:oauth:token-type:access_token"
+                        ),
+                        BasicNameValuePair(SUBJECT_TOKEN, getDatapowerSAMLBase64Encoded),
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
                     )
                 )
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
@@ -159,18 +152,14 @@ class TokenExchangeControllerTest {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .content(
-                    EntityUtils.toString(
-                        UrlEncodedFormEntity(
-                            listOf(
-                                BasicNameValuePair(
-                                    REQUESTED_TOKEN_TYPE,
-                                    "urn:ietf:params:oauth:token-type:access_token"
-                                ),
-                                BasicNameValuePair(SUBJECT_TOKEN, getDatapowerSAMLBase64Encoded),
-                                BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
-                            )
-                        )
+                .formPostBody(
+                    listOf(
+                        BasicNameValuePair(
+                            REQUESTED_TOKEN_TYPE,
+                            "urn:ietf:params:oauth:token-type:access_token"
+                        ),
+                        BasicNameValuePair(SUBJECT_TOKEN, getDatapowerSAMLBase64Encoded),
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
                     )
                 )
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
@@ -186,18 +175,14 @@ class TokenExchangeControllerTest {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .content(
-                    EntityUtils.toString(
-                        UrlEncodedFormEntity(
-                            listOf(
-                                BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
-                                BasicNameValuePair(
-                                    REQUESTED_TOKEN_TYPE,
-                                    "urn:ietf:params:oauth:token-type:access_token"
-                                ),
-                                BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
-                            )
-                        )
+                .formPostBody(
+                    listOf(
+                        BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
+                        BasicNameValuePair(
+                            REQUESTED_TOKEN_TYPE,
+                            "urn:ietf:params:oauth:token-type:access_token"
+                        ),
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
                     )
                 )
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
@@ -229,15 +214,11 @@ class TokenExchangeControllerTest {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .content(
-                    EntityUtils.toString(
-                        UrlEncodedFormEntity(
-                            listOf(
-                                BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
-                                BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token"),
-                                BasicNameValuePair(SUBJECT_TOKEN, mockedToken.access_token),
-                            )
-                        )
+                .formPostBody(
+                    listOf(
+                        BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token"),
+                        BasicNameValuePair(SUBJECT_TOKEN, mockedToken.access_token),
                     )
                 )
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
@@ -255,15 +236,11 @@ class TokenExchangeControllerTest {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .content(
-                    EntityUtils.toString(
-                        UrlEncodedFormEntity(
-                            listOf(
-                                BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
-                                BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token"),
-                                BasicNameValuePair(SUBJECT_TOKEN, getOpenAmAndDPSamlExchangePair()[0]),
-                            )
-                        )
+                .formPostBody(
+                    listOf(
+                        BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token"),
+                        BasicNameValuePair(SUBJECT_TOKEN, getOpenAmAndDPSamlExchangePair()[0]),
                     )
                 )
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
@@ -300,6 +277,13 @@ class TokenExchangeControllerTest {
             .andExpect(jsonPath("$.error_description").value("Failed to exchange difi token to oidc token: Validation failed: token has expired"))
     }
 }
+
+internal fun MockHttpServletRequestBuilder.formPostBody(formBody: List<BasicNameValuePair>) =
+    this.content(
+        EntityUtils.toString(
+            UrlEncodedFormEntity(formBody)
+        )
+    )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class MockTokenTest(
