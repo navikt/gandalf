@@ -63,7 +63,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-ui:${Version.openapi}")
-    // implementation("org.springdoc:springdoc-openapi-kotlin:${Version.openapi}")
     implementation("org.yaml:snakeyaml")
     runtimeOnly("com.oracle.ojdbc:ojdbc8")
 

@@ -40,7 +40,7 @@ For local Development `https://security-token-service.dev.adeo.no` is exposed in
 **You get:** An `OIDC-Token` with which you can make further actions.  
 
 **Request:**
-```json
+```http
 POST /rest/v1/sts/token 
 HTTP/1.1
 Accept: application/json
@@ -51,10 +51,12 @@ grant_type=client_credentials&
 scope=openid
 ```
 **Successful Response:**
-```json
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
    "access_token": "eY........",
    "token_type": "Bearer",
@@ -65,10 +67,12 @@ Content-Type: application/json
 The validity period of the token is specified in seconds. The OIDC token is a B64 URL-encoded JWT.
 
 **Failed Responses:**
-```json
+```http
 HTTP/1.1 401 Unauthorized
 Content-Type: application/json
+```
 
+```json
 {
     "error": "invalid_client",
     "error_description": "Unauthorised: Full authentication is required to access this resource"
@@ -76,10 +80,12 @@ Content-Type: application/json
 ```
 
 **Failed Response:**
-```json
+```http
 HTTP/1.1 400 BadRequest
 Content-Type: application/json
+```
 
+```json
 {
     "error": "invalid_request",
     "error_description": "Some message"
@@ -92,7 +98,7 @@ Content-Type: application/json
 The service validates the received SAML token, generates a new OIDC token with content retrieved from the SAML token.
 
 **Request:**
-```json
+```http
 POST /rest/v1/sts/token/exchange 
 HTTP/1.1
 Accept: application/x-www-form-urlencoded
@@ -106,7 +112,7 @@ subject_token=BASE64URL encoded SAML token
 ```
 
 **Successful Response:**
-```json
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -118,10 +124,12 @@ Content-Type: application/json
 }
 ```
 
-```json
+```http
 HTTP/1.1 400 BadRequest
 Content-Type: application/json
+```
 
+```json
 {
     "error": "invalid_request",
     "error_description": "Some message"
@@ -134,7 +142,7 @@ The validity period of the token is specified in seconds. The OIDC token is a B6
 `...rest/v1/sts/token/exchange`
 
 **Request:**
-```json
+```http
 POST /rest/v1/sts/token/exchange 
 HTTP/1.1
 Accept: application/x-www-form-urlencoded
@@ -148,10 +156,12 @@ subject_token=BASE64URL encoded OIDC token
 ```
 
 **Successful Response:**
-```json
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
    "access_token": "eY........",
    "issued_token_type": "urn:ietf:params:oauth:token-type:saml2",
@@ -160,10 +170,12 @@ Content-Type: application/json
 }
 ```
 
-```json
+```http
 HTTP/1.1 400 BadRequest
 Content-Type: application/json
+```
 
+```json
 {
     "error": "invalid_request",
     "error_description": "Some message"
