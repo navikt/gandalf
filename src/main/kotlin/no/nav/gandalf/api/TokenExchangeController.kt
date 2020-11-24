@@ -79,7 +79,7 @@ class TokenExchangeController {
             )
         ]
     )
-    @PostMapping("/token/exchange")
+    @PostMapping("/token/exchange", consumes = ["application/x-www-form-urlencoded"])
     fun exchangeSAMLToOIDCToSAMLToken(
         @Parameter(
             description = "'grant type' refers to the way an application gets an access token. OAuth 2.0 defines several grant types.",
