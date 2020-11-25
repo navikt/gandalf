@@ -173,7 +173,7 @@ class AccessTokenController(
     )
     @PostMapping("/token")
     fun postOIDCToken(
-        @Parameter(description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
+        @Parameter(description = " (Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
         @RequestParam("grant_type", required = true, defaultValue = "client_credentials") grantType: String,
         @Parameter(description = "Indicate that the application intends to use OIDC to verify the user's identity")
         @RequestParam("scope", required = true, defaultValue = "openid") scope: String
