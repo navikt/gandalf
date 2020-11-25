@@ -171,7 +171,7 @@ class AccessTokenController(
             )
         ]
     )
-    @PostMapping("/token")
+    @PostMapping("/token", consumes = ["application/x-www-form-urlencoded"])
     fun postOIDCToken(
         @Parameter(description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
         @RequestParam("grant_type", required = true, defaultValue = "client_credentials") grantType: String,

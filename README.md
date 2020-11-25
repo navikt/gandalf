@@ -115,6 +115,8 @@ subject_token=BASE64URL encoded SAML token
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
+```json
 
 {
    "access_token": "eY........",
