@@ -31,10 +31,10 @@ internal const val TOKEN_TYPE_SAML: String = "http://docs.oasis-open.org/wss/oas
 class WSTrustRequest(
     var username: String? = null,
     var password: String? = null,
-    var reqType: String? = null,
-    var keyType: String? = null,
+    private var reqType: String? = null,
+    private var keyType: String? = null,
     var tokenType: String? = null,
-    var onBehalfOf: String? = null,
+    private var onBehalfOf: String? = null,
     var validateTarget: String? = null
 ) {
 
@@ -52,12 +52,12 @@ class WSTrustRequest(
                 (
                     (reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) && (
                         onBehalfOf != null
-                        ) && !onBehalfOf!!.isEmpty()
+                        ) && !onBehalfOf.isNullOrEmpty()
                     )
                 )
         }
 
-    val isIssue: Boolean
+    private val isIssue: Boolean
         get() {
             return (reqType == REQUEST_TYPE_ISSUE)
         }
@@ -125,7 +125,7 @@ class WSTrustRequest(
     }
 
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
-    fun getResponse(samlToken: String): String? {
+    fun getResponse(samlToken: String): String {
         val samlObj = SamlObject()
         samlObj.read(samlToken)
         return getResponse(samlToken, samlObj.issueInstant!!, samlObj.notOnOrAfter!!)
@@ -173,7 +173,7 @@ class WSTrustRequest(
     }
 
     @Throws(TransformerFactoryConfigurationError::class, TransformerException::class)
-    private fun nodeToString(n: Node?): String? {
+    private fun nodeToString(n: Node?): String {
         val writer = StringWriter()
         val transformer: Transformer = TransformerFactory.newInstance().newTransformer()
         transformer.setOutputProperty("omit-xml-declaration", "yes")

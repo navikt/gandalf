@@ -1,15 +1,12 @@
 package no.nav.gandalf.api
 
-import no.nav.gandalf.utils.*
+import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
 import no.nav.gandalf.utils.SAML_TOKEN
 import no.nav.gandalf.utils.SCOPE
-import no.nav.gandalf.utils.SUBJECT_TOKEN
-import no.nav.gandalf.utils.SUBJECT_TOKEN_TYPE
 import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN2
 import no.nav.gandalf.utils.TOKEN_TYPE
-import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -118,22 +115,15 @@ class AccessTokenControllerTest {
     }
 
     // POST Path: /token
-    // Should have the same result as for get
     @Test
-    fun `POST OIDC Token`() {
+    fun `POST OIDC Token with Query Params should return 415 unsupported`() {
         mvc.perform(
             MockMvcRequestBuilders.post(TOKEN)
                 .param(GRANT_TYPE, "client_credentials")
                 .param(SCOPE, "openid")
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
         )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
-            .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
-            .andExpect(jsonPath("$.access_token").isString)
-            .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
-            .andExpect(jsonPath("$.expires_in").value(3600))
+            .andExpect(MockMvcResultMatchers.status().isUnsupportedMediaType)
     }
 
     @Test

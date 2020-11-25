@@ -76,25 +76,4 @@ class RsaKeys {
     fun expired(now: LocalDateTime): Boolean {
         return now.isAfter(expiry)
     }
-
-    // private fun getNewFormat(rsaKey: String?): String? {
-    //     if (rsaKey!!.contains("SIGNATURE")) { // old format
-    //         val oldJson = JSONObject(rsaKey)
-    //         var newKeyStr = "{"
-    //         for (key in oldJson.keySet()) {
-    //             if (oldJson.get(key)::class.java === JSONObject::class.java) {
-    //                 val newJson: JSONObject = oldJson.get(key) as JSONObject
-    //                 newKeyStr += "\"$key\":\"" + (if (newJson.has("value")) newJson.get("value") else newJson.get(
-    //                     "name"
-    //                 )) + "\","
-    //             } else if (oldJson.get(key)::class.java === String::class.java) {
-    //                 newKeyStr += "\"$key\":\"" + (if (oldJson.get(key)
-    //                         .equals("SIGNATURE")
-    //                 ) "sig" else oldJson.get(key)) + "\","
-    //             }
-    //         }
-    //         return newKeyStr.substring(0, newKeyStr.length - 1) + "}"
-    //     }
-    //     return rsaKey
-    // }
 }
