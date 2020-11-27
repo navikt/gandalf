@@ -42,19 +42,13 @@ class WSTrustRequest(
         get() = (
             (
                 (reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) &&
-                    (onBehalfOf == null || onBehalfOf!!.isEmpty())
+                    (onBehalfOf.isNullOrEmpty())
                 )
             )
 
     val isExchangeOidcToSaml: Boolean
         get() {
-            return (
-                (
-                    (reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) && (
-                        onBehalfOf != null
-                        ) && !onBehalfOf!!.isEmpty()
-                    )
-                )
+            return ((reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) && !onBehalfOf.isNullOrEmpty())
         }
 
     val isIssue: Boolean

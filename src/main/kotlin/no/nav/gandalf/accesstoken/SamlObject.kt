@@ -160,13 +160,13 @@ class SamlObject {
     @Throws(MarshalException::class, XMLSignatureException::class)
     fun validate(keySelector: KeySelector?) {
         // validate issuer
-        if (issuer == null || issuer!!.isEmpty()) {
+        if (issuer.isNullOrEmpty()) {
             log.info("Invalid SAML token: Issuer is empty")
             throw RuntimeException("Invalid SAML token: Issuer is empty")
         }
 
         // validate NameID
-        if (nameID == null || nameID!!.isEmpty()) {
+        if (nameID.isNullOrEmpty()) {
             log.info("Invalid SAML token: NameID is empty")
             throw RuntimeException("Invalid SAML token: NameID is empty")
         }
