@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.headers.Header
 import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Encoding
 import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -41,6 +43,7 @@ import no.nav.gandalf.service.ExchangeTokenService
 import no.nav.gandalf.util.authenticate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -171,14 +174,24 @@ class AccessTokenController(
             )
         ]
     )
-    @PostMapping("/token")
+
+    @PostMapping("/token", consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
     fun postOIDCToken(
-        @Parameter(description = " (Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
-        @RequestParam("grant_type", required = true, defaultValue = "client_credentials") grantType: String,
-        @Parameter(description = "Indicate that the application intends to use OIDC to verify the user's identity")
-        @RequestParam("scope", required = true, defaultValue = "openid") scope: String
+        @Parameter(hidden = true) @RequestParam(value = "grant_type") grant_type: String,
+        @Parameter(hidden = true) @RequestParam(value = "scope") scope: String,
+        @RequestBody(
+            required = true,
+            description = "grant_type **client_credentials**: Allows an application to request an Access Token using its Client Id and Client Secret.<br />" +
+                "scope **openid**: Indicate that the application intends to use OIDC to verify the user's identity.",
+            content = [
+                Content(
+                    encoding = [Encoding(style = "form", allowReserved = true)],
+                    schema = Schema(type = "object", implementation = TokenRequestFormParams::class)
+                )
+            ]
+        ) body: TokenRequestFormParams?
     ): ResponseEntity<Any> {
-        return getOIDCToken(grantType, scope)
+        return getOIDCToken(grant_type, scope)
     }
 
     @Operation(summary = "Stormaskin: System User -> OIDC Token")

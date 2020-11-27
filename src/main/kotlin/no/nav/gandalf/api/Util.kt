@@ -60,3 +60,15 @@ class Util {
         }
     }
 }
+
+data class TokenRequestFormParams(
+    val grant_type: String?,
+    val scope: String?
+)
+
+data class TokenExchangeRequestParams(
+    val grant_type: String?,
+    val requested_token_type: String?,
+    val subject_token: String?,
+    val subject_token_type: String?
+)

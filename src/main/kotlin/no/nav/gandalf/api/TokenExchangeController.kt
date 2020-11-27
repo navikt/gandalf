@@ -5,7 +5,9 @@ import io.prometheus.client.Histogram
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Encoding
 import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -26,6 +28,7 @@ import no.nav.gandalf.service.ExchangeTokenService
 import org.apache.commons.codec.binary.Base64
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestHeader
@@ -79,49 +82,47 @@ class TokenExchangeController {
             )
         ]
     )
-    @PostMapping("/token/exchange", consumes = ["application/x-www-form-urlencoded"])
+    @PostMapping("/token/exchange", consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
     fun exchangeSAMLToOIDCToSAMLToken(
-        @Parameter(
-            description = "'grant type' refers to the way an application gets an access token. OAuth 2.0 defines several grant types.",
-            required = true
-        )
-        @RequestParam("grant_type") grantType: String?,
-        @Parameter(
-            description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), for the type of the requested security token.",
-            required = false
-        )
-        @RequestParam("requested_token_type", required = false) reqTokenType: String?,
-        @Parameter(
-            description = "Represents the identity of the party on behalf of whom the token is being requested.",
-            required = true
-        )
-        @RequestParam("subject_token") subjectToken: String?,
-        @Parameter(
-            description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), that indicates the type of the security token in the 'subject_token' parameter.",
-            required = true
-        )
-        @RequestParam("subject_token_type") subTokenType: String?
+        @Parameter(hidden = true) @RequestParam("grant_type") grant_type: String?,
+        @Parameter(hidden = true) @RequestParam("requested_token_type", required = false) requested_token_type: String?,
+        @Parameter(hidden = true) @RequestParam("subject_token") subject_token: String?,
+        @Parameter(hidden = true) @RequestParam("subject_token_type") subject_token_type: String?,
+        @RequestBody(
+            required = true,
+            description = "grant_type **urn:ietf:params:oauth:grant-type:token-exchange** refers to the way an application gets an access token. OAuth 2.0 defines several grant types. <br />" +
+                "requested_token_type: **urn:ietf:params:oauth:token-type:saml2, urn:ietf:params:oauth:token-type:access_token** an identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), for the type of the requested security token.<br />" +
+                "subject_token: **Base64UrlEncodedString** represents the identity of the party on behalf of whom the token is being requested.<br />" +
+                "subject_token_type: **urn:ietf:params:oauth:token-type:saml2, urn:ietf:params:oauth:token-type:access_token** an identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), that indicates the type of the security token in the 'subject_token' parameter.",
+            content = [
+                Content(
+                    encoding = [Encoding(style = "form", allowReserved = true)],
+                    schema = Schema(type = "object", implementation = TokenExchangeRequestParams::class)
+                )
+            ]
+        ) body: TokenExchangeRequestParams
+
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
         try {
-            log.info("Exchange $subTokenType to $reqTokenType")
+            log.info("Exchange $subject_token_type to $requested_token_type")
             val user = requireNotNull(userDetails()) {
                 ApplicationMetric.exchangeTokenNotOk.inc()
                 return unauthorizedResponse(Throwable(), "Unauthorized")
             }
-            if (grantType.isNullOrEmpty() || grantType != "urn:ietf:params:oauth:grant-type:token-exchange") {
+            if (grant_type.isNullOrEmpty() || grant_type != "urn:ietf:params:oauth:grant-type:token-exchange") {
                 ApplicationMetric.exchangeTokenNotOk.inc()
                 return badRequestResponse("Unknown grant_type")
             }
-            if (subjectToken.isNullOrEmpty()) {
+            if (subject_token.isNullOrEmpty()) {
                 ApplicationMetric.exchangeTokenNotOk.inc()
                 return badRequestResponse("Missing subject_token in request")
             }
             when {
-                subTokenType.equals("urn:ietf:params:oauth:token-type:saml2") -> {
+                subject_token_type.equals("urn:ietf:params:oauth:token-type:saml2") -> {
                     log.info("Exchange SAML token to OIDC")
                     return try {
-                        val decodedSaml = Base64.decodeBase64(subjectToken.toByteArray())
+                        val decodedSaml = Base64.decodeBase64(subject_token.toByteArray())
                         val oidcToken: SignedJWT =
                             issuer.exchangeSamlToOidcToken(String(decodedSaml, StandardCharsets.UTF_8))
                         ApplicationMetric.exchangeSAMLTokenOk.inc()
@@ -134,11 +135,11 @@ class TokenExchangeController {
                         badRequestResponse(e.message ?: "")
                     }
                 }
-                subTokenType.equals("urn:ietf:params:oauth:token-type:access_token")
-                    && (reqTokenType.isNullOrEmpty() || reqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
+                subject_token_type.equals("urn:ietf:params:oauth:token-type:access_token")
+                    && (requested_token_type.isNullOrEmpty() || requested_token_type == "urn:ietf:params:oauth:token-type:saml2") -> {
                     log.info("Exchange OIDC to SAML token")
                     return try {
-                        val samlToken = issuer.exchangeOidcToSamlToken(subjectToken, user)
+                        val samlToken = issuer.exchangeOidcToSamlToken(subject_token, user)
                         val samlObj = SamlObject()
                         samlObj.read(samlToken)
                         Pair(samlToken, samlObj)
@@ -149,7 +150,7 @@ class TokenExchangeController {
                                 ExchangeTokenService().constructResponse(
                                     samlToken,
                                     "Bearer",
-                                    if (reqTokenType.isNullOrEmpty()) "urn:ietf:params:oauth:token-type:saml2" else reqTokenType,
+                                    if (requested_token_type.isNullOrEmpty()) "urn:ietf:params:oauth:token-type:saml2" else requested_token_type,
                                     samlObj.expiresIn,
                                     true
                                 )
