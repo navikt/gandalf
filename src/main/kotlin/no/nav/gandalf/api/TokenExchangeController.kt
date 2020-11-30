@@ -100,7 +100,7 @@ class TokenExchangeController {
                     schema = Schema(type = "object", implementation = TokenExchangeRequestParams::class)
                 )
             ]
-        ) body: TokenExchangeRequestParams
+        ) body: TokenExchangeRequestParams?
 
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
