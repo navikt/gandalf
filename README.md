@@ -31,7 +31,7 @@ For local Development `https://security-token-service.dev.adeo.no` is exposed in
 | client_credentials        | OIDC                | `/rest/v1/sts/token2`                   | For Stormaskin   |
 | client_credentials          | SAML               |  `/rest/v1/sts/samltoken`             | 
 | OIDC (Issued by OpenAm, `This` STS, AzureAD)      |  SAML     | `/rest/v1/sts/token/exchange`                   |                          |
-| SAML token (Issued by STS(Datapower) or `This` STS)                   | OIDC     | `/rest/v1/sts/token/exchange`                   |           |
+| SAML token (Issued by STS(Datapower) Azure B2C (Loginservice) or `This` STS)                   | OIDC     | `/rest/v1/sts/token/exchange`                   |           |
 
 ### Example Request. For more info check out: `../api`
 `../rest/v1/sts/token`  
@@ -79,7 +79,6 @@ Content-Type: application/json
 }
 ```
 
-**Failed Response:**
 ```http
 HTTP/1.1 400 BadRequest
 Content-Type: application/json
@@ -124,6 +123,7 @@ Content-Type: application/json
 }
 ```
 
+**Failed Response:**
 ```http
 HTTP/1.1 400 BadRequest
 Content-Type: application/json
@@ -170,6 +170,7 @@ Content-Type: application/json
 }
 ```
 
+**Failed Response:**
 ```http
 HTTP/1.1 400 BadRequest
 Content-Type: application/json
