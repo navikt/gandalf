@@ -11,7 +11,7 @@ data class ExternalIssuer(
     val jwksEndpointOpenAm: String,
     @Value("\${application.external.issuer.azureb2c}")
     val issuerAzureB2C: String,
-    @Value("\${application.jwks.endpoint.openam.azureb2c}")
+    @Value("\${application.jwks.endpoint.azureb2c}")
     val jwksEndpointAzureB2C: String,
     @Value("\${application.external.issuer.azuread}")
     val issuerAzureAd: String,
