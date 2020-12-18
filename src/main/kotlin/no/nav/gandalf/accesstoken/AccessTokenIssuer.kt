@@ -56,6 +56,10 @@ class AccessTokenIssuer(
                 externalIssuersConfig.jwksEndpointOpenAm
             ),
             OidcIssuerImpl(
+                externalIssuersConfig.issuerAzureB2C,
+                externalIssuersConfig.jwksEndpointAzureB2C
+            ),
+            OidcIssuerImpl(
                 externalIssuersConfig.issuerAzureAd,
                 externalIssuersConfig.jwksEndpointAzuread
             ),

@@ -12,6 +12,10 @@ envs:
     value: https://isso.adeo.no:443/isso/oauth2
   - name: APPLICATION_JWKS_ENDPOINT_OPENAM
     value: https://isso.adeo.no/isso/oauth2/connect/jwk_uri
+  - name: APPLICATION_EXTERNAL_ISSUER_AZUREB2C
+    value: https://navnob2c.b2clogin.com/8b7dfc8b-b52e-4741-bde4-d83ea366f94f/v2.0/
+  - name: APPLICATION_JWKS_ENDPOINT_AZUREB2C
+    value: https://navnob2c.b2clogin.com/navnob2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten
   - name: APPLICATION_EXTERNAL_ISSUER_AZUREAD
     value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0
   - name: APPLICATION_JWKS_ENDPOINT_AZUREAD
