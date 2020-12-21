@@ -49,6 +49,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.ZonedDateTime
 import javax.annotation.PostConstruct
+import kotlin.collections.ArrayList
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
 
@@ -340,7 +341,8 @@ class AccessTokenIssuerTest {
             val oidcObj = OidcObject(oidcToken)
             assertTrue(samlObj.nameID.equals(oidcObj.subject, ignoreCase = true))
             assertTrue(samlObj.identType.equals(oidcObj.resourceType, ignoreCase = true))
-            // sjekk auth level (denne blir satt til null!) og tidspunkt
+            assertTrue(samlObj.authenticationLevel.equals("0"))
+            // sjekk auth level (denne blir satt til 0 -> default) og tidspunkt
         } catch (e: Exception) {
             fail(e.message)
         }
