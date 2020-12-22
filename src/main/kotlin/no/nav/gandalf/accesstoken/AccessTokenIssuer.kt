@@ -199,7 +199,7 @@ class AccessTokenIssuer(
             oidcObj.authLevel != null -> {
                 samlObj.authenticationLevel = getAuthenticationLevel(oidcObj)
             }
-            !oidcObj.issuer.isNullOrEmpty() && idpIssoIssuer != null && idpIssoIssuer.issuer == oidcObj.issuer -> {
+            idpIssoIssuer != null && idpIssoIssuer.issuer == oidcObj.issuer -> {
                 samlObj.authenticationLevel = DEFAULT_INTERN_SAML_AUTHLEVEL
             }
             else -> {
