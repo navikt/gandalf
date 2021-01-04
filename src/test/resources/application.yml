@@ -38,6 +38,7 @@ application:
     issuer:
       openam: https://isso-t.adeo.no:443/isso/oauth2
       azuread: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0
+      azureb2c: https://navtestb2c.b2clogin.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
     configuration:
       difi:
         oidc: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
@@ -46,6 +47,7 @@ application:
     endpoint:
       openam: http://localhost:8888/isso/oauth2/connect/jwk_uri
       azuread:
+      azureb2c:
 # Truststore & KeyStore
 nav:
   truststore:
