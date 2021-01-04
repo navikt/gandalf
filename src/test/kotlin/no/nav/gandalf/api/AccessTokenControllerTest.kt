@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import wiremock.org.apache.http.message.BasicNameValuePair
 import javax.annotation.PostConstruct
 
 @RunWith(SpringRunner::class)
@@ -121,6 +122,28 @@ class AccessTokenControllerTest {
             MockMvcRequestBuilders.post(TOKEN)
                 .param(GRANT_TYPE, "client_credentials")
                 .param(SCOPE, "openid")
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
+            .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
+            .andExpect(jsonPath("$.access_token").isString)
+            .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
+            .andExpect(jsonPath("$.expires_in").value(3600))
+    }
+
+    @Test
+    fun `POST OIDC Token with Form-Params`() {
+        mvc.perform(
+            MockMvcRequestBuilders.post(TOKEN)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .formPostBody(
+                    listOf(
+                        BasicNameValuePair(GRANT_TYPE, "client_credentials"),
+                        BasicNameValuePair(SCOPE, "openid")
+                    )
+                )
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
         )
             .andExpect(MockMvcResultMatchers.status().isOk)

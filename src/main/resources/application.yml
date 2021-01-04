@@ -41,6 +41,7 @@ application:
   external.issuer:
     openam: <FROM ENV. VARS>
     azuread: <FROM ENV. VARS>
+    azureb2c: <FROM ENV. VARS>
     configuration.difi:
       oidc: <FROM ENV. VARS>
       maskinporten: <FROM ENV. VARS>
@@ -48,6 +49,7 @@ application:
     endpoint:
       openam: <FROM ENV. VARS>
       azuread: <FROM ENV. VARS>
+      azureb2c: <FROM ENV. VARS>
 # Truststore & KeyStore
 nav:
   truststore:

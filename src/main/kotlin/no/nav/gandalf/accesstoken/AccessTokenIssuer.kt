@@ -56,6 +56,10 @@ class AccessTokenIssuer(
                 externalIssuersConfig.jwksEndpointOpenAm
             ),
             OidcIssuerImpl(
+                externalIssuersConfig.issuerAzureB2C,
+                externalIssuersConfig.jwksEndpointAzureB2C
+            ),
+            OidcIssuerImpl(
                 externalIssuersConfig.issuerAzureAd,
                 externalIssuersConfig.jwksEndpointAzuread
             ),
@@ -193,9 +197,9 @@ class AccessTokenIssuer(
         val idpIssoIssuer = filterIssoInternIssuer()
         when {
             oidcObj.authLevel != null -> {
-                samlObj.authenticationLevel = oidcObj.authLevel
+                samlObj.authenticationLevel = getAuthenticationLevel(oidcObj)
             }
-            !oidcObj.issuer.isNullOrEmpty() && idpIssoIssuer != null && idpIssoIssuer.issuer == oidcObj.issuer -> {
+            idpIssoIssuer != null && idpIssoIssuer.issuer == oidcObj.issuer -> {
                 samlObj.authenticationLevel = DEFAULT_INTERN_SAML_AUTHLEVEL
             }
             else -> {
@@ -214,6 +218,14 @@ class AccessTokenIssuer(
     }
 
     fun filterIssoInternIssuer() = knownIssuers.singleOrNull { it.issuer.contains(ISSO_OIDC_ISSUER) }
+
+    fun getAuthenticationLevel(oidcObj: OidcObject): String {
+        return when {
+            oidcObj.authLevel.equals("Level3") -> "3"
+            oidcObj.authLevel.equals("Level4") -> "4"
+            else -> DEFAULT_SAML_AUTHLEVEL
+        }
+    }
 
     @JvmOverloads
     @Throws(Exception::class)
