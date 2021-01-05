@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.api.Util.Companion.tokenHeaders
 import no.nav.gandalf.metric.ApplicationMetric
+import no.nav.gandalf.metric.ApplicationMetric.Companion.providerJwksRequestHostHeader
 import no.nav.gandalf.model.ConfigurationResponse
 import no.nav.gandalf.model.Keys
 import no.nav.gandalf.model.toExchangePath
@@ -19,8 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+
+private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping(produces = ["application/json"])
@@ -56,8 +61,12 @@ class IdentityProviderController {
         ]
     )
     @GetMapping("/jwks")
-    fun getKeys(): ResponseEntity<Any> {
+    fun getKeys(@RequestHeader headers: Map<String, String>): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyJwks.startTimer()
+        headers["host"]?.let {
+            providerJwksRequestHostHeader.labels(it).inc()
+            log.info { "host: $it" }
+        }
         try {
             return ResponseEntity
                 .status(HttpStatus.OK)
@@ -91,8 +100,8 @@ class IdentityProviderController {
         ]
     )
     @GetMapping("rest/v1/sts/jwks")
-    fun getDeprecatedKeys(): ResponseEntity<Any> {
-        return getKeys()
+    fun getDeprecatedKeys(@RequestHeader headers: Map<String, String>): ResponseEntity<Any> {
+        return getKeys(headers)
     }
 
     @Operation(summary = "Discovery endpoint can be used to retrieve metadata.")

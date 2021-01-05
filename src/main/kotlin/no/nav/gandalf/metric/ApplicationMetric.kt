@@ -150,6 +150,15 @@ class ApplicationMetric {
             .namespace(latencyMetricPrefix)
             .name("seconds_ws_samltoken")
             .register(default)
+
+        // path: **/jwks
+        internal val providerJwksRequestHostHeader = Counter.build()
+            .namespace(metricPrefix)
+            .name("host_header")
+            .help("Requests jwks for validation of token")
+            .labelNames("host")
+            .register(default)
+
         // Cert
         internal val certCount: Counter = Counter.build()
             .help("Count days until expiry.")
