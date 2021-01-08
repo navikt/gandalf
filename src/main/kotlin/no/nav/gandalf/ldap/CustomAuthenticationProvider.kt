@@ -1,7 +1,6 @@
 package no.nav.gandalf.ldap
 
 import no.nav.gandalf.model.User
-import no.nav.gandalf.util.authenticate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
@@ -32,5 +31,12 @@ class CustomAuthenticationProvider(
 
     override fun supports(authentication: Class<*>): Boolean {
         return authentication == UsernamePasswordAuthenticationToken::class.java
+    }
+
+    fun externalAuth(username: String, password: String) = try {
+        authenticate(ldapConnectionSetup, User(username, password))
+        true
+    } catch (t: Throwable) {
+        throw BadCredentialsException("Authentication failed, ${t.message}")
     }
 }

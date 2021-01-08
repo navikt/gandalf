@@ -1,30 +1,21 @@
 package no.nav.gandalf.ldap
 
-import mu.KotlinLogging
-import java.nio.charset.Charset
-import kotlin.math.min
+import io.prometheus.client.Histogram
+import no.nav.gandalf.metric.ApplicationMetric
+import no.nav.gandalf.model.User
+import org.slf4j.MDC
 
-private val log = KotlinLogging.logger { }
-
-internal fun testSrvUserPassBeforeBind(ldap: LDAPConnectionSetup, dn: String, pwd: String) {
-    if (ldap.testUsername.isNotEmpty() && dn.contains(ldap.testUsername, ignoreCase = true)) {
-        val lengthOfRequestPw = pwd.length
-        val lengthOfVaultPw = ldap.testPassword.length
-        log.info { "Charset: ${Charset.defaultCharset().displayName()}" }
-        log.info { "Username in Vault: ${ldap.testUsername}" }
-        log.info { "Got password from request with length: $lengthOfRequestPw to match Vault password length: $lengthOfVaultPw for: $dn" }
-        when (pwd) {
-            ldap.testPassword -> {
-                log.info { "Password in Vault for: $dn MATCH password in request" }
-            }
-            else -> {
-                log.info { "Password in Vault for: $dn do NOT match password in request" }
-                (0 until min(lengthOfRequestPw, lengthOfVaultPw)).forEach {
-                    if (pwd[it] != ldap.testPassword[it]) {
-                        log.info { "Request Char: ${pwd[it]} != Vault Char: ${ldap.testPassword[it]}" }
-                    }
-                }
-            }
-        }
+internal fun authenticate(ldapConnectionSetup: LDAPConnectionSetup, user: User): Boolean {
+    val requestTimer: Histogram.Timer = ApplicationMetric.ldapDuration.startTimer()
+    return try {
+        LDAPAuthentication(ldapConnectionSetup).result(user = user)
+    } finally {
+        requestTimer.observeDuration()
     }
+}
+
+internal fun CustomAuthenticationProvider.authenticate(providedUsername: String?, providedPassword: String?): Boolean {
+    val username = providedUsername ?: throw RuntimeException("Missing username")
+    val password = providedPassword ?: throw RuntimeException("Missing password")
+    return this.externalAuth(username, password).also { if (it) MDC.put("client_id", username) }
 }
