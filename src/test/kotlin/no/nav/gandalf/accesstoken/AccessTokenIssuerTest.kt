@@ -8,6 +8,7 @@ import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_DURATION_TIME
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_VERSION
+import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.getIdentType
 import no.nav.gandalf.accesstoken.OidcObject.Companion.AUTHTIME_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.AZP_CLAIM
 import no.nav.gandalf.accesstoken.OidcObject.Companion.CLIENT_ORGNO_CLAIM
@@ -82,7 +83,7 @@ class AccessTokenIssuerTest {
     @Test
     @Throws(Exception::class)
     fun `'Token validation' issue and validate OIDC token`() {
-        val username = "testuser"
+        val username = "n123456"
         val token = issuer.issueToken(username)
         TestCase.assertNotNull(token)
         val jwt = token.jwtClaimsSet
@@ -361,7 +362,6 @@ class AccessTokenIssuerTest {
         val oidcToken = l[0]
         val dpSamlToken = l[1]
         try {
-            // val signedJwt = SignedJWT.parse(oidcToken)
             val oidcObj = OidcObject(oidcToken)
             val samlObj = SamlObject()
             samlObj.read(dpSamlToken)
@@ -369,22 +369,6 @@ class AccessTokenIssuerTest {
             println("Saml token issued at: " + samlObj.issueInstant)
             val samlToken =
                 issuer.exchangeOidcToSamlToken(oidcToken, samlObj.consumerId, OidcObject.toDate(samlObj.issueInstant))
-            // System.out.println("oidcToken: " + signedJwt.getJWTClaimsSet().toJSONObject());
-            // System.out.println("#DPSaml: " + dpSamlToken);
-            // System.out.println("#Saml: " + samlToken);
-
-            /* Diff myDiff = DiffBuilder.compare(dpSamlToken)
-/					.withNodeFilter(a-> {
-/						return !(a.getNodeName().equals("Signature") || a.getNodeName().equals("saml2:AuthnStatement"));
-/					})
-/					.withAttributeFilter(a-> {
-/						return !(a.getName().equals("ID") || a.getName().equals("NameFormat"));
-/					})
-/					.withTest(samlToken).build();
-            Iterator<Difference> iter = myDiff.getDifferences().iterator();
-            while (iter.hasNext()) {
-                System.out.println("XML DIFF: " + iter.next().toString());
-            }*/
             val diff: List<String>? = diffTokens(dpSamlToken, samlToken)
             val realDiff: MutableList<String> = ArrayList()
             diff!!.forEach { line ->
@@ -398,8 +382,10 @@ class AccessTokenIssuerTest {
                     line.contains("Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-18T07:27:29Z token2 has 2018-10-18T07:27:32Z") ||
                     line.contains("Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-18T08:22:38Z token2 has 2018-10-18T08:23:08Z")
                 ) {
+                    println("NO diff")
                 } else {
                     realDiff.add(line)
+                    println("#Diff: $line")
                 }
             }
             assertTrue(realDiff.size == 0)
@@ -442,5 +428,32 @@ class AccessTokenIssuerTest {
         assertEquals(0, jwt.notBeforeTime.compareTo(issueAt).toLong())
         assertEquals(jwt.getLongClaim(AUTHTIME_CLAIM) as Long, jwt.issueTime.time / 1000)
         assertEquals((jwt.expirationTime.time - jwt.issueTime.time) / 1000, OIDC_DURATION_TIME)
+    }
+
+    @Test
+    fun `Validate that the right IdentType get set`() {
+        val srvUser = "srvUser"
+        val samhandler = listOf("102010292")
+        val internalUsers = listOf("justAUser", "10202928", "n10939", "n1093998", "9jhsnog", "n291029", "N291029")
+        val externalUsers = listOf("12345678953")
+
+        assertEquals(IdentType.SYSTEMRESSURS.value, getIdentType(srvUser))
+        internalUsers.forEach {
+            assertEquals(IdentType.INTERNBRUKER.value, getIdentType(it))
+        }
+        samhandler.forEach {
+            assertEquals(IdentType.SAMHANDLER.value, getIdentType(it))
+        }
+        externalUsers.forEach {
+            assertEquals(IdentType.EKSTERNBRUKER.value, getIdentType(it, "4"))
+            assertEquals(IdentType.EKSTERNBRUKER.value, getIdentType(it, "3"))
+        }
+        assertThrows<RuntimeException> {
+            externalUsers.forEach {
+                assertEquals(IdentType.EKSTERNBRUKER.value, getIdentType(it, "1"))
+                assertEquals(IdentType.EKSTERNBRUKER.value, getIdentType(it, "0"))
+                assertEquals(IdentType.EKSTERNBRUKER.value, getIdentType(it, "5"))
+            }
+        }
     }
 }

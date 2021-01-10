@@ -18,7 +18,8 @@ import no.nav.gandalf.api.Util.Companion.serverErrorResponse
 import no.nav.gandalf.api.Util.Companion.tokenHeaders
 import no.nav.gandalf.api.Util.Companion.unauthorizedResponse
 import no.nav.gandalf.api.Util.Companion.userDetails
-import no.nav.gandalf.ldap.LDAPConnectionSetup
+import no.nav.gandalf.ldap.CustomAuthenticationProvider
+import no.nav.gandalf.ldap.authenticate
 import no.nav.gandalf.metric.ApplicationMetric.Companion.issuedTokenCounterUnique
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencySAMLToken
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencyToken
@@ -36,9 +37,7 @@ import no.nav.gandalf.model.AccessToken2Response
 import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.ErrorDescriptiveResponse
 import no.nav.gandalf.model.ExchangeTokenResponse
-import no.nav.gandalf.model.User
 import no.nav.gandalf.service.ExchangeTokenService
-import no.nav.gandalf.util.authenticate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -55,7 +54,7 @@ private val log = KotlinLogging.logger { }
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
 @Tag(name = "System OIDC Token", description = "System User to OIDC & SAML Token")
 class AccessTokenController(
-    @Autowired val ldapConnectionSetup: LDAPConnectionSetup
+    @Autowired val authenticationProvider: CustomAuthenticationProvider
 ) {
 
     @Autowired
@@ -219,16 +218,16 @@ class AccessTokenController(
     )
     @GetMapping("/token2")
     fun getOIDCToken2(
-        @RequestHeader("username") username: String,
-        @RequestHeader("password") password: String
+        @RequestHeader("username") username: String?,
+        @RequestHeader("password") password: String?
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = requestLatencyToken2.startTimer()
         try {
             try {
-                authenticate(ldapConnectionSetup, User(username, password))
+                authenticationProvider.authenticate(username, password)
             } catch (e: Throwable) {
                 token2NotOk.inc()
-                return unauthorizedResponse(e, "Could Not Authenticate username: $username")
+                return unauthorizedResponse(e, e.message ?: "")
             }
             log.info("Issue OIDC token2 for user: $username")
             return try {

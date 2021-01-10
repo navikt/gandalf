@@ -207,7 +207,7 @@ class AccessTokenIssuer(
             }
         }
         samlObj.consumerId = username
-        samlObj.identType = getIdentType(samlObj.nameID!!)
+        samlObj.identType = getIdentType(samlObj.nameID!!, getAuthenticationLevel(oidcObj))
         samlObj.auditTrackingId = (
             when {
                 oidcObj.auditTrackingId != null -> oidcObj.auditTrackingId
@@ -314,17 +314,41 @@ class AccessTokenIssuer(
             return issuer.substring(issuer.indexOf(domainPrefix) + domainPrefix.length)
         }
 
-        fun getIdentType(subject: String): String {
-            if (subject.toLowerCase().startsWith("srv")) {
-                return IdentType.SYSTEMRESSURS.value
-            }
+        @Throws(java.lang.RuntimeException::class)
+        fun getIdentType(subject: String, acrLevel: String? = null): String {
             return when {
-                subject.length == 9 && subject.matches("[0-9]+".toRegex()) -> {
+                subject.toLowerCase().startsWith("srv") -> {
+                    IdentType.SYSTEMRESSURS.value
+                }
+                subject.isSamHandler() -> {
                     IdentType.SAMHANDLER.value
+                }
+                acrLevel.isLeveledForExternal(subject) -> {
+                    IdentType.EKSTERNBRUKER.value
                 }
                 else -> IdentType.INTERNBRUKER.value
             }
         }
+
+        private fun String.isSamHandler() = this.length == 9 && this.isOnlyNumbers()
+
+        private fun String?.isLeveledForExternal(subject: String) = this?.let {
+            when {
+                !isFnr(subject) -> {
+                    false
+                }
+                isFnr(subject) && this in listOf("3", "4") -> {
+                    true
+                }
+                else -> {
+                    throw RuntimeException("Identype: $subject does not have the acrLevel 3 or 4")
+                }
+            }
+        } ?: false
+
+        private fun isFnr(subject: String) = subject.length == 11 && subject.isOnlyNumbers()
+
+        private fun String.isOnlyNumbers() = this.matches("[0-9]+".toRegex())
 
         fun toZonedDateTime(d: Date): ZonedDateTime {
             return ZonedDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault())
