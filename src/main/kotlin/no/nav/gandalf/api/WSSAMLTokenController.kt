@@ -3,10 +3,9 @@ package no.nav.gandalf.api
 import io.prometheus.client.Histogram
 import io.swagger.v3.oas.annotations.Operation
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.ldap.LDAPConnectionSetup
+import no.nav.gandalf.ldap.CustomAuthenticationProvider
+import no.nav.gandalf.ldap.authenticate
 import no.nav.gandalf.metric.ApplicationMetric
-import no.nav.gandalf.model.User
-import no.nav.gandalf.util.authenticate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("rest/v1/sts", consumes = ["text/xml"], produces = ["text/xml"])
 class WSSAMLTokenController(
-    @Autowired val ldapConnectionSetup: LDAPConnectionSetup,
+    @Autowired val authenticationProvider: CustomAuthenticationProvider,
     @Autowired val issuer: AccessTokenIssuer
 ) {
 
@@ -44,11 +43,7 @@ class WSSAMLTokenController(
             // check authorization
             try {
                 // Bind to ldap
-                if (wsReq.username == null || wsReq.password == null) {
-                    throw RuntimeException("Missing username and/or password")
-                } else {
-                    authenticate(ldapConnectionSetup, User(wsReq.username!!, wsReq.password!!))
-                }
+                authenticationProvider.authenticate(wsReq.username, wsReq.password)
             } catch (e: Throwable) {
                 ApplicationMetric.wsSAMLTokenNotOk.inc()
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized user: ${e.message}")

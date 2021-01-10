@@ -54,8 +54,6 @@ class LDAPAuthentication(
             alreadyAuthenticated -> true
             else ->
                 try {
-                    // Inactivated, can be used for debugging if client have problems with login.
-                    // testSrvUserPassBeforeBind(ldap, dn, pwd)
                     (ldap.pool.bind(dn, pwd).resultCode == ResultCode.SUCCESS)
                 } catch (e: LDAPException) {
                     ldapException = e
