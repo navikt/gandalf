@@ -232,7 +232,7 @@ class AccessTokenController(
             log.info("Issue OIDC token2 for user: $username")
             return try {
                 val oidcToken = issuer.issueToken(username)
-                token2Ok.inc()
+                token2Ok.labels(username).inc()
                 return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(AccessToken2Response(oidcToken))
@@ -291,7 +291,7 @@ class AccessTokenController(
                 val samlObj = SamlObject().apply {
                     this.read(samlToken)
                 }
-                samlTokenOk.inc()
+                samlTokenOk.labels(user).inc()
                 return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(tokenHeaders)
