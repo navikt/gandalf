@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("rest/v1/sts", consumes = ["text/xml"], produces = ["text/xml"])
 class WSSAMLTokenController(
-    @Autowired val authenticationProvider: CustomAuthenticationProvider,
+    @Autowired val provider: CustomAuthenticationProvider,
     @Autowired val issuer: AccessTokenIssuer
 ) {
 
@@ -43,7 +43,7 @@ class WSSAMLTokenController(
             // check authorization
             try {
                 // Bind to ldap
-                authenticationProvider.authenticate(wsReq.username, wsReq.password)
+                provider.authenticate(wsReq.username, wsReq.password)
             } catch (e: Throwable) {
                 ApplicationMetric.wsSAMLTokenNotOk.inc()
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized user: ${e.message}")
