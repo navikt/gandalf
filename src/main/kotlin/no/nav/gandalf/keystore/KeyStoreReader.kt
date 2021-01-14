@@ -87,7 +87,7 @@ class KeyStoreReader(
                 cert =
                     keyStore!!.getCertificate(keyAlias) as X509Certificate // eller keyStore.getCertificateChain(keyAlias)[0];
                 val keyUsage = cert!!.keyUsage
-                certCount.inc(numberOfDaysUtilCertificateExpire())
+                certCount.labels(keyAlias).inc(numberOfDaysUtilCertificateExpire())
                 privateKey =
                     keyStore!!.getKey(keyAlias, keystoreReaderConfig.keystorePassword.toCharArray()) as PrivateKey
                 if (privateKey != null && (keyUsage == null || keyUsage[0] || keyUsage[1])) { // if keyUsage is not specified or is digitalSignature or nonRepudation

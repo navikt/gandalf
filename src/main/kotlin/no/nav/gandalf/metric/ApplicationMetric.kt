@@ -44,6 +44,7 @@ class ApplicationMetric {
         internal val token2Ok = Counter.build()
             .help("Issued OIDC tokens (grensesnitt for stormaskin) OK.")
             .namespace(metricPrefix)
+            .labelNames("srvbruker")
             .name("oidctoken2Ok")
             .register(default)
         internal val token2NotOk = Counter.build()
@@ -65,6 +66,7 @@ class ApplicationMetric {
         // path: **/samltoken
         internal val samlTokenOk = Counter.build()
             .help("Issued saml token OK.")
+            .labelNames("srvbruker")
             .namespace(metricPrefix)
             .name("samlTokenOk")
             .register(default)
@@ -111,10 +113,12 @@ class ApplicationMetric {
         // path: **/token/exchange
         internal val exchangeSAMLTokenOk = Counter.build()
             .namespace(metricPrefix)
+            .labelNames("srvbruker")
             .name("exchangeSamlTokenOk")
             .help("Exchange Saml to Oidc token OK.").register(default)
         internal val exchangeOIDCTokenOk = Counter.build()
             .namespace(metricPrefix)
+            .labelNames("srvbruker")
             .name("exchangeOidcTokenOk")
             .help("Exchange Oidc token to Saml OK.").register(default)
         internal val exchangeTokenNotOk = Counter.build()
@@ -154,6 +158,7 @@ class ApplicationMetric {
         internal val certCount: Counter = Counter.build()
             .help("Count days until expiry.")
             .namespace("keystore")
+            .labelNames("key_alias")
             .name("cert_count")
             .register(default)
         // Ldap

@@ -124,7 +124,7 @@ class TokenExchangeController {
                         val decodedSaml = Base64.decodeBase64(subjectToken.toByteArray())
                         val oidcToken: SignedJWT =
                             issuer.exchangeSamlToOidcToken(String(decodedSaml, StandardCharsets.UTF_8))
-                        ApplicationMetric.exchangeSAMLTokenOk.inc()
+                        ApplicationMetric.exchangeSAMLTokenOk.labels(user).inc()
                         ResponseEntity
                             .status(HttpStatus.OK)
                             .headers(tokenHeaders)
@@ -142,7 +142,7 @@ class TokenExchangeController {
                         val samlObj = SamlObject()
                         samlObj.read(samlToken)
                         Pair(samlToken, samlObj)
-                        ApplicationMetric.exchangeOIDCTokenOk.inc()
+                        ApplicationMetric.exchangeOIDCTokenOk.labels(user).inc()
                         ResponseEntity.status(HttpStatus.OK)
                             .headers(tokenHeaders)
                             .body(
