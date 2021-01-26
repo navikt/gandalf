@@ -1,0 +1,21 @@
+name: detekt
+
+on: [ push ]
+
+jobs:
+  detekt:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: "checkout"
+        uses: actions/checkout@v2
+
+      - name: "detekt"
+        uses: natiginfo/action-detekt-all@1.15.0
+        with:
+          args: >
+            -r txt:reports/detekt.txt
+            --jvm-target 11
+      - name: Print Report
+        if: always()
+        run: cat reports/detekt.txt
