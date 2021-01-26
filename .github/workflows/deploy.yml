@@ -33,6 +33,12 @@ jobs:
             ${{ runner.os }}-gradle-wrapper-
       - name: Run tests
         run: ./gradlew clean test
+      - name: Unit tests results
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: unit-tests-results
+          path: build/reports/tests
 
   build:
     name: Build and push Docker container
