@@ -17,6 +17,7 @@ jobs:
             -r txt:reports/detekt.txt
             --jvm-target 14
             --config .github/detekt-config.yml
+            --build-upon-default-config
       - name: Print Report
         if: always()
         run: cat reports/detekt.txt
