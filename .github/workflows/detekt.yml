@@ -15,7 +15,7 @@ jobs:
         with:
           args: >
             -r txt:reports/detekt.txt
-            --jvm-target 11
+            --jvm-target 14
       - name: Print Report
         if: always()
         run: cat reports/detekt.txt
