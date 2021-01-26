@@ -144,7 +144,10 @@ class TokenExchangeControllerTest {
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
-            .andExpect(jsonPath("$.error_description").value("Invalid SAML token: condition NotOnOrAfter is 2018-10-24T09:58:39Z"))
+            .andExpect(
+                jsonPath("$.error_description")
+                    .value("Invalid SAML token: condition NotOnOrAfter is 2018-10-24T09:58:39Z")
+            )
     }
 
     @Test
@@ -274,7 +277,10 @@ class TokenExchangeControllerTest {
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
-            .andExpect(jsonPath("$.error_description").value("Failed to exchange difi token to oidc token: Validation failed: token has expired"))
+            .andExpect(
+                jsonPath("$.error_description")
+                    .value("Failed to exchange difi token to oidc token: Validation failed: token has expired")
+            )
     }
 }
 
