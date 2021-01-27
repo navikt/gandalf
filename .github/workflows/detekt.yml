@@ -7,17 +7,16 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: "checkout"
+      - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: "detekt"
+      - name: Detekt Codesmell
         uses: natiginfo/action-detekt-all@1.15.0
         with:
           args: >
             -r txt:reports/detekt.txt
             --jvm-target 14
-            --config .github/detekt-config.yml
             --build-upon-default-config
+            --config detekt/detekt-config.yml
       - name: Print Report
-        if: always()
         run: cat reports/detekt.txt
