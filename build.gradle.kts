@@ -4,34 +4,32 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 object Version {
     const val apacheHttp = "4.5.12"
     const val gradleVersion = "6.5"
-    const val json = "20200518"
-    const val kotlinLoggin = "2.0.3"
-    const val logbackStash = "6.4"
-    const val mockOAuth2Server = "0.1.35"
-    const val nimbus = "8.22"
-    const val openapi = "1.4.8"
-    const val unboundid = "5.1.1"
+    const val json = "20201115"
+    const val kotlinLoggin = "2.0.4"
+    const val logbackStash = "6.6"
+    const val mockOAuth2Server = "0.2.3"
+    const val nimbus = "8.30"
+    const val openapi = "1.5.2"
+    const val unboundid = "5.1.3"
     const val wiremock = "2.27.2"
-    const val wiremockCloud = "2.2.4.RELEASE"
+    const val wiremockCloud = "3.0.0"
 }
-
-val mainClass = "no.nav.gandalf.GandalfApplication"
 
 plugins {
     application
     java
     val kotlinVersion = "1.4.10"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jmailen.kotlinter") version "3.2.0"
-    id("com.github.ben-manes.versions") version "0.33.0"
-    id("org.springframework.boot") version "2.3.4.RELEASE"
+    id("org.jmailen.kotlinter") version "3.3.0"
+    id("com.github.ben-manes.versions") version "0.36.0"
+    id("org.springframework.boot") version "2.4.1"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
 }
 
 application {
-    mainClassName = "no.nav.gandalf.GandalfApplication"
+    mainClass.set("no.nav.gandalf.GandalfApplication")
 }
 
 repositories {
@@ -89,7 +87,7 @@ tasks {
         dependsOn("formatKotlin")
     }
     bootJar {
-        mainClassName = mainClass
+        mainClass.set("no.nav.gandalf.GandalfApplication")
     }
     withType<Wrapper> {
         gradleVersion = Version.gradleVersion

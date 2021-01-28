@@ -1,5 +1,6 @@
 package no.nav.gandalf.api
 
+import com.nimbusds.jwt.SignedJWT
 import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
@@ -41,7 +42,7 @@ class WSTrustRequestTest {
     }
 
     @Test
-    fun `SAML Request`() {
+    fun `WS FROM UNT to SAML Request`() {
         val xmlReq: String = getSamlRequest(username, password)
         val wsReq = WSTrustRequest()
         wsReq.read(xmlReq)
@@ -50,28 +51,31 @@ class WSTrustRequestTest {
 
     @Test
     @Throws(Exception::class)
-    fun `OIDC To SAML Request`() {
-        val oidcToken: String? = issuer.issueToken(username).serialize()
-        val xmlReq: String = getOidcToSamlRequest(username, password, oidcToken!!)
+    fun `WS - FROM OIDC To SAML Request`() {
+        val oidcToken: String = issuer.issueToken(username).serialize()
+        val xmlReq: String = getOidcToSamlRequest(username, password, oidcToken)
         val wsReq = WSTrustRequest()
         wsReq.read(xmlReq)
-        // oidcToken = wsReq.decodedOidcToken
-        // val signedJWT = SignedJWT.parse(oidcToken)
-        // val claimSet = signedJWT.jwtClaimsSet
         Assert.assertTrue(wsReq.isExchangeOidcToSaml)
+
+        val decodedOidc = wsReq.decodedOidcToken
+        Assert.assertTrue(decodedOidc != null)
+        val signedJWT = SignedJWT.parse(decodedOidc)
+        val claimSet = signedJWT.jwtClaimsSet
+        println(claimSet)
     }
 
     @Test
     @Throws(Exception::class)
-    fun `Validate SAML Request`() {
-        var samlToken: String? = issuer.issueSamlToken(username, username, "0")
-        val xmlReq: String = getValidateSamlRequest(username, password, samlToken!!)
+    fun `Issue and validate SAML Request`() {
+        var samlToken: String = issuer.issueSamlToken(username, username, "0")
+        val xmlReq: String = getValidateSamlRequest(username, password, samlToken)
         println("###getValidateSamlRequest: \n$xmlReq")
         val wsReq = WSTrustRequest()
         wsReq.read(xmlReq)
         Assert.assertTrue(wsReq.isValidateSaml)
         try {
-            samlToken = wsReq.validateTarget
+            samlToken = wsReq.validateTarget!!
             issuer.validateSamlToken(samlToken, testKeySelector)
             val samlObj = SamlObject()
             samlObj.read(samlToken)

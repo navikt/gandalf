@@ -32,7 +32,7 @@ class OidcObject {
     var notBeforeTime: Date?
     var issueTime: Date
     var expirationTime: Date
-    private var authTime: Date?
+    private var authTime: Long? = null
     var auditTrackingId: String? = null
     private var signedJWT: SignedJWT? = null
     private val log: Logger = LoggerFactory.getLogger(javaClass)
@@ -40,7 +40,7 @@ class OidcObject {
     constructor(issueTime: ZonedDateTime, duration: Long) {
         id = UUID.randomUUID().toString()
         this.issueTime = toDate(issueTime)
-        authTime = this.issueTime
+        authTime = this.issueTime.toInstant().epochSecond
         notBeforeTime = this.issueTime
         expirationTime = toDate(issueTime.plusSeconds(duration))
     }
@@ -48,14 +48,14 @@ class OidcObject {
     constructor(issueTime: ZonedDateTime?, expirationTime: ZonedDateTime) {
         id = UUID.randomUUID().toString()
         this.issueTime = toDate(issueTime)
-        authTime = this.issueTime
+        authTime = this.issueTime.toInstant().epochSecond
         notBeforeTime = this.issueTime
         this.expirationTime = toDate(expirationTime)
     }
 
-    constructor(oidcToken: String?) {
+    constructor(oidcToken: String) {
         // parse token
-        signedJWT = SignedJWT.parse(oidcToken)
+        signedJWT = oidcToken.parse()
         val claimSet: JWTClaimsSet = signedJWT!!.jwtClaimsSet
 
         // get claims
@@ -71,8 +71,18 @@ class OidcObject {
         notBeforeTime = claimSet.notBeforeTime
         issueTime = claimSet.issueTime
         expirationTime = claimSet.expirationTime
-        authTime = claimSet.getDateClaim(AUTHTIME_CLAIM)
+        if (claimSet.getDateClaim(AUTHTIME_CLAIM) != null) {
+            authTime = claimSet.getDateClaim(AUTHTIME_CLAIM).toInstant().epochSecond
+        }
         auditTrackingId = claimSet.getStringClaim(TRACKING_CLAIM)
+    }
+
+    @Throws(ParseException::class)
+    fun String.parse(): SignedJWT = try {
+        SignedJWT.parse(this)
+    } catch (p: ParseException) {
+        log.error("Could not parse token")
+        throw p
     }
 
     @Throws(JOSEException::class)
@@ -184,7 +194,12 @@ class OidcObject {
     }
 
     @Throws(ParseException::class)
-    fun getSignedTokenCopyAndAddClaimsFrom(copyOidc: OidcObject, copyClaimsList: List<String?>, key: RSAKey, alg: JWSAlgorithm): SignedJWT {
+    fun getSignedTokenCopyAndAddClaimsFrom(
+        copyOidc: OidcObject,
+        copyClaimsList: List<String?>,
+        key: RSAKey,
+        alg: JWSAlgorithm
+    ): SignedJWT {
         // copy claims in copyClaimsList from copyOidc to this and add extra claims from copyOidc to this
         val copyClaims: Map<String?, Any> = copyOidc.signedJWT!!.jwtClaimsSet.claims
         val newClaims: Map<String?, Any> = jWTClaimsSet.claims

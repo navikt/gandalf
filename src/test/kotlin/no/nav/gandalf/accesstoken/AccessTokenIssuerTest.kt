@@ -272,7 +272,8 @@ class AccessTokenIssuerTest {
         } catch (e: java.lang.Exception) {
             assertTrue(
                 e.message.equals(
-                    "Invalid SAML token: Signature validation failed on reference #SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae",
+                    "Invalid SAML token: Signature validation " +
+                        "failed on reference #SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae",
                     ignoreCase = true
                 )
             )

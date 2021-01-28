@@ -1,7 +1,7 @@
 ![PROD- Build, push, and deploy](https://github.com/navikt/gandalf/workflows/PROD-%20Build,%20push,%20and%20deploy/badge.svg)
 
 # Gandalf
-Is a Security Token Service (STS) a standard component in security architectures to realize operations such as authentication, identity mapping, token validation and conversion. 
+Is a Security Token Service (STS) a standard component in security architectures to realize operations such as authentication, identity mapping, token validation and conversion.
 The concept of an STS comes from the OASIS specification WS-Trust which describes a secure model for establishing, managing and evaluating "trust" relationships between applications.
 The security model is mainly based on 3 players: consumer, provider and a Security Token Service (STS) where the STS is the most central player as it issues tokens that all providers can trust.
 
@@ -10,18 +10,18 @@ The security model is mainly based on 3 players: consumer, provider and a Securi
 `This` STS does not perform any additional access control or role checks.  
 The service definitions are based on specifications in these references:  
 [The OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749)  
-[Starting point for .well-known endpoint](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)  
+[Starting point for .well-known endpoint](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
 
 ### Ingress
 **Test:** `https://security-token-service-t4.nais.preprod.local`  
 **Development:** `https://security-token-service.nais.preprod.local`  
-**Prod:** `https://security-token-service.nais.adeo.no`  
+**Prod:** `https://security-token-service.nais.adeo.no`
 
 ### Developers
 For local Development `https://security-token-service.dev.adeo.no` is exposed in [naisdevice](https://doc.nais.io/device)
 
 ### Openapi
-`/api`  
+`/api`
 
 ### Identity Provider Metadata
 | Type              | Endpoint              |
@@ -34,15 +34,15 @@ For local Development `https://security-token-service.dev.adeo.no` is exposed in
 |-----------------------|-----------------------|-----------------------|--------------------------------------------------|
 | client_credentials               | OIDC                | `/rest/v1/sts/token`                  |                             |
 | client_credentials        | OIDC                | `/rest/v1/sts/token2`                   | For Stormaskin   |
-| client_credentials          | SAML               |  `/rest/v1/sts/samltoken`             | 
+| client_credentials          | SAML               |  `/rest/v1/sts/samltoken`             |
 | OIDC (Issued by OpenAm, `This` STS, AzureAD)      |  SAML     | `/rest/v1/sts/token/exchange`                   |                          |
 | SAML token (Issued by STS(Datapower) Azure B2C (Loginservice) or `This` STS)                   | OIDC     | `/rest/v1/sts/token/exchange`                   |           |
 
 ### Example Request. For more info check out: `../api`
-`../rest/v1/sts/token`  
+`../rest/v1/sts/token`
 ### Issue System OIDC
 **You send:**  Your srvUser credentials i Authorization header  
-**You get:** An `OIDC-Token` with which you can make further actions.  
+**You get:** An `OIDC-Token` with which you can make further actions.
 
 **Request:**
 ```http
@@ -196,11 +196,11 @@ Runnable endpoints:
 `/rest/v1/sts/token/exchange`  
 `/rest/v1/sts/samltoken`  
 `/.well-known/openid-configuration`  
-`/jwks`  
+`/jwks`
 
 ## Tools n stuff
-* Kotlin  
-* Nimbus  
+* Kotlin
+* Nimbus
 * Snyk
 * Spring Boot
 
@@ -209,8 +209,7 @@ Plattformsikkerhet: `youssef.bel.mekki@nav.no` ++
 Slack: `#pig_sikkerhet`
 
 ## TODO
-- [x] Add more endpoints to be run local testing  
-- [x] Expose `dev.adeo.no` for local development  
+- [x] Add more endpoints to be run local testing
+- [x] Expose `dev.adeo.no` for local development
 - [ ] Describe the Swagger Objects and values
 - [ ] Refactoring of code for better readability
-

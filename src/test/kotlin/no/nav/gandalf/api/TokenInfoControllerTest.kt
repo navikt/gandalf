@@ -130,6 +130,6 @@ class TokenInfoControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status").value(false))
-            .andExpect(jsonPath("$.message").value("Validation failed: Validation failed: token has expired"))
+            .andExpect(jsonPath("$.message").value("Validation failed: token has expired"))
     }
 }
