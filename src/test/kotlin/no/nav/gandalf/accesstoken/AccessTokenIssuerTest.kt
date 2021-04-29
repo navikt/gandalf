@@ -158,6 +158,8 @@ class AccessTokenIssuerTest {
         val token = issuer.exchangeSamlToOidcToken(samlToken, now)
         assertTrue(token.jwtClaimsSet.expirationTime != null)
         assertTrue(token.jwtClaimsSet.subject == subject)
+        assertTrue(token.jwtClaimsSet.audience.size == 2)
+        assertTrue(token.jwtClaimsSet.audience.contains(samlObj.nameID))
         // Test response
         val response = ExchangeTokenService().getResponseFrom(token)
         assertTrue(response.expires_in == beforeAfter + AccessTokenIssuer.EXCHANGE_TOKEN_EXTENDED_TIME)
