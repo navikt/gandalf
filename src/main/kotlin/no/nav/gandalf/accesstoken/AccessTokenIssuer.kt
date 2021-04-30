@@ -170,7 +170,7 @@ class AccessTokenIssuer(
         oidcObj.issuer = this.issuer
         oidcObj.version = OIDC_VERSION
         oidcObj.setAudience(samlObj.consumerId!!, domain)
-        oidcObj.azp = samlObj.nameID
+        oidcObj.azp = samlObj.consumerId
         oidcObj.resourceType = samlObj.identType
         oidcObj.consumerId = samlObj.consumerId
         oidcObj.authLevel = samlObj.authenticationLevel

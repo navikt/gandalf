@@ -160,6 +160,7 @@ class AccessTokenIssuerTest {
         assertTrue(token.jwtClaimsSet.subject == subject)
         assertTrue(token.jwtClaimsSet.audience.size == 2)
         assertTrue(token.jwtClaimsSet.audience.contains(samlObj.nameID))
+        assertEquals(token.jwtClaimsSet.getClaim("azp"), samlObj.consumerId)
         // Test response
         val response = ExchangeTokenService().getResponseFrom(token)
         assertTrue(response.expires_in == beforeAfter + AccessTokenIssuer.EXCHANGE_TOKEN_EXTENDED_TIME)
