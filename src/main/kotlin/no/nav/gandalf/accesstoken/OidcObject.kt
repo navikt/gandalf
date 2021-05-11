@@ -16,7 +16,6 @@ import java.text.ParseException
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.UUID
-import kotlin.collections.ArrayList
 
 class OidcObject {
     var issuer: String? = null

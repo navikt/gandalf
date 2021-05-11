@@ -1,5 +1,8 @@
 package no.nav.gandalf.keystore
 
+import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -18,27 +21,36 @@ import javax.xml.crypto.XMLCryptoContext
 import javax.xml.crypto.XMLStructure
 import javax.xml.crypto.dsig.keyinfo.KeyInfo
 import javax.xml.crypto.dsig.keyinfo.X509Data
-import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Component
 
 private val log = KotlinLogging.logger { }
 
 @Component
 class X509KeySelector(
-    @Value("\${nav.truststore.path}") private val truststoreFile: String,
-    @Value("\${nav.truststore.password}") private val truststorePassword: String
+    @Value("\${nav.truststore.path}") private val truststoreFile: String?,
+    @Value("\${nav.truststore.password}") private val truststorePassword: String?
 ) : KeySelector() {
 
     private var trustManager: X509TrustManager? = null
 
     init {
-        System.setProperty(TRUSTSTORE_FILENAME_PROPERTYNAME, truststoreFile)
-        System.setProperty(TRUSTSTORE_PASSWORD_PROPERTYNAME, truststorePassword)
+        setOrThrow(TRUSTSTORE_FILENAME_PROPERTYNAME, truststoreFile)
+        setOrThrow(TRUSTSTORE_PASSWORD_PROPERTYNAME, truststorePassword)
+    }
+
+    private final fun setOrThrow(propertyName: String, value: String?) {
+        System.setProperty(
+            propertyName,
+            value ?: throw NullPointerException("$propertyName, is not set!")
+        )
     }
 
     @Throws(KeySelectorException::class)
-    override fun select(keyInfo: KeyInfo, purpose: Purpose, method: AlgorithmMethod, context: XMLCryptoContext): KeySelectorResult {
+    override fun select(
+        keyInfo: KeyInfo,
+        purpose: Purpose,
+        method: AlgorithmMethod,
+        context: XMLCryptoContext
+    ): KeySelectorResult {
         for (`object` in keyInfo.content) {
             val info = `object` as XMLStructure
             if (info is X509Data) {
@@ -70,10 +82,10 @@ class X509KeySelector(
             var tsis: InputStream?
             readKeyStoreAndHandle {
                 when {
-                    truststoreFile.isEmpty() -> {
+                    truststoreFile.isNullOrEmpty() -> {
                         throw RuntimeException("Failed to load truststore, system property '$TRUSTSTORE_FILENAME_PROPERTYNAME' is null or empty!")
                     }
-                    truststorePassword.isEmpty() -> {
+                    truststorePassword.isNullOrEmpty() -> {
                         log.error("System property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
                         throw RuntimeException("Failed to load truststore, system property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
                     }
@@ -109,7 +121,10 @@ class X509KeySelector(
         const val TRUSTSTORE_FILENAME_PROPERTYNAME = "javax.net.ssl.trustStore"
         const val TRUSTSTORE_PASSWORD_PROPERTYNAME = "javax.net.ssl.trustStorePassword"
         fun algEquals(algURI: String, algName: String): Boolean {
-            return algName.equals("RSA", ignoreCase = true) && algURI.equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", ignoreCase = true)
+            return algName.equals(
+                "RSA",
+                ignoreCase = true
+            ) && algURI.equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", ignoreCase = true)
         }
     }
 

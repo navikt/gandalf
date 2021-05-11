@@ -63,7 +63,7 @@ class KeyStoreReader(
         readKeyStoreAndHandle {
             when {
                 keystoreFile.isNullOrEmpty() -> throw RuntimeException("Failed to load keystore, system property '$keystoreFile' is null or empty!")
-                keystoreReaderConfig.keystorePassword.isEmpty() -> {
+                keystoreReaderConfig.keystorePassword.isNullOrEmpty() -> {
                     throw RuntimeException("Failed to load keystore, system property 'local-keystore.password' is null or empty!")
                 }
                 else -> {

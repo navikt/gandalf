@@ -77,7 +77,7 @@ class AccessTokenIssuer(
     @Throws(Exception::class)
     fun issueToken(username: String?): SignedJWT {
         log.info("issueToken for $username")
-        require(!(username == null || username.isEmpty())) { "Failed to issue oidc token, username is null" }
+        require(!username.isNullOrEmpty()) { "Failed to issue oidc token, username is null" }
         val oidcObj = OidcObject(ZonedDateTime.now(), OIDC_DURATION_TIME)
         oidcObj.subject = username
         oidcObj.issuer = issuer
@@ -93,7 +93,7 @@ class AccessTokenIssuer(
 
     @Throws(java.text.ParseException::class, JOSEException::class)
     fun validateOidcToken(oidcToken: String?, now: Date): OidcObject {
-        require(!(oidcToken == null || oidcToken.isEmpty())) { "Validation failed: OidcToken is null or empty" }
+        require(!oidcToken.isNullOrEmpty()) { "Validation failed: OidcToken is null or empty" }
         val oidcObj = OidcObject(oidcToken)
         val knownIssuer = knownIssuers.map { it }.singleOrNull { it.issuer == oidcObj.issuer }
             ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + oidcObj.issuer)
@@ -169,9 +169,8 @@ class AccessTokenIssuer(
         oidcObj.subject = samlObj.nameID
         oidcObj.issuer = this.issuer
         oidcObj.version = OIDC_VERSION
-        // oidcObj.setAudience(getIssuerSrvUser());
-        oidcObj.setAudience(samlObj.nameID!!, domain)
-        oidcObj.azp = samlObj.nameID
+        oidcObj.setAudience(samlObj.consumerId!!, domain)
+        oidcObj.azp = samlObj.consumerId
         oidcObj.resourceType = samlObj.identType
         oidcObj.consumerId = samlObj.consumerId
         oidcObj.authLevel = samlObj.authenticationLevel
@@ -231,7 +230,7 @@ class AccessTokenIssuer(
     @Throws(Exception::class)
     fun exchangeDifiTokenToOidc(difiToken: String?, now: Date = OidcObject.toDate(ZonedDateTime.now())): SignedJWT {
         log.info("Issuing a Exchange token for DIFI-Accesstoken")
-        require(!(difiToken == null || difiToken.isEmpty())) { "Validation failed: OidcToken is null or empty" }
+        require(!difiToken.isNullOrEmpty()) { "Validation failed: OidcToken is null or empty" }
         val difiOidcObj = OidcObject(difiToken)
         val knownIssuer: OidcIssuer = knownIssuers.map { it }.singleOrNull { it.issuer == difiOidcObj.issuer }
             ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + difiOidcObj.issuer)
