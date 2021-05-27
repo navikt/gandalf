@@ -173,6 +173,9 @@ class OidcObject {
             if (authLevel != null) {
                 clBuilder.claim(AUTHLEVEL_CLAIM, authLevel)
             }
+            if (navIdent != null) {
+                clBuilder.claim(NAV_IDENT_CLAIM, navIdent)
+            }
             return clBuilder.build()
         }
 
