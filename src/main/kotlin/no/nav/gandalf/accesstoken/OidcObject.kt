@@ -33,6 +33,7 @@ class OidcObject {
     var expirationTime: Date
     private var authTime: Long? = null
     var auditTrackingId: String? = null
+    var navIdent: String? = null
     private var signedJWT: SignedJWT? = null
     private val log: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -62,6 +63,7 @@ class OidcObject {
         version = claimSet.getStringClaim(VERSION_CLAIM)
         id = claimSet.jwtid
         subject = claimSet.subject
+        navIdent = claimSet.getStringClaim(NAV_IDENT_CLAIM)
         audience = claimSet.audience
         azp = claimSet.getStringClaim(AZP_CLAIM)
         authLevel = claimSet.getStringClaim(AUTHLEVEL_CLAIM)
@@ -145,6 +147,9 @@ class OidcObject {
             if (orgno != null) {
                 clBuilder.claim(CLIENT_ORGNO_CLAIM, orgno)
             }
+            if (navIdent != null) {
+                clBuilder.claim(NAV_IDENT_CLAIM, navIdent)
+            }
             return clBuilder.build()
         }
 
@@ -167,6 +172,9 @@ class OidcObject {
                 .claim(UTY_CLAIM, resourceType) // spec2 spesifikk
             if (authLevel != null) {
                 clBuilder.claim(AUTHLEVEL_CLAIM, authLevel)
+            }
+            if (navIdent != null) {
+                clBuilder.claim(NAV_IDENT_CLAIM, navIdent)
             }
             return clBuilder.build()
         }
@@ -251,6 +259,7 @@ class OidcObject {
         var UTY_CLAIM: String = "uty"
         var TRACKING_CLAIM: String = "auditTrackingId"
         var CLIENT_ORGNO_CLAIM = "client_orgno"
+        var NAV_IDENT_CLAIM = "NAVident"
         fun toDate(d: ZonedDateTime?): Date {
             return Date.from(d!!.toInstant())
         }
