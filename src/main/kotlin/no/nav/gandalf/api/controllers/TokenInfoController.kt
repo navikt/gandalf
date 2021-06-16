@@ -1,4 +1,4 @@
-package no.nav.gandalf.api
+package no.nav.gandalf.api.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -10,9 +10,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.api.Util.Companion.tokenHeaders
-import no.nav.gandalf.api.Util.Companion.unauthorizedResponse
-import no.nav.gandalf.api.Util.Companion.userDetails
 import no.nav.gandalf.model.ErrorDescriptiveResponse
 import no.nav.gandalf.model.Validation
 import org.apache.commons.codec.binary.Base64
@@ -24,6 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.nio.charset.StandardCharsets
+import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
+import no.nav.gandalf.api.INVALID_CLIENT
+import no.nav.gandalf.api.Util.tokenHeaders
+import no.nav.gandalf.api.Util.unauthorizedResponse
+import no.nav.gandalf.api.Util.userDetails
 
 private val log = KotlinLogging.logger { }
 
