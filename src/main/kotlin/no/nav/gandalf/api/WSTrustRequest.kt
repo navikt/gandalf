@@ -1,6 +1,6 @@
 package no.nav.gandalf.api
 
-import no.nav.gandalf.accesstoken.SamlObject
+import no.nav.gandalf.accesstoken.saml.SamlObject
 import org.apache.commons.codec.binary.Base64
 import org.w3c.dom.Document
 import org.w3c.dom.Node
@@ -123,7 +123,7 @@ class WSTrustRequest(
     }
 
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
-    fun getResponse(samlToken: String): String? {
+    fun getResponse(samlToken: String): String {
         val samlObj = SamlObject()
         samlObj.read(samlToken)
         return getResponse(samlToken, samlObj.issueInstant!!, samlObj.notOnOrAfter!!)
@@ -171,7 +171,7 @@ class WSTrustRequest(
     }
 
     @Throws(TransformerFactoryConfigurationError::class, TransformerException::class)
-    private fun nodeToString(n: Node?): String? {
+    private fun nodeToString(n: Node?): String {
         val writer = StringWriter()
         val transformer: Transformer = TransformerFactory.newInstance().newTransformer()
         transformer.setOutputProperty("omit-xml-declaration", "yes")

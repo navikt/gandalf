@@ -1,8 +1,9 @@
-package no.nav.gandalf.api
+package no.nav.gandalf.api.controllers
 
 import io.prometheus.client.Histogram
 import io.swagger.v3.oas.annotations.Operation
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
+import no.nav.gandalf.api.WSTrustRequest
 import no.nav.gandalf.ldap.CustomAuthenticationProvider
 import no.nav.gandalf.ldap.authenticate
 import no.nav.gandalf.metric.ApplicationMetric
