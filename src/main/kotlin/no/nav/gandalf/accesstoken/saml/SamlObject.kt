@@ -1,5 +1,6 @@
-package no.nav.gandalf.accesstoken
+package no.nav.gandalf.accesstoken.saml
 
+import com.nimbusds.oauth2.sdk.OAuth2Error
 import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter
@@ -29,7 +30,8 @@ import javax.xml.parsers.ParserConfigurationException
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
-import kotlin.collections.ArrayList
+import no.nav.gandalf.accesstoken.ClockSkew
+import no.nav.gandalf.accesstoken.OAuthException
 import no.nav.gandalf.keystore.KeyStoreReader
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Element
@@ -37,7 +39,7 @@ import org.w3c.dom.Node
 import org.xml.sax.InputSource
 import org.xml.sax.SAXException
 
-class SamlObject {
+class SamlObject : ClockSkew {
     var issuer: String? = null
     var id: String? = null
         private set
@@ -52,7 +54,7 @@ class SamlObject {
     var identType: String? = null
     var auditTrackingId: String? = null
     private var signatureNode: Node? = null
-    private val format = DateTimeFormatter.ISO_INSTANT // DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    val format: DateTimeFormatter = DateTimeFormatter.ISO_INSTANT // DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     private val log = LoggerFactory.getLogger(javaClass)
 
     constructor() {
@@ -69,27 +71,23 @@ class SamlObject {
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
     fun read(samlToken: String?) {
         log.info("Reading SAML token from String")
-
         // get document elements
         val dbFact = DocumentBuilderFactory.newInstance()
         dbFact.isNamespaceAware = true
         val docBuilder = dbFact.newDocumentBuilder()
         val doc = docBuilder.parse(InputSource(StringReader(samlToken!!)))
         doc.documentElement.normalize()
-
         // read Id
         var map = doc.firstChild.attributes
         var node = map.getNamedItem("ID")
         if (node != null) {
             id = node.nodeValue
         }
-
         // read IssueInstant
         node = map.getNamedItem("IssueInstant")
         if (node != null) {
             issueInstant = ZonedDateTime.parse(node.nodeValue)
         }
-
         // read Issuer
         var nList = doc.getElementsByTagName("saml2:Issuer")
         issuer = if (nList.length != 0) {
@@ -97,7 +95,6 @@ class SamlObject {
         } else {
             null
         }
-
         // read NameID (Subject)
         nList = doc.getElementsByTagName("saml2:NameID")
         nameID = if (nList.length != 0) {
@@ -105,7 +102,6 @@ class SamlObject {
         } else {
             null
         }
-
         // read Conditions
         nList = doc.getElementsByTagName("saml2:Conditions")
         if (nList.length != 0) {
@@ -125,7 +121,6 @@ class SamlObject {
                 null
             }
         }
-
         // read Attributes: identType, authenticationLevel, consumerId, auditTrackingId
         nList = doc.getElementsByTagName("saml2:Attribute")
         val vList = doc.getElementsByTagName("saml2:AttributeValue")
@@ -147,7 +142,6 @@ class SamlObject {
                 }
             }
         }
-
         // read Signature
         nList = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature")
         signatureNode = if (nList.length != 0) {
@@ -159,35 +153,47 @@ class SamlObject {
 
     @Throws(MarshalException::class, XMLSignatureException::class)
     fun validate(keySelector: KeySelector?) {
+        val maxClockSkew = getMaxClockSkew()
+        val nbfClockSkew = now.toInstant().plusSeconds(maxClockSkew)
+        val noaClockSkew = now.toInstant().minusSeconds(maxClockSkew)
+        val message: String
         // validate issuer
         if (issuer.isNullOrEmpty()) {
-            log.info("Invalid SAML token: Issuer is empty")
-            throw RuntimeException("Invalid SAML token: Issuer is empty")
+            message = "Invalid SAML token: Issuer is empty"
+            throw OAuthException(OAuth2Error.INVALID_REQUEST.setDescription(message)).also { log.warn(message) }
         }
 
         // validate NameID
         if (nameID.isNullOrEmpty()) {
-            log.info("Invalid SAML token: NameID is empty")
-            throw RuntimeException("Invalid SAML token: NameID is empty")
+            message = "Invalid SAML token: NameID is empty"
+            throw OAuthException(OAuth2Error.INVALID_REQUEST.setDescription(message)).also { log.warn(message) }
         }
 
         // validate NotBefore
-        if (now.isBefore(dateNotBefore)) {
-            log.info("Invalid SAML token: condition NotBefore $dateNotBefore")
-            throw RuntimeException("Invalid SAML token: condition NotBefore $dateNotBefore")
+        if (dateNotBefore != null && nbfClockSkew.isBefore(dateNotBefore!!.toInstant())) {
+            message = "Invalid SAML token: condition nbf: $dateNotBefore, is before: $nbfClockSkew"
+            throw OAuthException(
+                OAuth2Error.INVALID_REQUEST.setDescription(message)
+            ).also { log.warn(message) }
         }
-
         // validate NotOnOrAfter
-        if (now.compareTo(notOnOrAfter) == 0 || now.isAfter(notOnOrAfter)) {
-            log.info("Invalid SAML token: condition NotOnOrAfter is $notOnOrAfter")
-            throw RuntimeException("Invalid SAML token: condition NotOnOrAfter is $notOnOrAfter")
+        if (noaClockSkew.compareTo(notOnOrAfter!!.toInstant()) == 0 ||
+            noaClockSkew.isAfter(notOnOrAfter!!.toInstant())
+        ) {
+            message = "Invalid SAML token: condition notOnOrAfter: $notOnOrAfter, is not on or after: $noaClockSkew"
+            throw OAuthException(
+                OAuth2Error.INVALID_REQUEST.setDescription(message).also { log.warn(message) }
+            )
         }
 
         // no validation on attributes...?
 
         // validate Signature
         if (signatureNode == null) {
-            throw RuntimeException("Invalid SAML token: Signature is missing")
+            message = "Invalid SAML token: Signature is missing"
+            throw OAuthException(
+                OAuth2Error.INVALID_REQUEST.setDescription(message)
+            ).also { log.warn(message) }
         }
         val valContext = DOMValidateContext(keySelector, signatureNode)
         valContext.setIdAttributeNS(signatureNode!!.parentNode as Element, null, "ID")
@@ -195,23 +201,31 @@ class SamlObject {
         val signature = factory.unmarshalXMLSignature(valContext)
         if (!signature.validate(valContext)) {
             if (!signature.signatureValue.validate(valContext)) {
-                log.info("Invalid SAML token: Signature validation failed")
-                throw RuntimeException("Invalid SAML token: Signature validation failed")
+                message = "Invalid SAML token: Signature validation failed"
+                throw OAuthException(
+                    OAuth2Error.INVALID_REQUEST.setDescription(message)
+                ).also { log.warn(message) }
             }
             for (ref in signature.signedInfo.references) {
                 if (!(ref as Reference).validate(valContext)) {
-                    log.info("Invalid SAML token: Signature validation failed on reference " + ref.uri)
-                    throw RuntimeException("Invalid SAML token: Signature validation failed on reference " + ref.uri)
+                    message = "Invalid SAML token: Signature validation failed on reference ${ref.uri}"
+                    throw OAuthException(
+                        OAuth2Error.INVALID_REQUEST.setDescription(message)
+                    ).also { log.warn(message) }
                 }
             }
-            log.info("Invalid SAML token: validation failed")
-            throw RuntimeException("Invalid SAML token: validation failed")
+            message = "Invalid SAML token: validation failed"
+            throw OAuthException(OAuth2Error.INVALID_REQUEST.setDescription(message)).also { log.warn(message) }
         }
-        log.info("SAML token validation is OK")
+        message = "SAML validation is OK for issuer: $issuer"
+        log.info(message)
     }
 
-    val expiresIn: Long
-        get() = if (notOnOrAfter != null) ChronoUnit.SECONDS.between(now, notOnOrAfter) else -1
+    fun expiresIn(): Long {
+        return if (notOnOrAfter != null) {
+            ChronoUnit.SECONDS.between(now, notOnOrAfter)
+        } else -1
+    }
 
     private fun setId(id: String) {
         this.id = id
@@ -228,10 +242,18 @@ class SamlObject {
             " ConsumerId: " + consumerId + " IdentType: " + identType + " Authlevel: " + authenticationLevel
     }
 
+    override fun getMaxClockSkew(): Long {
+        return CLOCK_SKEW
+    }
+
+    override fun setMaxClockSkew(maxClockSkewSeconds: Long?) {
+        if (maxClockSkewSeconds != null) CLOCK_SKEW = maxClockSkewSeconds
+    }
+
     @Throws(Exception::class)
     fun getSignedSaml(keyStoreReader: KeyStoreReader): String {
         return try {
-            val samlToken = unsignedSaml
+            val samlToken = getUnsignedSaml(this)
             val docFac = DocumentBuilderFactory.newInstance()
             docFac.isNamespaceAware = true
             val docBuilder = docFac.newDocumentBuilder()
@@ -291,17 +313,7 @@ class SamlObject {
         }
     }
 
-    private val unsignedSaml: String
-        get() = "<saml2:Assertion xmlns:saml2=\"urn:oasis:names:tc:SAML:2.0:assertion\" ID=\"" + id + "\"" +
-            " IssueInstant=\"" + issueInstant!!.format(format) + "\" Version=\"2.0\">" +
-            "<saml2:Issuer>" + issuer + "</saml2:Issuer>" +
-            "<saml2:Subject><saml2:NameID Format=\"urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified\">" + nameID +
-            "</saml2:NameID><saml2:SubjectConfirmation Method=\"urn:oasis:names:tc:SAML:2.0:cm:bearer\">" +
-            "<saml2:SubjectConfirmationData NotBefore=\"" + dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" + notOnOrAfter + "\"/></saml2:SubjectConfirmation></saml2:Subject>" +
-            "<saml2:Conditions NotBefore=\"" + dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" + notOnOrAfter!!.format(format) + "\"/><saml2:AttributeStatement>" +
-            "<saml2:Attribute Name=\"identType\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>" + identType + "</saml2:AttributeValue></saml2:Attribute>" +
-            (if (authenticationLevel != null) "<saml2:Attribute Name=\"authenticationLevel\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>$authenticationLevel</saml2:AttributeValue></saml2:Attribute>" else "") +
-            (if (consumerId != null) "<saml2:Attribute Name=\"consumerId\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>$consumerId</saml2:AttributeValue></saml2:Attribute>" else "") +
-            (if (auditTrackingId != null) "<saml2:Attribute Name=\"auditTrackingId\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>$auditTrackingId</saml2:AttributeValue></saml2:Attribute>" else "") +
-            "</saml2:AttributeStatement></saml2:Assertion>"
+    companion object {
+        private var CLOCK_SKEW = 60L
+    }
 }

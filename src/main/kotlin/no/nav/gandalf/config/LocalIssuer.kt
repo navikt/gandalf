@@ -8,5 +8,9 @@ data class LocalIssuer(
     @Value("\${application.oidc.issuer}")
     val issuer: String,
     @Value("\${application.service.username}")
-    val issuerUsername: String
+    val issuerUsername: String,
+    @Value("\${application.clock.skew.saml}")
+    val clockSkewSaml: Long,
+    @Value("\${application.clock.skew.oidc}")
+    val clockSkewOidc: Long
 )

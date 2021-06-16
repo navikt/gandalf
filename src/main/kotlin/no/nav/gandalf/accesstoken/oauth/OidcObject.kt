@@ -1,4 +1,4 @@
-package no.nav.gandalf.accesstoken
+package no.nav.gandalf.accesstoken.oauth
 
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.JOSEObjectType
@@ -16,8 +16,10 @@ import java.text.ParseException
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.UUID
+import no.nav.gandalf.accesstoken.ClockSkew
+import no.nav.gandalf.accesstoken.OidcIssuer
 
-class OidcObject {
+class OidcObject : ClockSkew {
     var issuer: String? = null
     var version: String? = null
     var id: String? = null
@@ -93,7 +95,10 @@ class OidcObject {
     fun validate(issuer: OidcIssuer, now: Date) {
         when (val rsaJwk = issuer.getKeyByKeyId(signedJWT!!.header.keyID)) {
             null -> {
-                throw IllegalArgumentException("Validation failed: failed to find key " + signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer)
+                throw IllegalArgumentException(
+                    "Validation failed: failed to find key " +
+                        signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer
+                )
             }
             else -> {
                 validate(issuer.issuer, now, rsaJwk)
@@ -103,15 +108,21 @@ class OidcObject {
 
     @Throws(JOSEException::class)
     fun validate(issuer: String?, now: Date, rsaJwk: RSAKey) {
+        val maxClockSkew = getMaxClockSkew()
+        val nbfClockSkew = now.toInstant().plusSeconds(maxClockSkew)
+        val expClockSkew = now.toInstant().minusSeconds(maxClockSkew)
+        val nbf = notBeforeTime?.toInstant()
+        val exp = expirationTime.toInstant()
+
         when {
             issuer == null || issuer != this.issuer -> {
                 throw IllegalArgumentException("Validation failed: 'issuer' is null or unknown")
             }
             // check time
-            notBeforeTime != null && now.before(notBeforeTime) -> {
+            notBeforeTime != null && nbfClockSkew.isBefore(nbf) -> {
                 throw IllegalArgumentException("Validation failed: notBeforeTime validation failed")
             }
-            now.after(expirationTime) -> {
+            expClockSkew.isAfter(exp) -> {
                 throw IllegalArgumentException("Validation failed: token has expired")
             }
             else -> {
@@ -251,8 +262,17 @@ class OidcObject {
         var UTY_CLAIM: String = "uty"
         var TRACKING_CLAIM: String = "auditTrackingId"
         var CLIENT_ORGNO_CLAIM = "client_orgno"
+        private var CLOCK_SKEW = 60L
         fun toDate(d: ZonedDateTime?): Date {
             return Date.from(d!!.toInstant())
         }
+    }
+
+    override fun getMaxClockSkew(): Long {
+        return CLOCK_SKEW
+    }
+
+    override fun setMaxClockSkew(maxClockSkewSeconds: Long?) {
+        if (maxClockSkewSeconds != null) CLOCK_SKEW = maxClockSkewSeconds
     }
 }

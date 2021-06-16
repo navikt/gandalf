@@ -32,7 +32,12 @@ spring:
     timeout: 1000
 # Application
 application:
-  oidc.issuer: https://security-token-service.nais.preprod.local
+  oidc:
+    issuer: https://security-token-service.nais.preprod.local
+  clock:
+    skew:
+      saml: 60
+      oidc: 60
   service:
     username: srvsecurity-token-
     passoword: password
