@@ -195,7 +195,7 @@ class AccessTokenIssuer(
         val samlObj = SamlObject(toZonedDateTime(now))
         samlObj.issuer = SAML_ISSUER
         samlObj.setDuration((oidcObj.expirationTime.time - now.time) / 1000 + EXCHANGE_TOKEN_EXTENDED_TIME)
-        samlObj.nameID = oidcObj.subject
+        samlObj.nameID = oidcObj.navIdent ?: oidcObj.subject
         val idpIssoIssuer = filterIssoInternIssuer()
         when {
             oidcObj.authLevel != null -> {

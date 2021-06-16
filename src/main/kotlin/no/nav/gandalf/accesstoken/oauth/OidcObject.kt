@@ -10,14 +10,14 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.text.ParseException
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.UUID
 import no.nav.gandalf.accesstoken.ClockSkew
 import no.nav.gandalf.accesstoken.OidcIssuer
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class OidcObject : ClockSkew {
     var issuer: String? = null
@@ -35,6 +35,7 @@ class OidcObject : ClockSkew {
     var expirationTime: Date
     private var authTime: Long? = null
     var auditTrackingId: String? = null
+    var navIdent: String? = null
     private var signedJWT: SignedJWT? = null
     private val log: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -64,6 +65,7 @@ class OidcObject : ClockSkew {
         version = claimSet.getStringClaim(VERSION_CLAIM)
         id = claimSet.jwtid
         subject = claimSet.subject
+        navIdent = claimSet.getStringClaim(NAV_IDENT_CLAIM)
         audience = claimSet.audience
         azp = claimSet.getStringClaim(AZP_CLAIM)
         authLevel = claimSet.getStringClaim(AUTHLEVEL_CLAIM)
@@ -156,6 +158,9 @@ class OidcObject : ClockSkew {
             if (orgno != null) {
                 clBuilder.claim(CLIENT_ORGNO_CLAIM, orgno)
             }
+            if (navIdent != null) {
+                clBuilder.claim(NAV_IDENT_CLAIM, navIdent)
+            }
             return clBuilder.build()
         }
 
@@ -178,6 +183,9 @@ class OidcObject : ClockSkew {
                 .claim(UTY_CLAIM, resourceType) // spec2 spesifikk
             if (authLevel != null) {
                 clBuilder.claim(AUTHLEVEL_CLAIM, authLevel)
+            }
+            if (navIdent != null) {
+                clBuilder.claim(NAV_IDENT_CLAIM, navIdent)
             }
             return clBuilder.build()
         }
@@ -262,7 +270,9 @@ class OidcObject : ClockSkew {
         var UTY_CLAIM: String = "uty"
         var TRACKING_CLAIM: String = "auditTrackingId"
         var CLIENT_ORGNO_CLAIM = "client_orgno"
+        var NAV_IDENT_CLAIM = "NAVident"
         private var CLOCK_SKEW = 60L
+
         fun toDate(d: ZonedDateTime?): Date {
             return Date.from(d!!.toInstant())
         }
