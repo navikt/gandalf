@@ -4,7 +4,7 @@ import com.nimbusds.jwt.SignedJWT
 import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.accesstoken.SamlObject
+import no.nav.gandalf.accesstoken.saml.SamlObject
 import no.nav.gandalf.utils.getOidcToSamlRequest
 import no.nav.gandalf.utils.getSamlRequest
 import no.nav.gandalf.utils.getValidateSamlRequest

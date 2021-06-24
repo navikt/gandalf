@@ -1,25 +1,22 @@
 package no.nav.gandalf.accesstoken
 
-import java.io.IOException
 import java.time.ZonedDateTime
 import javax.xml.crypto.KeySelector
-import javax.xml.crypto.MarshalException
-import javax.xml.crypto.dsig.XMLSignatureException
-import javax.xml.parsers.ParserConfigurationException
 import no.nav.gandalf.TestKeySelector
+import no.nav.gandalf.accesstoken.saml.SamlObject
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.utils.getAlteredSamlToken
 import no.nav.gandalf.utils.getSamlToken
+import org.junit.Assert
 import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
-import org.xml.sax.SAXException
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -51,13 +48,11 @@ class SamlObjectTest {
     fun `Read And Validate SAML Token`() {
         val notOnOrAfter = ZonedDateTime.parse("2019-05-14T08:47:06.255Z")
         val now = notOnOrAfter.minusSeconds(2)
-        try {
+        assertDoesNotThrow {
             // read and validate saml token with with now = notOnOrAfter - 2 seconds
             val samlObj = SamlObject(now)
             samlObj.read(getSamlToken())
             samlObj.validate(keySelector)
-        } catch (e: Exception) {
-            fail("Error: " + e.message)
         }
     }
 
@@ -65,32 +60,22 @@ class SamlObjectTest {
     fun `Read And Validate Altered SAML Token`() {
         val notOnOrAfter = ZonedDateTime.parse("2019-05-14T08:47:06.255Z")
         val now = notOnOrAfter.minusSeconds(2)
-        try {
+        Assert.assertThrows(OAuthException::class.java) {
             // read and validate saml token with with now = notOnOrAfter - 2 seconds
             val samlObj = SamlObject(now)
             samlObj.read(getAlteredSamlToken())
             assertTrue(samlObj.nameID != null && samlObj.nameID.equals("srvsecurity-token-tull"))
             samlObj.validate(keySelector)
-            fail()
-        } catch (e: Exception) {
-            // signature validation har feilet som den skulle
-            assertTrue(true)
         }
     }
 
     @Test
-    @Throws(ParserConfigurationException::class, SAXException::class, IOException::class, MarshalException::class, XMLSignatureException::class)
     fun `Read And Validate Invalid SAML Token`() {
-        try {
+        Assert.assertThrows(OAuthException::class.java) {
             // saml token has notOnOrAfter = "2018-05-07T10:21:59Z"
             val samlObj = SamlObject()
             samlObj.read(getSamlToken())
             samlObj.validate(keySelector)
-            // denne skal ikke validere uten feil
-            fail()
-        } catch (e: Exception) {
-            // validation har feilet slik den skulle
-            assertTrue(true)
         }
     }
 
@@ -133,11 +118,8 @@ class SamlObjectTest {
         samlObj = SamlObject()
         samlObj.read(samlToken)
         val keySelector = TestKeySelector()
-        try {
+        assertDoesNotThrow {
             samlObj.validate(keySelector)
-            assertTrue(true)
-        } catch (e: Exception) {
-            fail("Error: " + e.message)
         }
     }
 }

@@ -8,16 +8,6 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.ParseException
-import mu.KotlinLogging
-import no.nav.gandalf.config.ExternalIssuer
-import no.nav.gandalf.config.LocalIssuer
-import no.nav.gandalf.keystore.KeyStoreReader
-import no.nav.gandalf.model.Consumer
-import no.nav.gandalf.model.IdentType
-import no.nav.gandalf.service.RsaKeysProvider
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
-import org.xml.sax.SAXException
 import java.io.IOException
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -27,6 +17,18 @@ import javax.xml.crypto.KeySelector
 import javax.xml.crypto.MarshalException
 import javax.xml.crypto.dsig.XMLSignatureException
 import javax.xml.parsers.ParserConfigurationException
+import mu.KotlinLogging
+import no.nav.gandalf.accesstoken.oauth.OidcObject
+import no.nav.gandalf.accesstoken.saml.SamlObject
+import no.nav.gandalf.config.ExternalIssuer
+import no.nav.gandalf.config.LocalIssuer
+import no.nav.gandalf.keystore.KeyStoreReader
+import no.nav.gandalf.model.Consumer
+import no.nav.gandalf.model.IdentType
+import no.nav.gandalf.service.RsaKeysProvider
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+import org.xml.sax.SAXException
 
 private val log = KotlinLogging.logger { }
 
@@ -41,8 +43,6 @@ class AccessTokenIssuer(
 ) : OidcIssuer {
 
     final override val issuer = localIssuerConfig.issuer
-    private val srvUser = localIssuerConfig.issuerUsername
-
     private val domain = getDomainFromIssuerURL(this.issuer)
     private lateinit var knownIssuers: MutableList<OidcIssuer>
 
@@ -95,6 +95,7 @@ class AccessTokenIssuer(
     fun validateOidcToken(oidcToken: String?, now: Date): OidcObject {
         require(!oidcToken.isNullOrEmpty()) { "Validation failed: OidcToken is null or empty" }
         val oidcObj = OidcObject(oidcToken)
+        oidcObj.setMaxClockSkew(localIssuerConfig.clockSkewOidc)
         val knownIssuer = knownIssuers.map { it }.singleOrNull { it.issuer == oidcObj.issuer }
             ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + oidcObj.issuer)
         oidcObj.validate(knownIssuer, now)
@@ -154,11 +155,12 @@ class AccessTokenIssuer(
 
     @JvmOverloads
     @Throws(Exception::class)
-    fun exchangeSamlToOidcToken(samlToken: String, now: ZonedDateTime? = ZonedDateTime.now()): SignedJWT {
+    fun exchangeSamlToOidcToken(samlToken: String, now: ZonedDateTime = ZonedDateTime.now()): SignedJWT {
         log.info("Issuing OIDC token from SAML: exchangeSamlToOidcToken")
 
         // read Saml token
-        val samlObj = SamlObject(now!!)
+        val samlObj = SamlObject(now)
+        samlObj.setMaxClockSkew(localIssuerConfig.clockSkewSaml)
         samlObj.read(samlToken)
 
         // validate token
@@ -185,6 +187,7 @@ class AccessTokenIssuer(
         now: Date = OidcObject.toDate(ZonedDateTime.now())
     ): String {
         log.info("Issuing SAML: exchangeOidcToSamlToken from OIDC")
+
         // validate oidc token
         val oidcObj: OidcObject = validateOidcToken(oidcToken, now)
 

@@ -1,4 +1,4 @@
-package no.nav.gandalf.api
+package no.nav.gandalf.api.controllers
 
 import com.nimbusds.jwt.SignedJWT
 import io.prometheus.client.Histogram
@@ -12,11 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.accesstoken.SamlObject
-import no.nav.gandalf.api.Util.Companion.badRequestResponse
-import no.nav.gandalf.api.Util.Companion.tokenHeaders
-import no.nav.gandalf.api.Util.Companion.unauthorizedResponse
-import no.nav.gandalf.api.Util.Companion.userDetails
+import no.nav.gandalf.accesstoken.saml.SamlObject
 import no.nav.gandalf.metric.ApplicationMetric
 import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.ErrorDescriptiveResponse
@@ -33,6 +29,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.nio.charset.StandardCharsets
+import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
+import no.nav.gandalf.api.INVALID_CLIENT
+import no.nav.gandalf.api.INVALID_REQUEST
+import no.nav.gandalf.api.Util.badRequestResponse
+import no.nav.gandalf.api.Util.tokenHeaders
+import no.nav.gandalf.api.Util.unauthorizedResponse
+import no.nav.gandalf.api.Util.userDetails
 
 private val log = KotlinLogging.logger { }
 
@@ -141,7 +144,6 @@ class TokenExchangeController {
                         val samlToken = issuer.exchangeOidcToSamlToken(subjectToken, user)
                         val samlObj = SamlObject()
                         samlObj.read(samlToken)
-                        Pair(samlToken, samlObj)
                         ApplicationMetric.exchangeOIDCTokenOk.labels(user).inc()
                         ResponseEntity.status(HttpStatus.OK)
                             .headers(tokenHeaders)
@@ -150,7 +152,7 @@ class TokenExchangeController {
                                     samlToken,
                                     "Bearer",
                                     if (reqTokenType.isNullOrEmpty()) "urn:ietf:params:oauth:token-type:saml2" else reqTokenType,
-                                    samlObj.expiresIn,
+                                    samlObj.expiresIn(),
                                     true
                                 )
                             )

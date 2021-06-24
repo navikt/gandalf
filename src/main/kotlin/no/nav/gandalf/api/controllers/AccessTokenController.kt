@@ -1,4 +1,4 @@
-package no.nav.gandalf.api
+package no.nav.gandalf.api.controllers
 
 import io.prometheus.client.Histogram
 import io.swagger.v3.oas.annotations.Operation
@@ -12,12 +12,15 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.accesstoken.SamlObject
-import no.nav.gandalf.api.Util.Companion.badRequestResponse
-import no.nav.gandalf.api.Util.Companion.serverErrorResponse
-import no.nav.gandalf.api.Util.Companion.tokenHeaders
-import no.nav.gandalf.api.Util.Companion.unauthorizedResponse
-import no.nav.gandalf.api.Util.Companion.userDetails
+import no.nav.gandalf.accesstoken.saml.SamlObject
+import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
+import no.nav.gandalf.api.INVALID_CLIENT
+import no.nav.gandalf.api.INVALID_REQUEST
+import no.nav.gandalf.api.Util.badRequestResponse
+import no.nav.gandalf.api.Util.serverErrorResponse
+import no.nav.gandalf.api.Util.tokenHeaders
+import no.nav.gandalf.api.Util.unauthorizedResponse
+import no.nav.gandalf.api.Util.userDetails
 import no.nav.gandalf.ldap.CustomAuthenticationProvider
 import no.nav.gandalf.ldap.authenticate
 import no.nav.gandalf.metric.ApplicationMetric.Companion.issuedTokenCounterUnique
@@ -300,7 +303,7 @@ class AccessTokenController(
                             samlToken,
                             "Bearer",
                             "urn:ietf:params:oauth:token-type:saml2",
-                            samlObj.expiresIn,
+                            samlObj.expiresIn(),
                             false
                         )
                     )

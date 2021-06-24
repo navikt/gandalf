@@ -4,16 +4,20 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.nimbusds.jwt.SignedJWT
+import java.time.ZonedDateTime
+import javax.annotation.PostConstruct
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_DURATION_TIME
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_VERSION
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.getIdentType
-import no.nav.gandalf.accesstoken.OidcObject.Companion.AUTHTIME_CLAIM
-import no.nav.gandalf.accesstoken.OidcObject.Companion.AZP_CLAIM
-import no.nav.gandalf.accesstoken.OidcObject.Companion.CLIENT_ORGNO_CLAIM
-import no.nav.gandalf.accesstoken.OidcObject.Companion.RESOURCETYPE_CLAIM
-import no.nav.gandalf.accesstoken.OidcObject.Companion.VERSION_CLAIM
+import no.nav.gandalf.accesstoken.oauth.OidcObject
+import no.nav.gandalf.accesstoken.oauth.OidcObject.Companion.AUTHTIME_CLAIM
+import no.nav.gandalf.accesstoken.oauth.OidcObject.Companion.AZP_CLAIM
+import no.nav.gandalf.accesstoken.oauth.OidcObject.Companion.CLIENT_ORGNO_CLAIM
+import no.nav.gandalf.accesstoken.oauth.OidcObject.Companion.RESOURCETYPE_CLAIM
+import no.nav.gandalf.accesstoken.oauth.OidcObject.Companion.VERSION_CLAIM
+import no.nav.gandalf.accesstoken.saml.SamlObject
 import no.nav.gandalf.config.LocalIssuer
 import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.IdentType
@@ -34,10 +38,12 @@ import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.gandalf.utils.getSamlToken
 import no.nav.gandalf.utils.openAMJwksUrl
+import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
 import org.junit.runner.RunWith
@@ -48,9 +54,6 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
-import java.time.ZonedDateTime
-import javax.annotation.PostConstruct
-import kotlin.collections.ArrayList
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
 
@@ -107,25 +110,20 @@ class AccessTokenIssuerTest {
         TestCase.assertTrue(expires_in == OIDC_DURATION_TIME)
         TestCase.assertTrue(token_type.equals(ACCESS_TOKEN_TYPE, ignoreCase = true))
         // test validation
-        try {
+        assertDoesNotThrow {
             issuer.validateOidcToken(token.serialize())
             TestCase.assertTrue(true)
-        } catch (e: Exception) {
-            fail { e.printStackTrace().toString() }
         }
     }
 
     @Test
     fun `Validate OpenAm OIDC`() {
         val oidcToken: String = getOpenAmOIDC()
-        val signedJWT: SignedJWT
-        try {
-            signedJWT = SignedJWT.parse(oidcToken)
+        assertDoesNotThrow {
+            val signedJWT = SignedJWT.parse(oidcToken)
             val claimSet = signedJWT.jwtClaimsSet
             issuer.validateOidcToken(oidcToken, claimSet.issueTime)
             assertTrue(true)
-        } catch (e: Exception) {
-            fail { e.printStackTrace().toString() }
         }
         verify(getRequestedFor(urlEqualTo(openAMJwksUrl)))
     }
@@ -188,39 +186,36 @@ class AccessTokenIssuerTest {
         val now = ZonedDateTime.parse("2018-05-07T10:21:59Z").minusSeconds(5)
         val samlObj = SamlObject(now)
         // exchangeToken med valid date
-        try {
+        Assert.assertThrows(RuntimeException::class.java) {
             samlObj.read(getAlteredSamlTokenWithEksternBrukerOgAuthLevel())
             samlObj.validate(issuer.getKeySelector())
-        } catch (e: java.lang.Exception) { // feiler i valideringen, men gjøre ikke noe for det som skal testes her
+            // feiler i valideringen, men gjøre ikke noe for det som skal testes her
             assertTrue(issuer.getAuthenticationLevel(samlObj).equals("Level3", ignoreCase = true))
         }
-        try {
+        Assert.assertThrows(RuntimeException::class.java) {
             samlObj.read(getAlteredSamlTokenWithInternBrukerOgAuthLevel())
             samlObj.validate(issuer.getKeySelector())
-        } catch (e: java.lang.Exception) { // feiler i valideringen som jo er riktig, men det gjør ikke noe for det som skal testes her
+            // feiler i valideringen som jo er riktig, men det gjør ikke noe for det som skal testes her
             assertTrue(issuer.getAuthenticationLevel(samlObj) == null)
         }
     }
 
     @Test
-    fun `Exchange SAML Token Condition NotOn`() {
+    fun `Exchange SAML to Oidc - condition NotOnOrAfter should fail`() {
         val samlToken = getSamlToken()
         val samlObj = SamlObject()
         samlObj.read(samlToken)
-        val notOnOrAfter: ZonedDateTime? = samlObj.notOnOrAfter
+        val now: ZonedDateTime = samlObj.notOnOrAfter!!.plusSeconds(65)
         // exchangeToken med invalid date
-        try {
-            issuer.exchangeSamlToOidcToken(samlToken, notOnOrAfter)
-        } catch (e: java.lang.Exception) {
-            assertTrue(
-                e.message.equals(
-                    "Invalid SAML token: condition NotOnOrAfter is $notOnOrAfter",
-                    ignoreCase = true
-                )
-            )
-            return
+        val nowWithSkew = now.toInstant().minusSeconds(samlObj.getMaxClockSkew())
+        val exception: RuntimeException = Assert.assertThrows(RuntimeException::class.java) {
+            issuer.exchangeSamlToOidcToken(samlToken, now)
         }
-        assertTrue(false)
+        val expectedMessage =
+            "{\"error_description\":\"Invalid SAML token: condition notOnOrAfter: ${samlObj.notOnOrAfter}, " +
+                "is not on or after: $nowWithSkew\",\"error\":\"invalid_request\"}"
+        val actualMessage = exception.message
+        assertEquals(expectedMessage, actualMessage!!)
     }
 
     @Test
@@ -229,20 +224,17 @@ class AccessTokenIssuerTest {
         val samlObj = SamlObject()
         samlObj.read(samlToken)
         val notOnOrAfter: ZonedDateTime? = samlObj.notOnOrAfter
-        val now = notOnOrAfter!!.plusSeconds(1)
+        val now = notOnOrAfter!!.plusSeconds(62)
         // exchangeToken med invalid date
-        try {
+        val nowWithSkew = now.toInstant().minusSeconds(samlObj.getMaxClockSkew())
+        val exception: RuntimeException = Assert.assertThrows(RuntimeException::class.java) {
             issuer.exchangeSamlToOidcToken(samlToken, now)
-        } catch (e: java.lang.Exception) {
-            assertTrue(
-                e.message.equals(
-                    "Invalid SAML token: condition NotOnOrAfter is $notOnOrAfter",
-                    ignoreCase = true
-                )
-            )
-            return
         }
-        assertTrue(false)
+        val expectedMessage =
+            "{\"error_description\":\"Invalid SAML token: condition notOnOrAfter: $notOnOrAfter, " +
+                "is not on or after: $nowWithSkew\",\"error\":\"invalid_request\"}"
+        val actualMessage = exception.message
+        assertEquals(expectedMessage, actualMessage!!)
     }
 
     @Test
@@ -251,15 +243,17 @@ class AccessTokenIssuerTest {
         val samlObj = SamlObject()
         samlObj.read(samlToken)
         val notBefore: ZonedDateTime? = samlObj.dateNotBefore
-        val now = notBefore!!.minusSeconds(1)
+        val now = notBefore!!.minusSeconds(65)
         // exchangeToken med invalid date
-        try {
+        val nowWithSkew = now.toInstant().plusSeconds(samlObj.getMaxClockSkew())
+        val exception: RuntimeException = Assert.assertThrows(RuntimeException::class.java) {
             issuer.exchangeSamlToOidcToken(samlToken, now)
-        } catch (e: java.lang.Exception) {
-            assertTrue(e.message.equals("Invalid SAML token: condition NotBefore $notBefore", ignoreCase = true))
-            return
         }
-        assertTrue(false)
+        val expectedMessage =
+            "{\"error_description\":\"Invalid SAML token: condition " +
+                "nbf: $notBefore, is before: $nowWithSkew\",\"error\":\"invalid_request\"}"
+        val actualMessage = exception.message
+        assertEquals(expectedMessage, actualMessage!!)
     }
 
     @Test
@@ -270,19 +264,13 @@ class AccessTokenIssuerTest {
         val notOnOrAfter: ZonedDateTime? = samlObj.notOnOrAfter
         val now = notOnOrAfter!!.minusSeconds(2)
         // exchangeToken med altered samlToken
-        try {
+        val exception: RuntimeException = Assert.assertThrows(RuntimeException::class.java) {
             issuer.exchangeSamlToOidcToken(samlToken, now)
-        } catch (e: java.lang.Exception) {
-            assertTrue(
-                e.message.equals(
-                    "Invalid SAML token: Signature validation " +
-                        "failed on reference #SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae",
-                    ignoreCase = true
-                )
-            )
-            return
         }
-        assertTrue(false)
+        val expectedMessage =
+            "{\"error_description\":\"Invalid SAML token: Signature validation failed on reference #SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae\",\"error\":\"invalid_request\"}"
+        val actualMessage = exception.message
+        assertEquals(expectedMessage, actualMessage!!)
     }
 
     @Test
@@ -291,16 +279,14 @@ class AccessTokenIssuerTest {
         val samlObj = SamlObject()
         samlObj.read(samlToken)
         val keySelector = TestKeySelector()
-        try {
+        assertDoesNotThrow {
             samlObj.validate(keySelector)
-        } catch (e: java.lang.Exception) {
-            assertTrue(false)
         }
     }
 
     @Test
     fun `Issue SAML And Compare To Datapower SAML`() {
-        try {
+        assertDoesNotThrow {
             val dpSamlToken: String = getDpSamlToken()
             val samlObj = SamlObject()
             samlObj.read(dpSamlToken)
@@ -313,28 +299,19 @@ class AccessTokenIssuerTest {
             val diff: List<String>? = diffTokens(dpSamlToken, samlToken)
             val realDiff: MutableList<String> = ArrayList()
             diff!!.forEach { line ->
-                // known differences
-                if (!(
-                    line.contains("Assertion Attribute ID has different") && line.contains("token2 has SAML-") ||
-                        line.contains("Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z") ||
-                        line.contains("Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z") ||
-                        line.contains("Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z") ||
-                        line.contains("Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z")
-                    )
-                ) {
+                if (hasDifferences(line)) {
                     realDiff.add(line)
                     println("#Diff: $line")
                 }
             }
             assertTrue(realDiff.size == 0)
-        } catch (e: Exception) {
-            fail(e.message)
+            println("NO diff")
         }
     }
 
     @Test
     fun `Exchange OIDC To SAML Token`() {
-        try {
+        assertDoesNotThrow {
             val signedJWT = issuer.issueToken(env.issuerUsername)
             val oidcToken = signedJWT.serialize()
             val samlToken = issuer.exchangeOidcToSamlToken(oidcToken, env.issuerUsername)
@@ -348,8 +325,6 @@ class AccessTokenIssuerTest {
             assertTrue(samlObj.identType.equals(oidcObj.resourceType, ignoreCase = true))
             assertTrue(samlObj.authenticationLevel.equals("0"))
             // sjekk auth level (denne blir satt til 0 -> default) og tidspunkt
-        } catch (e: Exception) {
-            fail(e.message)
         }
     }
 
@@ -461,3 +436,32 @@ class AccessTokenIssuerTest {
         }
     }
 }
+
+internal fun hasDifferences(line: String) =
+    !(
+        attributeIdDifferences(line) ||
+            notBeforeSubjectConfirmationDataHasDifferences(line) ||
+            notOnOrAfterSubjectConfirmationDataHasDifferences(line) ||
+            notBeforeConditionDifferences(line) ||
+            notOnOrAfterConditionHasDifferences(line)
+        )
+
+internal fun attributeIdDifferences(line: String) = line.contains(
+    "Assertion Attribute ID has different"
+) && line.contains("token2 has SAML-")
+
+internal fun notBeforeSubjectConfirmationDataHasDifferences(line: String) = line.contains(
+    "Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z"
+)
+
+internal fun notOnOrAfterSubjectConfirmationDataHasDifferences(line: String) = line.contains(
+    "Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z"
+)
+
+internal fun notBeforeConditionDifferences(line: String) = line.contains(
+    "Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z"
+)
+
+internal fun notOnOrAfterConditionHasDifferences(line: String) = line.contains(
+    "Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z"
+)

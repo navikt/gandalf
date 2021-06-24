@@ -1,4 +1,4 @@
-package no.nav.gandalf.api
+package no.nav.gandalf.api.controllers
 
 import io.prometheus.client.Histogram
 import io.swagger.v3.oas.annotations.Operation
@@ -8,7 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
-import no.nav.gandalf.api.Util.Companion.tokenHeaders
+import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
+import no.nav.gandalf.api.Util.tokenHeaders
 import no.nav.gandalf.metric.ApplicationMetric
 import no.nav.gandalf.model.ConfigurationResponse
 import no.nav.gandalf.model.Keys
