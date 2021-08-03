@@ -23,7 +23,7 @@ class OidcIssuerImplDifi(
         this.issuer = config.issuer.value
         config.jwkSetURI.toString()
     } catch (e: Exception) {
-        log.error(e) { "Failed to read jwks endpoint for issuer: $issuer" }
+        log.error(e) { "Failed to read jwks endpoint." }
         throw e
     }
 
@@ -33,7 +33,7 @@ class OidcIssuerImplDifi(
                 jwkSet = try {
                     JWKSet.load(URL(jwksUrl)).also { log.info { "Jwks endpoint: $jwksUrl validate keyid: $keyId" } }
                 } catch (e: ParseException) {
-                    log.error(e) { "Failed to get keys from: $jwksUrl, by issuer : $issuer" }
+                    log.error(e) { "Failed to get keys from: $jwksUrl." }
                     throw IllegalStateException()
                 }
             }
