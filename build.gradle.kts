@@ -18,14 +18,14 @@ object Version {
 plugins {
     application
     java
-    val kotlinVersion = "1.4.10"
+    val kotlinVersion = "1.5.21"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jmailen.kotlinter") version "3.3.0"
     id("com.github.ben-manes.versions") version "0.36.0"
-    id("org.springframework.boot") version "2.4.1"
+    id("org.springframework.boot") version "2.5.3"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
-    id("io.spring.dependency-management") version "1.0.10.RELEASE"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
 
 application {
@@ -33,10 +33,9 @@ application {
 }
 
 repositories {
-    maven(url = "http://packages.confluent.io/maven")
-    maven(url = "https://kotlin.bintray.com/kotlinx")
     mavenCentral()
-    jcenter()
+    maven(url = "https://packages.confluent.io/maven")
+    maven(url = "https://kotlin.bintray.com/kotlinx")
 }
 
 dependencies {
@@ -54,6 +53,7 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient")
     implementation("org.hibernate:hibernate-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.json:json:${Version.json}")
     implementation("org.springframework.boot:spring-boot-starter-actuator")

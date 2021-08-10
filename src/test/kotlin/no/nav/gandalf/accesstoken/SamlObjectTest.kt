@@ -84,7 +84,7 @@ class SamlObjectTest {
     fun `Issue Signed SAML Token`() {
         val samlIssued = SamlObject()
         samlIssued.issuer = "ISO2"
-        samlIssued.setDuration(60 * 60)
+        samlIssued.setDuration(3600)
         samlIssued.nameID = "srvPDP"
         samlIssued.authenticationLevel = "0"
         samlIssued.consumerId = "srvPDP"
@@ -109,7 +109,7 @@ class SamlObjectTest {
     fun `Issue And Validate SAML Token`() {
         var samlObj = SamlObject()
         samlObj.issuer = "ISO2"
-        samlObj.setDuration(60 * 60)
+        samlObj.setDuration(3600)
         samlObj.nameID = "srvPDP"
         samlObj.authenticationLevel = "0"
         samlObj.consumerId = "srvPDP"

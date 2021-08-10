@@ -319,7 +319,7 @@ class AccessTokenIssuer(
         @Throws(java.lang.RuntimeException::class)
         fun getIdentType(subject: String, acrLevel: String? = null): String {
             return when {
-                subject.toLowerCase().startsWith("srv") -> {
+                subject.lowercase().startsWith("srv") -> {
                     IdentType.SYSTEMRESSURS.value
                 }
                 subject.isSamHandler() -> {
