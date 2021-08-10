@@ -1,4 +1,4 @@
-name: DEV - Build, push, and deploy
+name: Test pull requests
 
 on: pull_request
 
