@@ -20,7 +20,7 @@ plugins {
     java
     val kotlinVersion = "1.5.21"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jmailen.kotlinter") version "3.3.0"
+    id("org.jmailen.kotlinter") version "3.4.5"
     id("com.github.ben-manes.versions") version "0.36.0"
     id("org.springframework.boot") version "2.5.3"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
