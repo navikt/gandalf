@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-java@v2.2.0
         with:
           java-version: 14
+          distribution: 'zulu'
       - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
@@ -50,6 +51,7 @@ jobs:
       - uses: actions/setup-java@v2.2.0
         with:
           java-version: 14
+          distribution: 'zulu'
       - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
