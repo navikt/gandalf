@@ -1,5 +1,6 @@
 package no.nav.gandalf.api
 
+import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
 import no.nav.gandalf.utils.SAML_TOKEN
@@ -25,21 +26,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import wiremock.org.apache.http.message.BasicNameValuePair
 import javax.annotation.PostConstruct
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(
-    properties = [
-        "application.external.issuer.difi.maskinporten=http://localhost:\${wiremock.server.port}/",
-        "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}/idporten-oidc-provider",
-        "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}/jwk",
-        "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}/isso/oauth2/connect/jwk_uri"
-    ],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+
 @AutoConfigureMockMvc
-@AutoConfigureWireMock(port = 0)
 @ActiveProfiles("test")
 @DirtiesContext
-class AccessTokenControllerTest {
+class AccessTokenControllerTest : SpringBootWireMockSetup(){
 
     @Autowired
     private lateinit var mvc: MockMvc
@@ -47,7 +38,6 @@ class AccessTokenControllerTest {
     @PostConstruct
     fun setup() {
         val controllerUtil = ControllerUtil()
-        controllerUtil.setupKnownIssuers()
         controllerUtil.setupOverride()
     }
 

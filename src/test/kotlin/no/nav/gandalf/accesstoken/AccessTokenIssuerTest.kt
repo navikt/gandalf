@@ -4,10 +4,9 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.nimbusds.jwt.SignedJWT
-import java.time.ZonedDateTime
-import javax.annotation.PostConstruct
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
+import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_DURATION_TIME
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_VERSION
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.getIdentType
@@ -22,10 +21,8 @@ import no.nav.gandalf.config.LocalIssuer
 import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.ExchangeTokenService
-import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.azureADJwksUrl
 import no.nav.gandalf.utils.diffTokens
-import no.nav.gandalf.utils.difiOIDCJwksUrl
 import no.nav.gandalf.utils.getAlteredSamlToken
 import no.nav.gandalf.utils.getAlteredSamlTokenWithEksternBrukerOgAuthLevel
 import no.nav.gandalf.utils.getAlteredSamlTokenWithInternBrukerOgAuthLevel
@@ -37,51 +34,35 @@ import no.nav.gandalf.utils.getMaskinportenToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.gandalf.utils.getSamlToken
+import no.nav.gandalf.utils.getTokenDingsIdportenToken
 import no.nav.gandalf.utils.openAMJwksUrl
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
+import java.time.ZonedDateTime
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(
-    properties = [
-        "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}$difiOIDCJwksUrl",
-        "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}$azureADJwksUrl",
-        "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}$openAMJwksUrl"
-    ],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@AutoConfigureWireMock(port = 0)
 @DirtiesContext
-class AccessTokenIssuerTest {
+class AccessTokenIssuerTest : SpringBootWireMockSetup() {
 
     @Autowired
     private lateinit var env: LocalIssuer
 
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
-
-    @PostConstruct
-    fun setupKnownIssuers() {
-        ControllerUtil().setupKnownIssuers()
-    }
 
     @Test
     @Throws(Exception::class)
@@ -435,6 +416,35 @@ class AccessTokenIssuerTest {
             }
         }
     }
+
+    @Test
+    @Ignore
+    fun `exchange oidc from tokendings and idporten to SAML`() {
+        val jwt = getTokenDingsIdportenToken()
+        val claims = SignedJWT.parse(jwt).jwtClaimsSet
+
+        val saml = issuer.exchangeOidcToSamlToken(jwt, "serviceUser1", claims.issueTime)
+
+        SamlObject().apply { read(saml) }.let {
+            println(it.id)
+            println(it.issueInstant)
+            println(it.issuer)
+            println(it.nameID)
+            println(it.notOnOrAfter)
+            println(it.identType)
+            println(it.authenticationLevel shouldBe claims.claims["acr"])
+            println(it.auditTrackingId)
+            println(it.consumerId shouldBe "serviceUser1")
+            println(it.dateNotBefore)
+        }
+    }
+
+    @Test
+    fun `exchange oidc from tokendings and Azure AD B2C to SAML`() {
+    }
+
+    private infix fun <Actual, Expected : Actual> Actual.shouldBe(expected: Expected?): Unit =
+        assertEquals(expected, this)
 }
 
 internal fun hasDifferences(line: String) =

@@ -10,14 +10,14 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import no.nav.gandalf.accesstoken.ClockSkew
+import no.nav.gandalf.accesstoken.IssuerConfig
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.text.ParseException
 import java.time.ZonedDateTime
 import java.util.Date
 import java.util.UUID
-import no.nav.gandalf.accesstoken.ClockSkew
-import no.nav.gandalf.accesstoken.OidcIssuer
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 class OidcObject : ClockSkew {
     var issuer: String? = null
@@ -89,12 +89,12 @@ class OidcObject : ClockSkew {
     }
 
     @Throws(JOSEException::class)
-    fun validate(issuer: OidcIssuer, rsaJwk: RSAKey) {
+    fun validate(issuer: IssuerConfig, rsaJwk: RSAKey) {
         validate(issuer.issuer, toDate(ZonedDateTime.now()), rsaJwk)
     }
 
     @Throws(JOSEException::class)
-    fun validate(issuer: OidcIssuer, now: Date) {
+    fun validate(issuer: IssuerConfig, now: Date) {
         when (val rsaJwk = issuer.getKeyByKeyId(signedJWT!!.header.keyID)) {
             null -> {
                 throw IllegalArgumentException(

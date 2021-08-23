@@ -24,3 +24,5 @@ target/
 .gradle
 /build/
 /.gradle/
+/out/test/resources/apacheDS.ldif
+/out/

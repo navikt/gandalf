@@ -1,7 +1,7 @@
 package no.nav.gandalf.api
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.gandalf.utils.ControllerUtil
+import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.utils.GRANT_TYPE
 import no.nav.gandalf.utils.OIDC_TOKEN_VALIDATE
 import no.nav.gandalf.utils.SAML_TOKEN
@@ -14,45 +14,24 @@ import no.nav.gandalf.utils.getDatapowerSAMLBase64Encoded
 import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.security.mock.oauth2.http.objectMapper
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import javax.annotation.PostConstruct
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(
-    properties = [
-        "application.external.issuer.difi.maskinporten=http://localhost:\${wiremock.server.port}/",
-        "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}/idporten-oidc-provider",
-        "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}/jwk",
-        "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}/isso/oauth2/connect/jwk_uri"
-    ],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
 @AutoConfigureMockMvc
-@AutoConfigureWireMock(port = 0)
 @ActiveProfiles("test")
 @DirtiesContext
-class TokenInfoControllerTest {
+class TokenInfoControllerTest : SpringBootWireMockSetup() {
 
     @Autowired
     private lateinit var mvc: MockMvc
-
-    @PostConstruct
-    fun setupKnownIssuers() {
-        ControllerUtil().setupKnownIssuers()
-    }
 
     @Test
     fun `Validate Valid SAML Token`() {
