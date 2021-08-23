@@ -1,7 +1,11 @@
 package no.nav.gandalf.accesstoken
 
-import com.nimbusds.jose.jwk.JWKSet
+import com.nimbusds.jose.jwk.JWKMatcher
+import com.nimbusds.jose.jwk.JWKSelector
+import com.nimbusds.jose.jwk.KeyType
 import com.nimbusds.jose.jwk.RSAKey
+import com.nimbusds.jose.jwk.source.RemoteJWKSet
+import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.oauth2.sdk.`as`.AuthorizationServerMetadata
 import mu.KotlinLogging
 import no.nav.gandalf.http.ProxyAwareResourceRetriever
@@ -9,35 +13,17 @@ import java.net.URL
 
 private val log = KotlinLogging.logger { }
 
+// @TODO: Create tests
 interface IssuerConfig {
     val issuer: String
     fun getKeyByKeyId(keyId: String?): RSAKey?
 
     companion object {
-        fun from(wellKnownUrl: String): IssuerConfig =
-            object : IssuerConfig {
-                private val wellKnown: WellKnown by lazy {
-                    wellKnown(wellKnownUrl)
-                }
-                override val issuer: String
-                    get() = wellKnown.issuer
-                private var jwkSet: JWKSet? = null
 
-                override fun getKeyByKeyId(keyId: String?): RSAKey? {
-                    jwkSet = jwkSet.fetchAndReloadIfNeccessary(keyId, wellKnown.jwksUrl)
-                    return jwkSet?.getKeyByKeyId(keyId)?.toRSAKey()
-                        ?: throw RuntimeException("Could not find matching keys in configuration for: $keyId")
-                }
-            }
-
-        fun from(issuer: String, jwksUrl: String) = issuerConfig(
-            WellKnown(issuer, jwksUrl)
-        )
-
-        private fun wellKnown(url: String?): WellKnown {
-            log.info { "retrieve metadata from wellknown: $url" }
-            return AuthorizationServerMetadata.parse(
-                ProxyAwareResourceRetriever().retrieveResource(URL(url)).content
+        fun from(wellKnownUrl: String) = issuerConfig {
+            log.info { "retrieve metadata from wellknown: $wellKnownUrl" }
+            AuthorizationServerMetadata.parse(
+                ProxyAwareResourceRetriever().retrieveResource(URL(wellKnownUrl)).content
             ).let {
                 WellKnown(
                     it.issuer.toString(),
@@ -46,24 +32,29 @@ interface IssuerConfig {
             }
         }
 
-        private fun issuerConfig(wellKnown: WellKnown): IssuerConfig = object : IssuerConfig {
-            override val issuer: String = wellKnown.issuer
-            private var jwkSet: JWKSet? = null
-
-            override fun getKeyByKeyId(keyId: String?): RSAKey? {
-                jwkSet = jwkSet.fetchAndReloadIfNeccessary(keyId, wellKnown.jwksUrl)
-                return jwkSet?.getKeyByKeyId(keyId)?.toRSAKey()
-                    ?: throw RuntimeException("Could not find matching keys in configuration for: $keyId")
-            }
+        fun from(issuer: String, jwksUrl: String) = issuerConfig {
+            WellKnown(issuer, jwksUrl)
         }
 
-        private fun JWKSet?.fetchAndReloadIfNeccessary(keyId: String?, jwksUrl: String): JWKSet? =
-            if (this?.getKeyByKeyId(keyId)?.toRSAKey() != null) {
-                this
-            } else {
-                log.info("reloading jwks from endpoint: $jwksUrl for keyid: $keyId")
-                JWKSet.load(URL(jwksUrl))
+        private fun issuerConfig(wellKnownFunction: () -> WellKnown): IssuerConfig = object : IssuerConfig {
+            val wellKnown: WellKnown by lazy { wellKnownFunction.invoke() }
+            val remoteJWKSet: RemoteJWKSet<SecurityContext?> by lazy {
+                RemoteJWKSet<SecurityContext?>(URL(wellKnown.jwksUrl), ProxyAwareResourceRetriever())
             }
+            override val issuer: String by lazy { wellKnownFunction.invoke().issuer }
+            override fun getKeyByKeyId(keyId: String?): RSAKey = remoteJWKSet.getKeyByKeyId(keyId)
+        }
+
+        private fun RemoteJWKSet<SecurityContext?>.getKeyByKeyId(keyId: String?): RSAKey =
+            get(keyId?.toJWKSelector(), null)?.firstOrNull()?.toRSAKey()
+                ?: throw RuntimeException("Could not find matching keys in configuration for: $keyId")
+
+        private fun String.toJWKSelector(): JWKSelector = JWKSelector(
+            JWKMatcher.Builder()
+                .keyType(KeyType.RSA)
+                .keyID(this)
+                .build()
+        )
     }
 
     private data class WellKnown(
@@ -71,3 +62,4 @@ interface IssuerConfig {
         val jwksUrl: String
     )
 }
+
