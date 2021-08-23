@@ -49,6 +49,7 @@ application:
     configuration.difi:
       oidc: <FROM ENV. VARS>
       maskinporten: <FROM ENV. VARS>
+    configuration.tokenx: <FROM ENV. VARS>
   jwks:
     endpoint:
       openam: <FROM ENV. VARS>

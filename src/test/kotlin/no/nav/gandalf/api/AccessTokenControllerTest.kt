@@ -9,16 +9,12 @@ import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN2
 import no.nav.gandalf.utils.TOKEN_TYPE
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -26,11 +22,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import wiremock.org.apache.http.message.BasicNameValuePair
 import javax.annotation.PostConstruct
 
-
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DirtiesContext
-class AccessTokenControllerTest : SpringBootWireMockSetup(){
+class AccessTokenControllerTest : SpringBootWireMockSetup() {
 
     @Autowired
     private lateinit var mvc: MockMvc

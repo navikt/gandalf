@@ -67,6 +67,9 @@ class AccessTokenIssuer(
             ),
             IssuerConfig.from(
                 externalIssuersConfig.configurationDIFIMaskinportenUrl
+            ),
+            IssuerConfig.from(
+                externalIssuersConfig.configurationTokenX
             )
         )
     }
