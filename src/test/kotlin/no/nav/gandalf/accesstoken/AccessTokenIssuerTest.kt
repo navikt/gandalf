@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.nimbusds.jwt.SignedJWT
+import io.kotest.assertions.asClue
+import io.kotest.matchers.shouldBe
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.SpringBootWireMockSetup
@@ -40,7 +42,6 @@ import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -418,33 +419,25 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
     }
 
     @Test
-    @Ignore
-    fun `exchange oidc from tokendings and idporten to SAML`() {
+    fun `exchange jwt from tokendings and idporten to SAML`() {
         val jwt = getTokenDingsIdportenToken()
         val claims = SignedJWT.parse(jwt).jwtClaimsSet
 
         val saml = issuer.exchangeOidcToSamlToken(jwt, "serviceUser1", claims.issueTime)
 
-        SamlObject().apply { read(saml) }.let {
-            println(it.id)
-            println(it.issueInstant)
-            println(it.issuer)
-            println(it.nameID)
-            println(it.notOnOrAfter)
-            println(it.identType)
-            println(it.authenticationLevel shouldBe claims.claims["acr"])
-            println(it.auditTrackingId)
-            println(it.consumerId shouldBe "serviceUser1")
-            println(it.dateNotBefore)
+        SamlObject().apply { read(saml) }.asClue {
+            it.issuer shouldBe "IS02"
+            it.nameID shouldBe claims.claims["pid"]
+            it.identType shouldBe "EksternBruker"
+            it.authenticationLevel shouldBe "4"
+            it.auditTrackingId shouldBe claims.jwtid
+            it.consumerId shouldBe "serviceUser1"
         }
     }
 
     @Test
     fun `exchange oidc from tokendings and Azure AD B2C to SAML`() {
     }
-
-    private infix fun <Actual, Expected : Actual> Actual.shouldBe(expected: Expected?): Unit =
-        assertEquals(expected, this)
 }
 
 internal fun hasDifferences(line: String) =

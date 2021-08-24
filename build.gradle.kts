@@ -2,6 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 object Version {
+    const val kotest = "4.6.2"
     const val apacheHttp = "4.5.12"
     const val gradleVersion = "6.5"
     const val json = "20201115"
@@ -76,6 +77,7 @@ dependencies {
     testImplementation("com.github.tomakehurst:wiremock-jre8:${Version.wiremock}")
     testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:${Version.wiremockCloud}")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("io.kotest:kotest-assertions-core:${Version.kotest}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
