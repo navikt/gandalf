@@ -36,6 +36,7 @@ import no.nav.gandalf.utils.getMaskinportenToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.gandalf.utils.getSamlToken
+import no.nav.gandalf.utils.getTokenDingsAzureADB2CToken
 import no.nav.gandalf.utils.getTokenDingsIdportenToken
 import no.nav.gandalf.utils.openAMJwksUrl
 import org.junit.Assert
@@ -437,6 +438,19 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
 
     @Test
     fun `exchange oidc from tokendings and Azure AD B2C to SAML`() {
+        val jwt = getTokenDingsAzureADB2CToken()
+        val claims = SignedJWT.parse(jwt).jwtClaimsSet
+
+        val saml = issuer.exchangeOidcToSamlToken(jwt, "serviceUser1", claims.issueTime)
+
+        SamlObject().apply { read(saml) }.asClue {
+            it.issuer shouldBe "IS02"
+            it.nameID shouldBe claims.subject
+            it.identType shouldBe "EksternBruker"
+            it.authenticationLevel shouldBe "4"
+            it.auditTrackingId shouldBe claims.jwtid
+            it.consumerId shouldBe "serviceUser1"
+        }
     }
 }
 
