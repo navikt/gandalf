@@ -17,6 +17,7 @@ object Version {
     const val wiremockCloud = "3.0.0"
 }
 
+//override Spring dependency management which uses a older version
 ext["okhttp3.version"] = "4.9.1"
 
 plugins {
