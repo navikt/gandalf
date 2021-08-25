@@ -9,13 +9,15 @@ object Version {
     const val json = "20201115"
     const val kotlinLoggin = "2.0.4"
     const val logbackStash = "6.6"
-    const val mockOAuth2Server = "0.2.3"
+    const val mockOAuth2Server = "0.3.4"
     const val nimbus = "8.30"
     const val openapi = "1.5.2"
     const val unboundid = "5.1.3"
     const val wiremock = "2.27.2"
     const val wiremockCloud = "3.0.0"
 }
+
+ext["okhttp3.version"] = "4.9.1"
 
 plugins {
     application
