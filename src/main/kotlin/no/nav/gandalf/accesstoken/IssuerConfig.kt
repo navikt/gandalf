@@ -14,7 +14,6 @@ import java.net.URL
 
 private val log = KotlinLogging.logger { }
 
-// @TODO: Create tests
 interface IssuerConfig {
     val issuer: String
     fun getKeyByKeyId(keyId: String?): RSAKey?
