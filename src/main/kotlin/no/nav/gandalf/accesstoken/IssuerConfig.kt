@@ -6,6 +6,7 @@ import com.nimbusds.jose.jwk.KeyType
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.source.RemoteJWKSet
 import com.nimbusds.jose.proc.SecurityContext
+import com.nimbusds.oauth2.sdk.OAuth2Error
 import com.nimbusds.oauth2.sdk.`as`.AuthorizationServerMetadata
 import mu.KotlinLogging
 import no.nav.gandalf.http.ProxyAwareResourceRetriever
@@ -47,7 +48,11 @@ interface IssuerConfig {
 
         private fun RemoteJWKSet<SecurityContext?>.getKeyByKeyId(keyId: String?): RSAKey =
             get(keyId?.toJWKSelector(), null)?.firstOrNull()?.toRSAKey()
-                ?: throw RuntimeException("Could not find matching keys in configuration for: $keyId")
+                ?: throw OAuthException(
+                    OAuth2Error.INVALID_REQUEST.setDescription(
+                        "Could not find matching keys in configuration for kid=$keyId"
+                    )
+                )
 
         private fun String.toJWKSelector(): JWKSelector = JWKSelector(
             JWKMatcher.Builder()
