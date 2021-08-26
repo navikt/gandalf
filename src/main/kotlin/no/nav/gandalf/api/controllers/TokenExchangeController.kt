@@ -137,8 +137,8 @@ class TokenExchangeController {
                         badRequestResponse(e.message ?: "")
                     }
                 }
-                subTokenType.equals("urn:ietf:params:oauth:token-type:access_token")
-                    && (reqTokenType.isNullOrEmpty() || reqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
+                subTokenType.equals("urn:ietf:params:oauth:token-type:access_token") &&
+                    (reqTokenType.isNullOrEmpty() || reqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
                     log.info("Exchange OIDC to SAML token")
                     return try {
                         val samlToken = issuer.exchangeOidcToSamlToken(subjectToken, user)

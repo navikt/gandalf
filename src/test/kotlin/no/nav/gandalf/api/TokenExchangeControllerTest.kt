@@ -2,6 +2,7 @@ package no.nav.gandalf.api
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.EXCHANGE
 import no.nav.gandalf.utils.EXCHANGE_DIFI
@@ -19,16 +20,12 @@ import no.nav.gandalf.utils.getDifiOidcToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.security.mock.oauth2.http.objectMapper
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -39,19 +36,10 @@ import wiremock.org.apache.http.message.BasicNameValuePair
 import wiremock.org.apache.http.util.EntityUtils
 import javax.annotation.PostConstruct
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(
-    properties = [
-        "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}/jwk",
-        "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}/isso/oauth2/connect/jwk_uri"
-    ],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
 @AutoConfigureMockMvc
-@AutoConfigureWireMock(port = 0)
 @ActiveProfiles("test")
 @DirtiesContext
-class TokenExchangeControllerTest {
+class TokenExchangeControllerTest : SpringBootWireMockSetup() {
 
     @Autowired
     private lateinit var mvc: MockMvc
@@ -59,7 +47,7 @@ class TokenExchangeControllerTest {
     @PostConstruct
     fun setup() {
         val controllerUtil = ControllerUtil()
-        controllerUtil.setupKnownIssuers()
+        // controllerUtil.setupKnownIssuers()
         controllerUtil.setupOverride()
     }
 

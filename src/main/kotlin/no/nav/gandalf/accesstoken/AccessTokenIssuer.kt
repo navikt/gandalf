@@ -8,15 +8,6 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.ParseException
-import java.io.IOException
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.util.Date
-import javax.annotation.PostConstruct
-import javax.xml.crypto.KeySelector
-import javax.xml.crypto.MarshalException
-import javax.xml.crypto.dsig.XMLSignatureException
-import javax.xml.parsers.ParserConfigurationException
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.oauth.OidcObject
 import no.nav.gandalf.accesstoken.saml.SamlObject
@@ -29,6 +20,15 @@ import no.nav.gandalf.service.RsaKeysProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.xml.sax.SAXException
+import java.io.IOException
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.util.Date
+import javax.annotation.PostConstruct
+import javax.xml.crypto.KeySelector
+import javax.xml.crypto.MarshalException
+import javax.xml.crypto.dsig.XMLSignatureException
+import javax.xml.parsers.ParserConfigurationException
 
 private val log = KotlinLogging.logger { }
 
@@ -37,39 +37,39 @@ class AccessTokenIssuer(
     @Autowired private val keyStore: RsaKeysProvider,
     @Autowired private val keySelector: KeySelector,
     @Autowired private val keyStoreReader: KeyStoreReader,
-    @Autowired private val difiConfiguration: DIFIConfiguration,
     @Autowired private val externalIssuersConfig: ExternalIssuer,
     @Autowired private val localIssuerConfig: LocalIssuer
-) : OidcIssuer {
+) : IssuerConfig {
 
     final override val issuer = localIssuerConfig.issuer
     private val domain = getDomainFromIssuerURL(this.issuer)
-    private lateinit var knownIssuers: MutableList<OidcIssuer>
+    private lateinit var knownIssuers: MutableList<IssuerConfig>
 
     @PostConstruct
     @Throws(ParseException::class)
     fun setKnownIssuers() {
         knownIssuers = mutableListOf(
             this,
-            OidcIssuerImpl(
+            IssuerConfig.from(
                 externalIssuersConfig.issuerOpenAm,
                 externalIssuersConfig.jwksEndpointOpenAm
             ),
-            OidcIssuerImpl(
+            IssuerConfig.from(
                 externalIssuersConfig.issuerAzureB2C,
                 externalIssuersConfig.jwksEndpointAzureB2C
             ),
-            OidcIssuerImpl(
+            IssuerConfig.from(
                 externalIssuersConfig.issuerAzureAd,
                 externalIssuersConfig.jwksEndpointAzuread
             ),
-            OidcIssuerImplDifi(
-                externalIssuersConfig.configurationDIFIOIDCUrl,
-                difiConfiguration
+            IssuerConfig.from(
+                externalIssuersConfig.configurationDIFIOIDCUrl
             ),
-            OidcIssuerImplDifi(
-                externalIssuersConfig.configurationDIFIMaskinportenUrl,
-                difiConfiguration
+            IssuerConfig.from(
+                externalIssuersConfig.configurationDIFIMaskinportenUrl
+            ),
+            IssuerConfig.from(
+                externalIssuersConfig.configurationTokenX
             )
         )
     }
@@ -182,42 +182,26 @@ class AccessTokenIssuer(
     @JvmOverloads
     @Throws(Exception::class)
     fun exchangeOidcToSamlToken(
-        oidcToken: String,
+        token: String,
         username: String?,
         now: Date = OidcObject.toDate(ZonedDateTime.now())
     ): String {
-        log.info("Issuing SAML: exchangeOidcToSamlToken from OIDC")
+        log.info("Issuing SAML from JWT: exchangeOidcToSamlToken")
+        val oidcObj = validateOidcToken(token, now)
 
-        // validate oidc token
-        val oidcObj: OidcObject = validateOidcToken(oidcToken, now)
-
-        // issue new saml token based on oidc token
-        val samlObj = SamlObject(toZonedDateTime(now))
-        samlObj.issuer = SAML_ISSUER
-        samlObj.setDuration((oidcObj.expirationTime.time - now.time) / 1000 + EXCHANGE_TOKEN_EXTENDED_TIME)
-        samlObj.nameID = oidcObj.navIdent ?: oidcObj.subject
-        val idpIssoIssuer = filterIssoInternIssuer()
-        when {
-            oidcObj.authLevel != null -> {
-                samlObj.authenticationLevel = getAuthenticationLevel(oidcObj)
-            }
-            idpIssoIssuer != null && idpIssoIssuer.issuer == oidcObj.issuer -> {
-                samlObj.authenticationLevel = DEFAULT_INTERN_SAML_AUTHLEVEL
-            }
-            else -> {
-                samlObj.authenticationLevel = DEFAULT_SAML_AUTHLEVEL
-            }
-        }
-        samlObj.consumerId = username
-        samlObj.identType = getIdentType(samlObj.nameID!!, getAuthenticationLevel(oidcObj))
-        samlObj.auditTrackingId = (
-            when {
-                oidcObj.auditTrackingId != null -> oidcObj.auditTrackingId
-                else -> oidcObj.id
-            }
-            )
-        return samlObj.getSignedSaml(keyStoreReader)
+        return samlObject(toZonedDateTime(now)) {
+            issuer = SAML_ISSUER
+            setDuration((oidcObj.expirationTime.time - now.time) / 1000 + EXCHANGE_TOKEN_EXTENDED_TIME)
+            nameID = oidcObj.navIdent ?: oidcObj.getClaim("pid") as? String ?: oidcObj.subject
+            authenticationLevel = getAuthenticationLevel(oidcObj)
+            consumerId = username
+            identType = getIdentType(nameID!!, getAuthenticationLevel(oidcObj))
+            auditTrackingId = oidcObj.auditTrackingId ?: oidcObj.id
+        }.getSignedSaml(keyStoreReader)
     }
+
+    fun samlObject(now: ZonedDateTime, configure: SamlObject.() -> Unit): SamlObject =
+        SamlObject(now).apply(configure)
 
     fun filterIssoInternIssuer() = knownIssuers.singleOrNull { it.issuer.contains(ISSO_OIDC_ISSUER) }
 
@@ -235,7 +219,7 @@ class AccessTokenIssuer(
         log.info("Issuing a Exchange token for DIFI-Accesstoken")
         require(!difiToken.isNullOrEmpty()) { "Validation failed: OidcToken is null or empty" }
         val difiOidcObj = OidcObject(difiToken)
-        val knownIssuer: OidcIssuer = knownIssuers.map { it }.singleOrNull { it.issuer == difiOidcObj.issuer }
+        val knownIssuer: IssuerConfig = knownIssuers.map { it }.singleOrNull { it.issuer == difiOidcObj.issuer }
             ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + difiOidcObj.issuer)
         log.info("DIFI accessToken from issuer: " + knownIssuer.issuer)
         difiOidcObj.validate(knownIssuer, now)

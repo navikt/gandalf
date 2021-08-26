@@ -1,0 +1,10 @@
+{
+  "issuer" : "https://tokendings.dev-gcp.nais.io",
+  "authorization_endpoint" : "https://tokendings.dev-gcp.nais.io/authorization",
+  "token_endpoint" : "https://tokendings.dev-gcp.nais.io/token",
+  "jwks_uri" : "https://tokendings.dev-gcp.nais.io/jwks",
+  "grant_types_supported" : [ "urn:ietf:params:oauth:grant-type:token-exchange" ],
+  "token_endpoint_auth_methods_supported" : [ "private_key_jwt" ],
+  "token_endpoint_auth_signing_alg_values_supported" : [ "RS256" ],
+  "subject_types_supported" : [ "public" ]
+}

@@ -1,7 +1,6 @@
 package no.nav.gandalf.utils
 
 import no.nav.gandalf.ldap.InMemoryLdap
-import org.apache.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -30,14 +29,6 @@ internal const val SUBJECT_TOKEN_TYPE = "subject_token_type"
 open class ControllerUtil {
 
     private val inMemoryLdap = InMemoryLdap()
-
-    fun setupKnownIssuers() {
-        endpointStub(HttpStatus.SC_OK, difiOIDCConfigurationUrl, difiOIDCConfigurationResponseFileName)
-        endpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)
-        endpointStub(HttpStatus.SC_OK, openAMJwksUrl, openAMResponseFileName)
-        endpointStub(HttpStatus.SC_OK, difiMASKINPORTENCJwksUrl, difiMASKINPORTENJWKSResponseFileName)
-        endpointStub(HttpStatus.SC_OK, difiOIDCJwksUrl, difiOIDCResponseFileName)
-    }
 
     fun setupOverride() {
         // Default value has changed in Spring5, need to allow overriding of beans in tests

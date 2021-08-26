@@ -1,9 +1,16 @@
 package no.nav.gandalf.utils
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import org.apache.http.HttpStatus
+import java.nio.file.Files
+import java.nio.file.Path
 
 internal const val openAMResponseFileName = "openam-jwks.json"
 internal const val openAMJwksUrl = "/isso/oauth2/connect/jwk_uri"
@@ -21,6 +28,8 @@ internal const val difiMASKINPORTENConfigurationResponseFileName = "difi-maskinp
 internal const val azureADResponseFileName = "azuread-jwks.json"
 internal const val azureADJwksUrl = "/discovery/v2.0/keys"
 
+private val objectMapper: ObjectMapper = jacksonObjectMapper()
+
 internal fun endpointStub(status: Int = HttpStatus.SC_OK, path: String, bodyFile: String) =
     stubFor(
         WireMock.get(WireMock.urlEqualTo(path))
@@ -32,14 +41,22 @@ internal fun endpointStub(status: Int = HttpStatus.SC_OK, path: String, bodyFile
             )
     )
 
-internal fun endpointStubWithBody(status: Int = HttpStatus.SC_OK, path: String, bodyFile: String) =
+internal fun wellKnownStub(path: String, jwksUrl: String, bodyFile: String) {
+    val content = Files.readString(Path.of("src/test/resources/__files/$bodyFile"))
+    val jsonNode: JsonNode = objectMapper.readValue<JsonNode>(content).apply {
+        (this as ObjectNode).put("jwks_uri", jwksUrl)
+    }
+    endpointStubWithBody(path = path, body = jsonNode)
+}
+
+internal fun endpointStubWithBody(status: Int = HttpStatus.SC_OK, path: String, body: Any) =
     stubFor(
         WireMock.get(WireMock.urlEqualTo(path))
             .willReturn(
                 aResponse()
                     .withStatus(status)
                     .withHeader("Content-Type", "application/json; charset=UTF-8")
-                    .withBody(bodyFile)
+                    .withBody(objectMapper.writeValueAsString(body))
             )
     )
 
@@ -52,3 +69,9 @@ internal fun getMaskinportenToken() =
 
 internal fun getOpenAmOIDC() =
     "eyAidHlwIjogIkpXVCIsICJraWQiOiAiU0gxSWVSU2sxT1VGSDNzd1orRXVVcTE5VHZRPSIsICJhbGciOiAiUlMyNTYiIH0.eyAiYXRfaGFzaCI6ICJZNXgxcVNLclVVRlE3eVpEVVBIUXZBIiwgInN1YiI6ICJhZ2VudGFkbWluIiwgImF1ZGl0VHJhY2tpbmdJZCI6ICI0NWVkYmYwZS05NmIxLTRkODUtYWFlOC0xMzNmZDVlNmYzOGMtMzA4MDQ1IiwgImlzcyI6ICJodHRwczovL2lzc28tdC5hZGVvLm5vOjQ0My9pc3NvL29hdXRoMiIsICJ0b2tlbk5hbWUiOiAiaWRfdG9rZW4iLCAiYXVkIjogImZyZWctdG9rZW4tcHJvdmlkZXItdDAiLCAiY19oYXNoIjogInY3YW1vYl9lbjc2Tl9VRm5lZDFJaXciLCAib3JnLmZvcmdlcm9jay5vcGVuaWRjb25uZWN0Lm9wcyI6ICI2YjI3OWI0MC1iYjdhLTRjMmItYTQzNC01Y2YyYmNmMzcyMjUiLCAiYXpwIjogImZyZWctdG9rZW4tcHJvdmlkZXItdDAiLCAiYXV0aF90aW1lIjogMTUzOTY4MDMwMCwgInJlYWxtIjogIi8iLCAiZXhwIjogMTUzOTY4MzkwMCwgInRva2VuVHlwZSI6ICJKV1RUb2tlbiIsICJpYXQiOiAxNTM5NjgwMzAwIH0.CEPqay8UMpqVDUB9VMYMWtGgL5NoKY5fqy4-0216OxZ6zSQgUwJ9tqqMXD12yFNIACSOTTRdwahA0qgBDoRZH-u67mnEYXF_pFwhYpOWbwZy3W67B3re8dti8pMoCbFv0ydSifVkyDD44LEEUbnIBV-GvWgcY8E5pASwjycdRJAskCP3m2Bo9GY4XV10lDv59mM9G5wr3kpOn9iiPK0NFxdSizJZjh2qv9KtId9fuC7E-8SZvvUlKjChcIwP-gYiFkqce7KBhYkbwr9eYZ5wSwIY7107xAYVgKoRrjAbEm1okity6yEow0RwoEU-JlUe5Tbvd8mmjrJSHBEgEPiZyw"
+
+internal fun getTokenDingsIdportenToken() =
+    "eyJraWQiOiI3YmM4MjAxYS1lNDkxLTQxZDMtYjVlZC0zNTU1NjRjMjE4MDgiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoiY2ZCRFJuODFYSkJnUG9NWVZyd2JFZyIsInN1YiI6IlFGeUJvYW9HQ2ZYV2hLR0tyQzl5dkVnY2lyTzdFblktNjVCU1kteGNrdG89IiwiYW1yIjpbIkJhbmtJRCJdLCJpc3MiOiJodHRwczpcL1wvdG9rZW5kaW5ncy5kZXYtZ2NwLm5haXMuaW8iLCJwaWQiOiIwODA4OTQwNjMxNiIsImxvY2FsZSI6Im5iIiwiY2xpZW50X2lkIjoiZGV2LWdjcDpwbGF0dGZvcm1zaWtrZXJoZXQ6ZGVidWctZGluZ3MiLCJzaWQiOiJRUWxzWTk5Qi1nQ0lHSGEtWHpVVXpzdHl4VjE1d3UwZmdyamZ5ZG5OSTRzIiwiYXVkIjoiZGV2LWdjcDpwbGF0dGZvcm1zaWtrZXJoZXQ6YXBpLWRpbmdzIiwiYWNyIjoiTGV2ZWw0IiwibmJmIjoxNjI5ODAzNzAxLCJpZHAiOiJodHRwczpcL1wvb2lkYy12ZXIyLmRpZmkubm9cL2lkcG9ydGVuLW9pZGMtcHJvdmlkZXJcLyIsImF1dGhfdGltZSI6MTYyOTgwMzQ4OSwiZXhwIjoxNjI5ODA0MDAxLCJpYXQiOjE2Mjk4MDM3MDEsImp0aSI6ImY4OGRjZjFkLWNlNDgtNDUwYy05MWExLWQwZThiYzdhZDNiZiJ9.nn2lF8H_GjlSYr_s7Mx_QRJMzK-_kiGIAUSZ4UQ1uT89luJ8juJbYQHykbiHiQmIF0Z5TEPgFO4Irc9GcKFVbUDRmAB7ucthCD3WBjSK1MUec_qTdynEtq3CxJMC1Edag2XN0GQLNO4ENHa0hqb9eKzMMS19W8fTw9P3ONPK4A-oi7WqvYCsNfozKsPtNuBSm0MkqKMjlEpAoXvF-TgMvm-JW9wuI3Y4DkTq7n1v0MnMJxnJAQ7twZgBcSx2Ff4Ck0uPXcvICCuvvr6EcNmNgWtBWRNwD3acOpSN17b-Tt78CdK-9-lp_SqV0Cl0g5UBKtH_Ph2s4kmkc12oY2HqxA"
+
+internal fun getTokenDingsAzureADB2CToken() =
+    "eyJraWQiOiJjZDg3NzQyZi0yZDliLTQxMzYtYjU4Yi04NTA3ODk3NjBhZjEiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoiOHBDa2RHMGtLU1ZEZFZ1dnhrUzc5ZyIsInN1YiI6IjA4MDg5NDA2MzE2IiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6XC9cL3Rva2VuZGluZ3MuZGV2LWdjcC5uYWlzLmlvIiwibm9uY2UiOiJvRTk2c0lXZjUyRTFqSkxIa1ZsV1ZNeXlaVmpKdG9JeFdnMzRWM0IycXpJIiwiY2xpZW50X2lkIjoiZGV2LWdjcDpwbGF0dGZvcm1zaWtrZXJoZXQ6ZGVidWctZGluZ3MiLCJhdWQiOiJkZXYtZ2NwOnBsYXR0Zm9ybXNpa2tlcmhldDphcGktZGluZ3MiLCJhY3IiOiJMZXZlbDQiLCJuYmYiOjE2Mjk4OTQzNTcsImlkcCI6Imh0dHBzOlwvXC9uYXZ0ZXN0YjJjLmIyY2xvZ2luLmNvbVwvZDM4ZjI1YWEtZWFiOC00YzUwLTlmMjgtZWJmOTJjMTI1NmYyXC92Mi4wXC8iLCJhdXRoX3RpbWUiOjE2Mjk4OTQyMzAsImV4cCI6MTYyOTg5NDY1NywiaWF0IjoxNjI5ODk0MzU3LCJqdGkiOiIwYmYyNjU4OC01YWUzLTRlYWItODdhYi0zNWIxMTUzNzdkZDIifQ.hD2WsbsU418iD8cJsTrhgFH71ZyIp2OXaCF-u5THeRCe9t7fR0_8wFx7uR2oVCJz1Q7oooO7DSQGDK0XE0lg15Ml5_Mh66rkSQCqqBRt9nkV49T7vtb_ttEsEMA4x1Q1SlZR7ysoMtxXc87APK90-WkUo5EzwWmwJxIoREXsHouuskRR_uN97Jc2vIJAhe6BZaN3pGsstycNepbVuK-xRXtW75_9LtzbFVPNnRjmIll4Bg-_R3WwTXTdjLjYP_A_NwBGmKOJR7Pc5tsH0IuT2rZnKR0gWeUmo8Q2HXvvxzaNh58LRB4IqcSctFbF7LXFFfzJoTyd50fqEMF5bqhgOw"

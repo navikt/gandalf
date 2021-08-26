@@ -1,5 +1,6 @@
 package no.nav.gandalf.api
 
+import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
 import no.nav.gandalf.utils.SAML_TOKEN
@@ -8,16 +9,12 @@ import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN2
 import no.nav.gandalf.utils.TOKEN_TYPE
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -25,21 +22,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import wiremock.org.apache.http.message.BasicNameValuePair
 import javax.annotation.PostConstruct
 
-@RunWith(SpringRunner::class)
-@SpringBootTest(
-    properties = [
-        "application.external.issuer.difi.maskinporten=http://localhost:\${wiremock.server.port}/",
-        "application.external.issuer.difi.oidc=http://localhost:\${wiremock.server.port}/idporten-oidc-provider",
-        "application.jwks.endpoint.azuread=http://localhost:\${wiremock.server.port}/jwk",
-        "application.jwks.endpoint.openam=http://localhost:\${wiremock.server.port}/isso/oauth2/connect/jwk_uri"
-    ],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
 @AutoConfigureMockMvc
-@AutoConfigureWireMock(port = 0)
 @ActiveProfiles("test")
 @DirtiesContext
-class AccessTokenControllerTest {
+class AccessTokenControllerTest : SpringBootWireMockSetup() {
 
     @Autowired
     private lateinit var mvc: MockMvc
@@ -47,7 +33,6 @@ class AccessTokenControllerTest {
     @PostConstruct
     fun setup() {
         val controllerUtil = ControllerUtil()
-        controllerUtil.setupKnownIssuers()
         controllerUtil.setupOverride()
     }
 

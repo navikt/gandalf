@@ -2,18 +2,23 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 object Version {
+    const val mockk = "1.12.0"
+    const val kotest = "4.6.2"
     const val apacheHttp = "4.5.12"
     const val gradleVersion = "6.5"
     const val json = "20201115"
     const val kotlinLoggin = "2.0.4"
     const val logbackStash = "6.6"
-    const val mockOAuth2Server = "0.2.3"
+    const val mockOAuth2Server = "0.3.4"
     const val nimbus = "8.30"
     const val openapi = "1.5.2"
     const val unboundid = "5.1.3"
     const val wiremock = "2.27.2"
     const val wiremockCloud = "3.0.0"
 }
+
+//override Spring dependency management which uses a older version
+ext["okhttp3.version"] = "4.9.1"
 
 plugins {
     application
@@ -76,6 +81,8 @@ dependencies {
     testImplementation("com.github.tomakehurst:wiremock-jre8:${Version.wiremock}")
     testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:${Version.wiremockCloud}")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("io.kotest:kotest-assertions-core:${Version.kotest}")
+    testImplementation("io.mockk:mockk:${Version.mockk}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 

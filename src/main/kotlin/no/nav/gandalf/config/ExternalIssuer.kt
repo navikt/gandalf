@@ -20,5 +20,7 @@ data class ExternalIssuer(
     @Value("\${application.external.configuration.difi.oidc}")
     val configurationDIFIOIDCUrl: String,
     @Value("\${application.external.configuration.difi.maskinporten}")
-    val configurationDIFIMaskinportenUrl: String
+    val configurationDIFIMaskinportenUrl: String,
+    @Value("\${application.external.configuration.tokenx}")
+    val configurationTokenX: String
 )
