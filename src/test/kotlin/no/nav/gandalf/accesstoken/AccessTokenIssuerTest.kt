@@ -420,6 +420,36 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
     }
 
     @Test
+    fun `if token is for identType InternBruker authlevel should be 4`() {
+        val signedJWT = issuer.issueToken("F123456")
+        val jwt = signedJWT.serialize()
+        val saml = issuer.exchangeOidcToSamlToken(jwt, "serviceUser1", signedJWT.jwtClaimsSet.issueTime)
+
+        SamlObject().apply { read(saml) }.asClue {
+            it.issuer shouldBe "IS02"
+            it.nameID shouldBe "F123456"
+            it.identType shouldBe "InternBruker"
+            it.authenticationLevel shouldBe "4"
+            it.consumerId shouldBe "serviceUser1"
+        }
+    }
+
+    @Test
+    fun `if token is for identType SystemBruker authlevel should be 0`() {
+        val signedJWT = issuer.issueToken("srvDoh")
+        val jwt = signedJWT.serialize()
+        val saml = issuer.exchangeOidcToSamlToken(jwt, "serviceUser1", signedJWT.jwtClaimsSet.issueTime)
+
+        SamlObject().apply { read(saml) }.asClue {
+            it.issuer shouldBe "IS02"
+            it.nameID shouldBe "srvDoh"
+            it.identType shouldBe "Systemressurs"
+            it.authenticationLevel shouldBe "0"
+            it.consumerId shouldBe "serviceUser1"
+        }
+    }
+
+    @Test
     fun `exchange jwt from tokendings and idporten to SAML`() {
         val jwt = getTokenDingsIdportenToken()
         val claims = SignedJWT.parse(jwt).jwtClaimsSet

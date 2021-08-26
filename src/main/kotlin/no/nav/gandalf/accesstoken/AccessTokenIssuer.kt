@@ -193,12 +193,21 @@ class AccessTokenIssuer(
             issuer = SAML_ISSUER
             setDuration((oidcObj.expirationTime.time - now.time) / 1000 + EXCHANGE_TOKEN_EXTENDED_TIME)
             nameID = oidcObj.navIdent ?: oidcObj.getClaim("pid") as? String ?: oidcObj.subject
-            authenticationLevel = getAuthenticationLevel(oidcObj)
+            val level = getAuthenticationLevel(oidcObj)
+            val type = getIdentType(nameID!!, getAuthenticationLevel(oidcObj))
+            authenticationLevel = defaultLevelIfInternBruker(level, type)
             consumerId = username
-            identType = getIdentType(nameID!!, getAuthenticationLevel(oidcObj))
+            identType = type
             auditTrackingId = oidcObj.auditTrackingId ?: oidcObj.id
         }.getSignedSaml(keyStoreReader)
     }
+
+    private fun defaultLevelIfInternBruker(authLevel: String, identType: String) =
+        if (authLevel == DEFAULT_SAML_AUTHLEVEL && identType == IdentType.INTERNBRUKER.value) {
+            DEFAULT_INTERN_SAML_AUTHLEVEL
+        } else {
+            authLevel
+        }
 
     fun samlObject(now: ZonedDateTime, configure: SamlObject.() -> Unit): SamlObject =
         SamlObject(now).apply(configure)
