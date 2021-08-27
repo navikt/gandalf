@@ -27,7 +27,7 @@ plugins {
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jmailen.kotlinter") version "3.5.1"
     id("com.github.ben-manes.versions") version "0.39.0"
-    id("org.springframework.boot") version "2.5.3"
+    id("org.springframework.boot") version "2.5.4"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
