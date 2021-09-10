@@ -54,7 +54,7 @@ jobs:
 
   deploy-dev:
     name: Deploy to NAIS dev
-    needs: deploy-dev-t4
+    needs: build
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
