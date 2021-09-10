@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: security-token-service
+  namespace: default
+spec:
+  externalName: security-token-service.aura.svc.nais.local
+  sessionAffinity: None
+  type: ExternalName
+status:
+  loadBalancer: {}

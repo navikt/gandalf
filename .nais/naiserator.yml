@@ -36,14 +36,9 @@ spec:
       cpu: 500m
       memory: 2Gi
   cpuThresholdPercentage: 80
-  vault:
-    enabled: true
-    paths:
-      {{#each vault-paths}}
-      - kvPath: "{{this.kvPath}}"
-        mountPath: "{{this.mountPath}}"
-      {{/each}}
   webproxy: true
+  envFrom:
+    - secret: security-token-service
   env:
     {{#each envs}}
     - name: "{{this.name}}"
