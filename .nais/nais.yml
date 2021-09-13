@@ -1,0 +1,46 @@
+kind: Application
+apiVersion: nais.io/v1alpha1
+metadata:
+  name: {{name}}
+  namespace: {{namespace}}
+  labels:
+    team: {{team}}
+spec:
+  image: {{image}}
+  ingresses:
+    {{#each ingresses}}
+     - "{{this}}"
+     {{/each}}
+  liveness:
+    path: /isAlive
+    initialDelay: 20
+    periodSeconds: 5
+    failureThreshold: 30
+  port: 8080
+  prometheus:
+    enabled: true
+    path: /prometheus
+  readiness:
+    path: /isReady
+    initialDelay: 20
+    periodSeconds: 5
+    failureThreshold: 30
+  replicas:
+    min: {{replicas.min}}
+    max: {{replicas.max}}
+  resources:
+    limits:
+      cpu: 800m
+      memory: 4Gi
+    requests:
+      cpu: 500m
+      memory: 2Gi
+  cpuThresholdPercentage: 80
+  webproxy: true
+  envFrom:
+    - secret: security-token-service
+  env:
+    {{#each envs}}
+    - name: "{{this.name}}"
+      value: "{{this.value}}"
+    {{/each}}
