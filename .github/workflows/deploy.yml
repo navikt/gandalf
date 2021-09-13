@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: nais/deploy/actions/deploy@v1
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          APIKEY: ${{ secrets.NAIS_AURA_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/default-vars.yml
@@ -75,7 +75,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: nais/deploy/actions/deploy@v1
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          APIKEY: ${{ secrets.NAIS_AURA_DEPLOY_APIKEY }} 
           CLUSTER: prod-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/prod-vars.yml
