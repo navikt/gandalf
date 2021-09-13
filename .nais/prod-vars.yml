@@ -1,7 +1,7 @@
 namespace: aura
 team: aura
 name: security-token-service
-  #ingresses:
+ingresses: {}
   # - https://security-token-service.nais.adeo.no
 envs:
   - name: SPRING_PROFILES_ACTIVE
