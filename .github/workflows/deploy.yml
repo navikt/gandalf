@@ -63,7 +63,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
-          RESOURCE: .nais/naiserator.yml
+          RESOURCE: .nais/nais.yml
           VARS: .nais/default-vars.yml
 
   deploy-prod:
@@ -77,7 +77,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
-          RESOURCE: .nais/naiserator.yml
+          RESOURCE: .nais/nais.yml
           VARS: .nais/prod-vars.yml
 
   release-notes:
