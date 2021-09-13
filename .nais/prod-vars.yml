@@ -1,8 +1,8 @@
-namespace: default
-team: integrasjon
+namespace: aura
+team: aura
 name: security-token-service
-ingresses:
-  - https://security-token-service.nais.adeo.no
+  #ingresses:
+  # - https://security-token-service.nais.adeo.no
 envs:
   - name: SPRING_PROFILES_ACTIVE
     value: remote
@@ -35,12 +35,3 @@ envs:
 replicas:
   min: 4
   max: 6
-vault-paths:
-  - kvPath: serviceuser/data/prod/srvsecurity-token-service
-    mountPath: /secrets/serviceuser
-  - kvPath: oracle/data/prod/creds/securitytokenservice_p-user
-    mountPath: /secrets/database/credentials
-  - kvPath: oracle/data/prod/config/securitytokenservice_p
-    mountPath: /secrets/database/config
-  - kvPath: kv/prod/fss/security-token-service/default
-    mountPath: /var/run/secrets/nais.io/vault
