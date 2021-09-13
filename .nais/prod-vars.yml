@@ -2,8 +2,7 @@ namespace: aura
 team: aura
 name: security-token-service
 ingresses: 
-  - https://security-token-service.intern.nav.no
-  # - https://security-token-service.nais.adeo.no
+  - https://security-token-service.nais.adeo.no
 envs:
   - name: SPRING_PROFILES_ACTIVE
     value: remote
