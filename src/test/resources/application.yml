@@ -30,6 +30,9 @@ spring:
     base: dc=test,dc=local
     port: 11389
     timeout: 1000
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 # Application
 application:
   oidc:
