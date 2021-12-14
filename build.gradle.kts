@@ -43,6 +43,10 @@ repositories {
     maven(url = "https://kotlin.bintray.com/kotlinx")
 }
 
+// https://spring.io/blog/2021/12/10/log4j2-vulnerability-and-spring-boot
+// Not in use, but to be sure.
+ext["log4j2.version"] = "2.16.0"
+
 dependencies {
     implementation("ch.qos.logback:logback-classic")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
