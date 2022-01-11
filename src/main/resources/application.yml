@@ -29,7 +29,9 @@ spring:
     base: dc=test,dc=local
     port: <FROM ENV. VARS>
     timeout: 5000
-# Application
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 application:
   oidc:
     issuer: <FROM ENV. VARS>
@@ -80,3 +82,4 @@ springdoc:
   swagger-ui:
     path: /api
   writer-with-default-pretty-printer: true
+

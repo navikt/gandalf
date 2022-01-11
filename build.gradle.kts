@@ -9,8 +9,8 @@ object Version {
     const val json = "20201115"
     const val kotlinLoggin = "2.0.4"
     const val logbackStash = "6.6"
-    const val mockOAuth2Server = "0.3.4"
-    const val nimbus = "8.30"
+    const val mockOAuth2Server = "0.4.0"
+    const val nimbus = "9.20"
     const val openapi = "1.5.2"
     const val unboundid = "5.1.3"
     const val wiremock = "2.27.2"
@@ -23,11 +23,11 @@ ext["okhttp3.version"] = "4.9.1"
 plugins {
     application
     java
-    val kotlinVersion = "1.5.21"
+    val kotlinVersion = "1.6.0"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jmailen.kotlinter") version "3.6.0"
     id("com.github.ben-manes.versions") version "0.39.0"
-    id("org.springframework.boot") version "2.5.5"
+    id("org.springframework.boot") version "2.6.1"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
@@ -69,9 +69,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.conscrypt:conscrypt-openjdk:2.5.2")
     implementation("org.springdoc:springdoc-openapi-ui:${Version.openapi}")
     implementation("org.yaml:snakeyaml")
-    runtimeOnly("com.oracle.ojdbc:ojdbc8")
+    runtimeOnly("com.oracle.database.jdbc:ojdbc8")
 
     // test
     testImplementation("com.h2database:h2")

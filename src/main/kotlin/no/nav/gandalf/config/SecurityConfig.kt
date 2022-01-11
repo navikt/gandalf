@@ -76,8 +76,8 @@ class SecurityConfig(
         return super.authenticationManagerBean()
     }
 
-    @Primary
-    @Bean
+    //@Primary
+    // @Bean
     fun activeDirectoryLdapAuthenticationProvider(): AuthenticationProvider? {
         return CustomAuthenticationProvider(LDAPConnectionSetup(ldapConfig))
     }
