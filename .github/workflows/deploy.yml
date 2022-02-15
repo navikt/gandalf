@@ -52,9 +52,6 @@ jobs:
           echo "$GITHUB_TOKEN" | docker login --username "$GITHUB_REPOSITORY" --password-stdin https://docker.pkg.github.com
           docker push ${IMAGE}
 
-      - name: NAIS salsa
-        uses: nais/salsa/actions/salsa@v1
-
   deploy-dev:
     name: Deploy to NAIS dev
     needs: build
