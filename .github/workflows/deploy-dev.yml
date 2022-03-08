@@ -25,7 +25,7 @@ jobs:
         run: ./gradlew clean test
       - name: Unit tests results
         if: always()
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v3
         with:
           name: unit-tests-results
           path: build/reports/tests
