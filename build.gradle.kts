@@ -5,7 +5,7 @@ object Version {
     const val mockk = "1.12.3"
     const val kotest = "5.1.0"
     const val apacheHttp = "4.5.12"
-    const val gradleVersion = "6.5"
+    const val gradleVersion = "7.4.1"
     const val json = "20211205"
     const val kotlinLoggin = "2.1.21"
     const val logbackStash = "7.0.1"
@@ -42,7 +42,7 @@ repositories {
 }
 
 //override Spring dependency management which uses a older version
-ext["okhttp3.version"] = "4.9.1"
+ext["okhttp3.version"] = "4.9.2"
 
 dependencies {
     implementation("ch.qos.logback:logback-classic")
