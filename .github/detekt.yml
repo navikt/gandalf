@@ -15,7 +15,7 @@ jobs:
         with:
           args: >
             -r txt:reports/detekt.txt
-            --jvm-target 14
+            --jvm-target 15
             --build-upon-default-config
             --config detekt/detekt-config.yml
       - name: Print Report

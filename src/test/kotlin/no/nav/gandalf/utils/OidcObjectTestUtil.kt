@@ -42,7 +42,8 @@ internal fun getOriginalJwkSet(): JWKSet {
       "n": "kWGpFHfV0eEh7OxYOs4xYzFqD0QuxUqoG2y9jHU4u3fA76ryCNg6SE1y-O5F7ebo3pEYXRxrLbqPJdeM3XOb8_S4UvWRfnhFaybDo4OCKcuyA8wH-crhoqObUWOitcx9GnSyW-JuZASm_8_FhO0qu8laMQPxfAYhXQwRlyfCtCssUdc0yFgoPci87PFXhvmhmzWp_7aqrfXZiNrQSsfrjCeIqldopDkIN4JF47Yb_wtrp3e6y0y-RhcV1qXXa5N7SpXS7yjzhp-RMjyCmYyH7zOpKaE58KxuMDlql8BNGB2dlfirnU1R4fQkktNmvR8fPMb4DKCeNJkMo9n_Uil-Jw"
     }
   ]
-}"""
+}
+        """
     return JWKSet.parse(jwks)
 }
 

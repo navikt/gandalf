@@ -2,23 +2,21 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 object Version {
-    const val mockk = "1.12.0"
-    const val kotest = "4.6.2"
+    const val mockk = "1.12.3"
+    const val kotest = "5.1.0"
     const val apacheHttp = "4.5.12"
-    const val gradleVersion = "6.5"
-    const val json = "20201115"
-    const val kotlinLoggin = "2.0.4"
-    const val logbackStash = "6.6"
-    const val mockOAuth2Server = "0.4.0"
-    const val nimbus = "9.20"
-    const val openapi = "1.5.2"
-    const val unboundid = "5.1.3"
-    const val wiremock = "2.27.2"
-    const val wiremockCloud = "3.0.0"
+    const val gradleVersion = "7.4.1"
+    const val json = "20211205"
+    const val kotlinLoggin = "2.1.21"
+    const val logbackStash = "7.0.1"
+    const val mockOAuth2Server = "0.4.4"
+    const val nimbus = "9.28"
+    const val openapi = "1.6.6"
+    const val unboundid = "6.0.3"
+    const val wiremock = "2.32.0"
+    const val wiremockCloud = "3.1.1"
+    const val h2 = "2.1.210"
 }
-
-//override Spring dependency management which uses a older version
-ext["okhttp3.version"] = "4.9.1"
 
 plugins {
     application
@@ -43,9 +41,8 @@ repositories {
     maven(url = "https://kotlin.bintray.com/kotlinx")
 }
 
-// https://spring.io/blog/2021/12/10/log4j2-vulnerability-and-spring-boot
-// Not in use, but to be sure.
-ext["log4j2.version"] = "2.16.0"
+//override Spring dependency management which uses a older version
+ext["okhttp3.version"] = "4.9.2"
 
 dependencies {
     implementation("ch.qos.logback:logback-classic")
@@ -75,7 +72,7 @@ dependencies {
     runtimeOnly("com.oracle.database.jdbc:ojdbc8")
 
     // test
-    testImplementation("com.h2database:h2")
+    testImplementation("com.h2database:h2:${Version.h2}")
     testImplementation("no.nav.security:mock-oauth2-server:${Version.mockOAuth2Server}")
     testImplementation("org.hibernate:hibernate-testing")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
@@ -108,7 +105,7 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "13"
+            jvmTarget = "15"
         }
     }
     withType<Test> {
