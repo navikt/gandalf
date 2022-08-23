@@ -3,19 +3,19 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 object Version {
     const val mockk = "1.12.3"
-    const val kotest = "5.1.0"
+    const val kotest = "5.4.2"
     const val apacheHttp = "4.5.12"
     const val gradleVersion = "7.4.1"
-    const val json = "20211205"
+    const val json = "20220320"
     const val kotlinLoggin = "2.1.21"
     const val logbackStash = "7.0.1"
-    const val mockOAuth2Server = "0.4.4"
-    const val nimbus = "9.28"
+    const val mockOAuth2Server = "0.5.1"
+    const val nimbus = "9.41"
     const val openapi = "1.6.6"
     const val unboundid = "6.0.3"
     const val wiremock = "2.32.0"
     const val wiremockCloud = "3.1.1"
-    const val h2 = "2.1.210"
+    const val h2 = "2.1.214"
 }
 
 plugins {
@@ -25,7 +25,7 @@ plugins {
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jmailen.kotlinter") version "3.10.0"
     id("com.github.ben-manes.versions") version "0.42.0"
-    id("org.springframework.boot") version "2.7.2"
+    id("org.springframework.boot") version "2.7.3"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.0.13.RELEASE"
