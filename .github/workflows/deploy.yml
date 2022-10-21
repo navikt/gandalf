@@ -86,7 +86,7 @@ jobs:
 
   deploy-dev:
     name: Deploy to NAIS dev
-    needs: build, deploy-dev-dev
+    needs: [build, deploy-dev-dev]
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-20.04
     steps:
@@ -100,7 +100,7 @@ jobs:
 
   deploy-prod:
     name: Deploy to NAIS prod
-    needs: deploy-dev, deploy-dev-dev
+    needs: [deploy-dev, deploy-dev-dev]
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-20.04
     steps:
