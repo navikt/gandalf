@@ -70,7 +70,7 @@ jobs:
           key: ${{ secrets.SALSA_KMS_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-  deploy-dev-dev:
+  deploy-dev-t4:
     name: Deploy to NAIS dev (old t4)
     needs: build
     if: "github.ref == 'refs/heads/master'"
@@ -86,7 +86,7 @@ jobs:
 
   deploy-dev:
     name: Deploy to NAIS dev
-    needs: build
+    needs: [build, deploy-dev-t4]
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-20.04
     steps:
@@ -100,7 +100,7 @@ jobs:
 
   deploy-prod:
     name: Deploy to NAIS prod
-    needs: [deploy-dev, deploy-dev-dev]
+    needs: [deploy-dev, deploy-dev-t4]
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-20.04
     steps:
@@ -111,11 +111,3 @@ jobs:
           CLUSTER: prod-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/prod-vars.yml
-
-  release-notes:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Release Drafter
-        uses: release-drafter/release-drafter@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

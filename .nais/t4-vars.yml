@@ -35,13 +35,7 @@ envs:
 replicas:
   min: 2
   max: 2
-vault-paths:
-  - kvPath: serviceuser/data/test/srvsecurity-token-service
-    mountPath: /secrets/serviceuser
-  - kvPath: oracle/data/dev/creds/securitytokenservice_t4-user
-    mountPath: /secrets/database/credentials
-  - kvPath: oracle/data/dev/config/securitytokenservice_t4
-    mountPath: /secrets/database/config
-  - kvPath: kv/preprod/fss/security-token-service/t4
-    mountPath: /var/run/secrets/nais.io/vault
+envFrom:
+  secret: security-token-service-t4
+
 

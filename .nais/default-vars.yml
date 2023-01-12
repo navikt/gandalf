@@ -36,3 +36,5 @@ envs:
 replicas:
   min: 2
   max: 2
+envFrom:
+  secret: security-token-service

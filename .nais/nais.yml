@@ -38,7 +38,7 @@ spec:
   cpuThresholdPercentage: 80
   webproxy: true
   envFrom:
-    - secret: security-token-service
+    - secret: "{{ envFrom.secret }}"
   env:
     {{#each envs}}
     - name: "{{this.name}}"
