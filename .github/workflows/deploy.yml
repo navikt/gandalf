@@ -84,30 +84,30 @@ jobs:
           RESOURCE: .nais/nais.yml
           VARS: .nais/t4-vars.yml
 
-  deploy-dev:
-    name: Deploy to NAIS dev
-    needs: [build, deploy-dev-t4]
-    if: "github.ref == 'refs/heads/master'"
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_AURA_DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
-          RESOURCE: .nais/nais.yml
-          VARS: .nais/default-vars.yml
-
-  deploy-prod:
-    name: Deploy to NAIS prod
-    needs: [deploy-dev, deploy-dev-t4]
-    if: "github.ref == 'refs/heads/master'"
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_AURA_DEPLOY_APIKEY }}
-          CLUSTER: prod-fss
-          RESOURCE: .nais/nais.yml
-          VARS: .nais/prod-vars.yml
+  #deploy-dev:
+  #  name: Deploy to NAIS dev
+  #  needs: [build, deploy-dev-t4]
+  #  if: "github.ref == 'refs/heads/master'"
+  #  runs-on: ubuntu-20.04
+  #  steps:
+  #    - uses: actions/checkout@v3
+  #    - uses: nais/deploy/actions/deploy@v1
+  #      env:
+  #        APIKEY: ${{ secrets.NAIS_AURA_DEPLOY_APIKEY }}
+  #        CLUSTER: dev-fss
+  #        RESOURCE: .nais/nais.yml
+  #        VARS: .nais/default-vars.yml
+#
+  #deploy-prod:
+  #  name: Deploy to NAIS prod
+  #  needs: [deploy-dev, deploy-dev-t4]
+  #  if: "github.ref == 'refs/heads/master'"
+  #  runs-on: ubuntu-20.04
+  #  steps:
+  #    - uses: actions/checkout@v3
+  #    - uses: nais/deploy/actions/deploy@v1
+  #      env:
+  #        APIKEY: ${{ secrets.NAIS_AURA_DEPLOY_APIKEY }}
+  #        CLUSTER: prod-fss
+  #        RESOURCE: .nais/nais.yml
+  #        VARS: .nais/prod-vars.yml

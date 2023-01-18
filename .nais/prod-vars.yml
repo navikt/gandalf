@@ -24,8 +24,8 @@ envs:
     value: https://oidc.difi.no/idporten-oidc-provider/.well-known/openid-configuration
   - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_MASKINPORTEN
     value: https://maskinporten.no/.well-known/oauth-authorization-server
-  - name: APPLICATION_EXTERNAL_CONFIGURATION_TOKENX
-    value: https://tokendings.prod-gcp.nais.io/.well-known/oauth-authorization-server
+ # - name: APPLICATION_EXTERNAL_CONFIGURATION_TOKENX
+ #  value: https://tokendings.prod-gcp.nais.io/.well-known/oauth-authorization-server
   - name: SPRING_LDAP_URL
     value: ldapgw.adeo.no
   - name: SPRING_LDAP_PORT

@@ -32,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner
     properties = [
         "$PROP_EXTERNAL_PREFIX.difi.oidc=$WIREMOCK_URL$difiOIDCConfigurationUrl",
         "$PROP_EXTERNAL_PREFIX.difi.maskinporten=$WIREMOCK_URL$difiMASKINPORTENCConfigurationUrl",
-        "$PROP_EXTERNAL_PREFIX.tokenx=$WIREMOCK_URL$TOKENX_WELLKNOWN_PATH",
+        "token.x.well.known.url=$WIREMOCK_URL$TOKENX_WELLKNOWN_PATH",
         "$PROP_JWKS_ENDPOINT_PREFIX.azuread=$WIREMOCK_URL$azureADJwksUrl",
         "$PROP_JWKS_ENDPOINT_PREFIX.azureb2c=$WIREMOCK_URL$azureADJwksUrl",
         "$PROP_JWKS_ENDPOINT_PREFIX.openam=$WIREMOCK_URL$openAMJwksUrl",

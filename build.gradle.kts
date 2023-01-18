@@ -18,6 +18,11 @@ object Version {
     const val h2 = "2.1.214"
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_15
+    targetCompatibility = JavaVersion.VERSION_15
+}
+
 plugins {
     application
     java

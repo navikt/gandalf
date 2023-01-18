@@ -32,6 +32,7 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+token.x.well.known.url: <FROM ENV. VARS>
 application:
   oidc:
     issuer: <FROM ENV. VARS>
@@ -51,7 +52,6 @@ application:
     configuration.difi:
       oidc: <FROM ENV. VARS>
       maskinporten: <FROM ENV. VARS>
-    configuration.tokenx: <FROM ENV. VARS>
   jwks:
     endpoint:
       openam: <FROM ENV. VARS>
