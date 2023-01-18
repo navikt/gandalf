@@ -44,3 +44,5 @@ spec:
     - name: "{{this.name}}"
       value: "{{this.value}}"
     {{/each}}
+  tokenx:
+    enabled: true
