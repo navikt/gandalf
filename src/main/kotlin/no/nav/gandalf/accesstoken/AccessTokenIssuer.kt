@@ -184,7 +184,7 @@ class AccessTokenIssuer(
     fun exchangeOidcToSamlToken(
         token: String,
         username: String?,
-        now: Date = OidcObject.toDate(ZonedDateTime.now())
+        now: Date = OidcObject.toDate(ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS))
     ): String {
         log.info("Issuing SAML from JWT: exchangeOidcToSamlToken")
         val oidcObj = validateOidcToken(token, now)

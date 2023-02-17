@@ -486,10 +486,22 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
     }
 
     @Test
-    fun `saml token should be issued 3 seconds into the future`(){
+    fun `issueSamlToken - saml token should be issued 3 seconds into the future`(){
         val samlToken = issuer.issueSamlToken("srvPDP", "srvPDP", AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
         val samlObj = SamlObject()
         samlObj.read(samlToken)
+        // skew 3 seconds into the future
+        samlObj.dateNotBefore?.toInstant() shouldBe before(Instant.now().minusSeconds(2))
+    }
+
+    @Test
+    fun `exchangeOidcToSaml - saml token should be issued 3 seconds into the future`(){
+        val token = issuer.issueToken("foobar").serialize()
+        TestCase.assertNotNull(token)
+        val samlToken = issuer.exchangeOidcToSamlToken(token, env.issuerUsername)
+        val samlObj = SamlObject()
+        samlObj.read(samlToken)
+
         // skew 3 seconds into the future
         samlObj.dateNotBefore?.toInstant() shouldBe before(Instant.now().minusSeconds(2))
     }
