@@ -108,7 +108,7 @@ class AccessTokenIssuer(
         username: String,
         consumerId: String?,
         authLevel: String?,
-        issueTime: ZonedDateTime = ZonedDateTime.now()
+        issueTime: ZonedDateTime = ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS)
     ): String {
         val samlObj = SamlObject(issueTime)
         samlObj.issuer = SAML_ISSUER
@@ -292,6 +292,8 @@ class AccessTokenIssuer(
     }
 
     companion object {
+
+        const val SAML_ISSUE_SKEW_SECONDS: Long = 3
         // seconds
         var OIDC_DURATION_TIME = 60 * 60.toLong()
         var OIDC_VERSION = "1.0"
