@@ -65,7 +65,7 @@ jobs:
           credentials_json: ${{ secrets.SALSA_CREDENTIALS }}
 
       - name: NAIS SLSA Provenance Action
-        uses: nais/salsa@v0.6
+        uses: nais/salsa@v0.10
         with:
           key: ${{ secrets.SALSA_KMS_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
