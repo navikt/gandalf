@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import com.nimbusds.jwt.SignedJWT
 import io.kotest.assertions.asClue
+import io.kotest.matchers.date.before
 import io.kotest.matchers.shouldBe
 import junit.framework.TestCase
 import no.nav.gandalf.TestKeySelector
@@ -51,6 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
+import java.time.Instant
 import java.time.ZonedDateTime
 
 private const val ACCESS_TOKEN_TYPE = "bearer"
@@ -481,6 +483,27 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
             it.auditTrackingId shouldBe claims.jwtid
             it.consumerId shouldBe "serviceUser1"
         }
+    }
+
+    @Test
+    fun `issueSamlToken - saml token should be issued 3 seconds into the future`(){
+        val samlToken = issuer.issueSamlToken("srvPDP", "srvPDP", AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
+        val samlObj = SamlObject()
+        samlObj.read(samlToken)
+        // skew 3 seconds into the future
+        samlObj.dateNotBefore?.toInstant() shouldBe before(Instant.now().minusSeconds(2))
+    }
+
+    @Test
+    fun `exchangeOidcToSaml - saml token should be issued 3 seconds into the future`(){
+        val token = issuer.issueToken("foobar").serialize()
+        TestCase.assertNotNull(token)
+        val samlToken = issuer.exchangeOidcToSamlToken(token, env.issuerUsername)
+        val samlObj = SamlObject()
+        samlObj.read(samlToken)
+
+        // skew 3 seconds into the future
+        samlObj.dateNotBefore?.toInstant() shouldBe before(Instant.now().minusSeconds(2))
     }
 }
 
