@@ -7,9 +7,6 @@ on:
     branches:
       - "release/**"
 
-env:
-  IMAGE: ghcr.io/${{ github.repository }}/gandalf-security-token-service:${{ github.sha }}
-
 jobs:
   test:
     name: Run tests
@@ -44,19 +41,14 @@ jobs:
           cache: 'gradle'
       - name: Build JAR
         run: ./gradlew bootJar -x test
-      - name: Login to GitHub Docker Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v3
+      - name: Push docker image to GAR and sign image
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
         with:
-          context: .
-          push: true
-          tags: ${{ env.IMAGE }}
+          team: aura
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # Provided as Organization Secret
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # Provided as Organization Variable
 
   deploy-dev-dev:
     name: Deploy to NAIS dev dev
@@ -70,6 +62,7 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/t4-vars.yml
+          VAR: image=${{ steps.docker-push.outputs.image }}
 
   deploy-dev:
     name: Deploy to NAIS dev
@@ -83,3 +76,4 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/default-vars.yml
+          VAR: image=${{ steps.docker-push.outputs.image }}
