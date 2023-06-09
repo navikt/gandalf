@@ -94,7 +94,7 @@ jobs:
 
   deploy-prod:
     name: Deploy to NAIS prod
-    needs: [ deploy-dev, deploy-dev-t4 ]
+    needs: [ build, deploy-dev, deploy-dev-t4 ]
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-20.04
     steps:
