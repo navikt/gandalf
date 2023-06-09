@@ -46,7 +46,9 @@ jobs:
           distribution: 'zulu'
           cache: 'gradle'
       - name: Build JAR
-        run: ./gradlew bootJar -x test
+        run:
+          ./gradlew bootJar -x test
+          ./gradlew cyclonedxBom
 
       - name: Push docker image to GAR and sign image
         uses: nais/docker-build-push@v0
@@ -55,6 +57,7 @@ jobs:
           team: aura
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # Provided as Organization Secret
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # Provided as Organization Variable
+          byosbom: build/reports/bom.json
 
       - name: Upload salsa
         uses: actions/upload-artifact@v3
