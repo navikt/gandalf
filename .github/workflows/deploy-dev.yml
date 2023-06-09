@@ -66,7 +66,7 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/t4-vars.yml
-          VAR: image=${{ steps.docker-push.outputs.image }}
+          VAR: image=${{ steps.docker-build-push.outputs.image }}
 
   deploy-dev:
     name: Deploy to NAIS dev
@@ -80,4 +80,4 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/default-vars.yml
-          VAR: image=${{ steps.docker-push.outputs.image }}
+          VAR: image=${{ steps.docker-build-push.outputs.image }}
