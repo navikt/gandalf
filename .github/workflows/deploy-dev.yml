@@ -54,6 +54,9 @@ jobs:
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # Provided as Organization Secret
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # Provided as Organization Variable
 
+      - name: Export image name
+        run: echo "IMAGE=${{ steps.docker-build-push.outputs.image }}" >> $GITHUB_ENV
+
   deploy-dev-dev:
     name: Deploy to NAIS dev dev
     needs: build
@@ -66,7 +69,7 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/t4-vars.yml
-          VAR: image=${{ steps.docker-build-push.outputs.image }}
+          IMAGE: ${{ env.IMAGE }}
 
   deploy-dev:
     name: Deploy to NAIS dev
@@ -80,4 +83,4 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/default-vars.yml
-          VAR: image=${{ steps.docker-build-push.outputs.image }}
+          IMAGE: ${{ env.IMAGE }}
