@@ -32,6 +32,8 @@ jobs:
     needs: test
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-20.04
+    outputs:
+      "image": ${{ steps.docker-build-push.outputs.image }}
     permissions:
       packages: "write"
       contents: "read"
@@ -60,9 +62,6 @@ jobs:
           name: salsa
           path: ${{ steps.docker-build-push.outputs.salsa }}
 
-      - name: Export image name
-        run: echo "IMAGE=${{ steps.docker-build-push.outputs.image }}" >> $GITHUB_ENV
-
   deploy-dev-t4:
     name: Deploy to NAIS dev (old t4)
     needs: build
@@ -76,7 +75,7 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/t4-vars.yml
-          IMAGE: ${{ env.IMAGE }}
+          VAR: image=${{ needs.build.outputs.image }}
 
   deploy-dev:
     name: Deploy to NAIS dev
@@ -91,7 +90,7 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/default-vars.yml
-          IMAGE: ${{ env.IMAGE }}
+          VAR: image=${{ needs.build.outputs.image }}
 
   deploy-prod:
     name: Deploy to NAIS prod
@@ -106,4 +105,4 @@ jobs:
           CLUSTER: prod-fss
           RESOURCE: .nais/nais.yml
           VARS: .nais/prod-vars.yml
-          IMAGE: ${{ env.IMAGE }}
+          VAR: image=${{ needs.build.outputs.image }}
