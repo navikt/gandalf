@@ -215,9 +215,9 @@ class AccessTokenIssuer(
     fun filterIssoInternIssuer() = knownIssuers.singleOrNull { it.issuer.contains(ISSO_OIDC_ISSUER) }
 
     fun getAuthenticationLevel(oidcObj: OidcObject): String {
-        return when {
-            oidcObj.authLevel.equals("Level3") -> "3"
-            oidcObj.authLevel.equals("Level4") -> "4"
+        return when (oidcObj.authLevel) {
+            "Level3", "idporten-loa-substantial" -> "3"
+            "Level4", "idporten-loa-high" -> "4"
             else -> DEFAULT_SAML_AUTHLEVEL
         }
     }

@@ -24,19 +24,19 @@ For local Development `https://security-token-service.dev.adeo.no` is exposed in
 `/api`
 
 ### Identity Provider Metadata
-| Type              | Endpoint              |
-|-----------------------|-----------------------|
-| Retrieve public keys for validating the oidc token issued by STS    | `/jwks`                  |
-| Configuration info    | `/.well-known/openid-configuration`                  |
+| Type                                                             | Endpoint                            |
+|------------------------------------------------------------------|-------------------------------------|
+| Retrieve public keys for validating the oidc token issued by STS | `/jwks`                             |
+| Configuration info                                               | `/.well-known/openid-configuration` |
 
 ### Overview of token issuance and token conversions on REST interface
-| From              | To                  | Endpoint              | Extra                                            |
-|-----------------------|-----------------------|-----------------------|--------------------------------------------------|
-| client_credentials               | OIDC                | `/rest/v1/sts/token`                  |                             |
-| client_credentials        | OIDC                | `/rest/v1/sts/token2`                   | For Stormaskin   |
-| client_credentials          | SAML               |  `/rest/v1/sts/samltoken`             |
-| OIDC (Issued by OpenAm, `This` STS, AzureAD)      |  SAML     | `/rest/v1/sts/token/exchange`                   |                          |
-| SAML token (Issued by STS(Datapower) Azure B2C (Loginservice) or `This` STS)                   | OIDC     | `/rest/v1/sts/token/exchange`                   |           |
+| From                                                | To   | Endpoint                      | Extra          |
+|-----------------------------------------------------|------|-------------------------------|----------------|
+| client_credentials                                  | OIDC | `/rest/v1/sts/token`          |                |
+| client_credentials                                  | OIDC | `/rest/v1/sts/token2`         | For Stormaskin |
+| client_credentials                                  | SAML | `/rest/v1/sts/samltoken`      |
+| OIDC (Issued by TokenX, `This` STS, AzureAD)        | SAML | `/rest/v1/sts/token/exchange` |                |
+| SAML token (Issued by STS(Datapower) or `This` STS) | OIDC | `/rest/v1/sts/token/exchange` |                |
 
 ### Example Request. For more info check out: `../api`
 `../rest/v1/sts/token`

@@ -53,7 +53,7 @@ application:
       azureb2c: https://navtestb2c.b2clogin.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
     configuration:
       difi:
-        oidc: https://oidc-ver2.difi.no/idporten-oidc-provider/.well-known/openid-configuration
+        oidc: https://test.idporten.no/.well-known/openid-configuration
         maskinporten: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
   jwks:
     endpoint:

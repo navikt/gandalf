@@ -33,6 +33,8 @@ import no.nav.gandalf.utils.getAzureAdOIDC
 import no.nav.gandalf.utils.getDifiOidcToken
 import no.nav.gandalf.utils.getDpSamlToken
 import no.nav.gandalf.utils.getIDASelvutstedtSaml
+import no.nav.gandalf.utils.getIDPortenTokenAcrHigh
+import no.nav.gandalf.utils.getIDPortenTokenAcrSubstantial
 import no.nav.gandalf.utils.getMaskinportenToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.gandalf.utils.getOpenAmOIDC
@@ -481,6 +483,36 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
             it.identType shouldBe "EksternBruker"
             it.authenticationLevel shouldBe "4"
             it.auditTrackingId shouldBe claims.jwtid
+            it.consumerId shouldBe "serviceUser1"
+        }
+    }
+
+    @Test
+    fun `authlevel with new acr idporten-loa-substantial`() {
+        val jwt = getIDPortenTokenAcrSubstantial()
+        val claims = SignedJWT.parse(jwt).jwtClaimsSet
+        val saml = issuer.exchangeOidcToSamlToken(jwt, "serviceUser1", claims.issueTime)
+
+        SamlObject().apply { read(saml) }.asClue {
+            it.issuer shouldBe "IS02"
+            it.nameID shouldBe "20918697706"
+            it.identType shouldBe "EksternBruker"
+            it.authenticationLevel shouldBe "3"
+            it.consumerId shouldBe "serviceUser1"
+        }
+    }
+
+    @Test
+    fun `authlevel with new acr idporten-loa-high`() {
+        val jwt = getIDPortenTokenAcrHigh()
+        val claims = SignedJWT.parse(jwt).jwtClaimsSet
+        val saml = issuer.exchangeOidcToSamlToken(jwt, "serviceUser1", claims.issueTime)
+
+        SamlObject().apply { read(saml) }.asClue {
+            it.issuer shouldBe "IS02"
+            it.nameID shouldBe "20918697706"
+            it.identType shouldBe "EksternBruker"
+            it.authenticationLevel shouldBe "4"
             it.consumerId shouldBe "serviceUser1"
         }
     }
