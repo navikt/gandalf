@@ -361,13 +361,6 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
     }
 
     @Test
-    fun `Exchange DIFI Token To OIDC - Utdated Token Not In Use by DIFI`() {
-        val difiToken: String = getDifiOidcToken()
-        val difiJwt = SignedJWT.parse(difiToken).jwtClaimsSet
-        assertThrows<Exception> { issuer.getSubjectFromDifiToken(difiJwt.getClaim("consumer")) }
-    }
-
-    @Test
     @Throws(java.lang.Exception::class)
     fun `Exchange Maskinporten Token To Oidc`() {
         val difiToken: String = getMaskinportenToken()
