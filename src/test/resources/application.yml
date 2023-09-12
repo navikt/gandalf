@@ -54,7 +54,7 @@ application:
     configuration:
       difi:
         oidc: https://test.idporten.no/.well-known/openid-configuration
-        maskinporten: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+        maskinporten: https://test.maskinporten.no/.well-known/oauth-authorization-server
   jwks:
     endpoint:
       openam: http://localhost:8888/isso/oauth2/connect/jwk_uri

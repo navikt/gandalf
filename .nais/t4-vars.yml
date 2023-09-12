@@ -23,7 +23,7 @@ envs:
   - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_OIDC
     value: https://test.idporten.no/.well-known/openid-configuration
   - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_MASKINPORTEN
-    value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+    value: https://test.maskinporten.no/.well-known/oauth-authorization-server
   - name: SPRING_LDAP_URL
     value: ldapgw.test.local
   - name: SPRING_LDAP_PORT
