@@ -30,7 +30,6 @@ import no.nav.gandalf.utils.getAlteredSamlToken
 import no.nav.gandalf.utils.getAlteredSamlTokenWithEksternBrukerOgAuthLevel
 import no.nav.gandalf.utils.getAlteredSamlTokenWithInternBrukerOgAuthLevel
 import no.nav.gandalf.utils.getAzureAdOIDC
-import no.nav.gandalf.utils.getDifiOidcToken
 import no.nav.gandalf.utils.getDpSamlToken
 import no.nav.gandalf.utils.getIDASelvutstedtSaml
 import no.nav.gandalf.utils.getIDPortenTokenAcrHigh
