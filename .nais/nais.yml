@@ -33,10 +33,10 @@ spec:
     max: {{replicas.max}}
   resources:
     limits:
-      cpu: {{limits.cpu}}
+      cpu: "{{limits.cpu}}"
       memory: {{limits.memory}}
     requests:
-      cpu: {{requests.cpu}}
+      cpu: "{{requests.cpu}}"
       memory: {{requests.memory}}
   cpuThresholdPercentage: 80
   webproxy: true
