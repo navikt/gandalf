@@ -38,6 +38,6 @@ limits:
   memory: 3Gi
 requests:
   cpu: 300m
-  memory: 1Gi
+  memory: 2Gi
 envFrom:
   secret: security-token-service
