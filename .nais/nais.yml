@@ -33,11 +33,11 @@ spec:
     max: {{replicas.max}}
   resources:
     limits:
-      cpu: 800m
-      memory: 4Gi
+      cpu: 400m
+      memory: 3Gi
     requests:
-      cpu: 500m
-      memory: 2Gi
+      cpu: 200m
+      memory: 1Gi
   cpuThresholdPercentage: 80
   webproxy: true
   envFrom:
