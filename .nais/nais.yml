@@ -16,8 +16,8 @@ spec:
      {{/each}}
   liveness:
     path: /isAlive
-    initialDelay: 20
-    periodSeconds: 5
+    initialDelay: 60
+    periodSeconds: 10
     failureThreshold: 30
   port: 8080
   prometheus:
@@ -25,8 +25,8 @@ spec:
     path: /prometheus
   readiness:
     path: /isReady
-    initialDelay: 20
-    periodSeconds: 5
+    initialDelay: 60
+    periodSeconds: 10
     failureThreshold: 30
   replicas:
     min: {{replicas.min}}

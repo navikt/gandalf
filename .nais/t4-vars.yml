@@ -31,7 +31,7 @@ envs:
   - name: SPRING_LDAP_BASE
     value: DC=test,DC=local
 replicas:
-  min: 2
+  min: 1
   max: 2
 limits:
   cpu: 200m
