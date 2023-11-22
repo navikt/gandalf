@@ -112,3 +112,4 @@ jobs:
           RESOURCE: .nais/nais.yml
           VARS: .nais/prod-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
+          TIMEOUT: 15m
