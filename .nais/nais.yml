@@ -16,8 +16,8 @@ spec:
      {{/each}}
   liveness:
     path: /isAlive
-    initialDelay: 60
-    periodSeconds: 10
+    initialDelay: 120
+    periodSeconds: 15
     failureThreshold: 30
   port: 8080
   prometheus:
@@ -25,18 +25,16 @@ spec:
     path: /prometheus
   readiness:
     path: /isReady
-    initialDelay: 60
-    periodSeconds: 10
+    initialDelay: 120
+    periodSeconds: 15
     failureThreshold: 30
   replicas:
     min: {{replicas.min}}
     max: {{replicas.max}}
   resources:
     limits:
-      cpu: "{{limits.cpu}}"
       memory: {{limits.memory}}
     requests:
-      cpu: "{{requests.cpu}}"
       memory: {{requests.memory}}
   webproxy: true
   envFrom:
