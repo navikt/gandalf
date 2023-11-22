@@ -34,7 +34,7 @@ replicas:
   min: 1
   max: 2
 limits:
-  memory: 512Mi
+  memory: 1Gi
 requests:
   memory: 748Mi
 envFrom:
