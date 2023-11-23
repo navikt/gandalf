@@ -12,7 +12,6 @@ import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.model.ErrorDescriptiveResponse
 import no.nav.gandalf.model.Validation
-import org.apache.commons.codec.binary.Base64
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,6 +25,7 @@ import no.nav.gandalf.api.INVALID_CLIENT
 import no.nav.gandalf.api.Util.tokenHeaders
 import no.nav.gandalf.api.Util.unauthorizedResponse
 import no.nav.gandalf.api.Util.userDetails
+import java.util.Base64
 
 private val log = KotlinLogging.logger { }
 
@@ -76,7 +76,7 @@ class ValidateController {
         log.info("Validate SAML token")
         return try {
             val samlObject =
-                issuer.validateSamlToken(String(Base64.decodeBase64(samlToken.toByteArray()), StandardCharsets.UTF_8))
+                issuer.validateSamlToken(String(Base64.getDecoder().decode(samlToken.toByteArray()), StandardCharsets.UTF_8))
             ResponseEntity
                 .status(HttpStatus.OK)
                 .headers(tokenHeaders)

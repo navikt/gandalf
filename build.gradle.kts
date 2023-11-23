@@ -13,8 +13,8 @@ object Version {
     const val nimbus = "9.41"
     const val openapi = "1.6.6"
     const val unboundid = "6.0.3"
-    const val wiremock = "2.32.0"
-    const val wiremockCloud = "3.1.1"
+    const val wiremock = "3.0.1"
+    const val wiremockCloud = "4.0.4"
     const val h2 = "2.1.214"
 }
 
@@ -60,10 +60,10 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:${Version.kotlinLoggin}")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("javax.inject:javax.inject:1")
-    implementation("javax.validation:validation-api")
+    implementation("jakarta.validation:jakarta.validation-api")
     implementation("net.logstash.logback:logstash-logback-encoder:${Version.logbackStash}")
-    implementation("org.apache.httpcomponents:httpclient")
-    implementation("org.hibernate:hibernate-core")
+    implementation("org.apache.httpcomponents.client5:httpclient5")
+    implementation("jakarta.persistence:jakarta.persistence-api")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -80,13 +80,13 @@ dependencies {
     // test
     testImplementation("com.h2database:h2:${Version.h2}")
     testImplementation("no.nav.security:mock-oauth2-server:${Version.mockOAuth2Server}")
-    testImplementation("org.hibernate:hibernate-testing")
+    //testImplementation("org.hibernate:hibernate-testing")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "com.vaadin.external.google", module = "android-json")
         exclude(module = "junit")
     }
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("com.github.tomakehurst:wiremock-jre8:${Version.wiremock}")
+    //testImplementation("com.github.tomakehurst:wiremock-jre8:${Version.wiremock}")
     testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:${Version.wiremockCloud}")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("io.kotest:kotest-assertions-core:${Version.kotest}")

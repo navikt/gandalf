@@ -31,10 +31,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import wiremock.org.apache.http.client.entity.UrlEncodedFormEntity
-import wiremock.org.apache.http.message.BasicNameValuePair
-import wiremock.org.apache.http.util.EntityUtils
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
+import wiremock.org.apache.hc.client5.http.entity.UrlEncodedFormEntity
+import wiremock.org.apache.hc.core5.http.io.entity.EntityUtils
+import wiremock.org.apache.hc.core5.http.message.BasicNameValuePair
 
 @AutoConfigureMockMvc
 @ActiveProfiles("test")

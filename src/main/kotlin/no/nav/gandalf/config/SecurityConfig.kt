@@ -12,56 +12,56 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
-import javax.inject.Inject
 
 @Configuration
 class SecurityConfig(
     val ldapConfig: LdapConfig
-) : WebSecurityConfigurerAdapter() {
-
-    @Inject
-    override fun configure(auth: AuthenticationManagerBuilder) {
-        auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider())
+) {
+    @Bean
+    fun ldapAuthenticationManager(): AuthenticationManager {
+        return AuthenticationManager { authentication ->
+            activeDirectoryLdapAuthenticationProvider().authenticate(authentication)
+        }
     }
 
-    override fun configure(http: HttpSecurity) {
+    @Bean
+    @Throws(Exception::class)
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             // If you are only creating a service that is used by non-browser clients,
             // you will likely want to disable CSRF protection same for cors
-            .cors().disable()
-            .csrf().disable()
-            .formLogin().disable()
-            .authorizeRequests()
-            .antMatchers(
-                "/rest/v1/sts/token2",
-                "/rest/v1/sts/ws/samltoken",
-                // Disse to over bruker ldap for auth. men athentesering gjøres seinere.
-                "/.well-known/openid-configuration",
-                "/rest/v1/sts/.well-known/openid-configuration",
-                "/jwks",
-                "/rest/v1/sts/jwks",
-                "/isAlive",
-                "/isReady",
-                "/ping",
-                "/prometheus",
-                // Swagger
-                "/api/**",
-                "/swagger-ui/**"
-            ).permitAll()
-            .and()
-            .authorizeRequests().anyRequest().authenticated()
-            .and()
-            .httpBasic()
-            .authenticationEntryPoint(authenticationEntryPoint())
-            .and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .addFilterBefore(CharacterSetFilter(), BasicAuthenticationFilter::class.java)
+            .cors { cors -> cors.disable() }
+            .csrf { csrf -> csrf.disable() }
+            .formLogin { formLogin -> formLogin.disable() }
+            .authorizeHttpRequests {
+                it.requestMatchers(
+                    "/rest/v1/sts/token2",
+                    "/rest/v1/sts/ws/samltoken",
+                    // Disse to over bruker ldap for auth. men athentesering gjøres seinere.
+                    "/.well-known/openid-configuration",
+                    "/rest/v1/sts/.well-known/openid-configuration",
+                    "/jwks",
+                    "/rest/v1/sts/jwks",
+                    "/isAlive",
+                    "/isReady",
+                    "/ping",
+                    "/prometheus",
+                    // Swagger
+                    "/api/**",
+                    "/swagger-ui/**"
+                ).permitAll()
+            }.authorizeHttpRequests {
+                it.anyRequest().authenticated()
+            }.httpBasic {
+                it.authenticationEntryPoint(authenticationEntryPoint())
+            }.sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }.addFilterBefore(CharacterSetFilter(), BasicAuthenticationFilter::class.java)
+        return http.build()
     }
 
     @Bean
@@ -69,15 +69,9 @@ class SecurityConfig(
         return RestAuthenticationEntryPoint()
     }
 
-    @Bean
-    @Throws(Exception::class)
-    override fun authenticationManagerBean(): AuthenticationManager? {
-        return super.authenticationManagerBean()
-    }
-
     // @Primary
     // @Bean
-    fun activeDirectoryLdapAuthenticationProvider(): AuthenticationProvider? {
+    fun activeDirectoryLdapAuthenticationProvider(): AuthenticationProvider {
         return CustomAuthenticationProvider(LDAPConnectionSetup(ldapConfig))
     }
 

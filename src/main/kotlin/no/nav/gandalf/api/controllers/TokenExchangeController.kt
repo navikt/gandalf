@@ -19,7 +19,6 @@ import no.nav.gandalf.model.ErrorDescriptiveResponse
 import no.nav.gandalf.model.ErrorResponse
 import no.nav.gandalf.model.ExchangeTokenResponse
 import no.nav.gandalf.service.ExchangeTokenService
-import org.apache.commons.codec.binary.Base64
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -36,6 +35,7 @@ import no.nav.gandalf.api.Util.badRequestResponse
 import no.nav.gandalf.api.Util.tokenHeaders
 import no.nav.gandalf.api.Util.unauthorizedResponse
 import no.nav.gandalf.api.Util.userDetails
+import java.util.Base64
 
 private val log = KotlinLogging.logger { }
 
@@ -124,7 +124,7 @@ class TokenExchangeController {
                 subTokenType.equals("urn:ietf:params:oauth:token-type:saml2") -> {
                     log.info("Exchange SAML token to OIDC")
                     return try {
-                        val decodedSaml = Base64.decodeBase64(subjectToken.toByteArray())
+                        val decodedSaml = Base64.getDecoder().decode(subjectToken.toByteArray())
                         val oidcToken: SignedJWT =
                             issuer.exchangeSamlToOidcToken(String(decodedSaml, StandardCharsets.UTF_8))
                         ApplicationMetric.exchangeSAMLTokenOk.labels(user).inc()

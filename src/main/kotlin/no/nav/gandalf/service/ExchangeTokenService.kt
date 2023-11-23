@@ -2,8 +2,8 @@ package no.nav.gandalf.service
 
 import com.nimbusds.jwt.SignedJWT
 import no.nav.gandalf.model.ExchangeTokenResponse
-import org.apache.commons.codec.binary.Base64
 import org.springframework.stereotype.Service
+import java.util.Base64
 
 @Service
 class ExchangeTokenService {
@@ -20,10 +20,10 @@ class ExchangeTokenService {
         ExchangeTokenResponse(
             access_token = when {
                 UrlEncoding -> {
-                    Base64.encodeBase64URLSafeString(accessToken.toByteArray())
+                    Base64.getUrlEncoder().encodeToString(accessToken.toByteArray())
                 }
                 else -> {
-                    Base64.encodeBase64String(accessToken.toByteArray())
+                    Base64.getEncoder().encodeToString(accessToken.toByteArray())
                 }
             },
             token_type = tokenType,

@@ -19,8 +19,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import wiremock.org.apache.http.message.BasicNameValuePair
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
+import wiremock.org.apache.hc.core5.http.message.BasicNameValuePair
 
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
