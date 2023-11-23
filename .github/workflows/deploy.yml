@@ -80,6 +80,7 @@ jobs:
           RESOURCE: .nais/nais.yml
           VARS: .nais/t4-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
+          TIMEOUT: 15m
 
   deploy-dev:
     name: Deploy to NAIS dev
@@ -95,6 +96,7 @@ jobs:
           RESOURCE: .nais/nais.yml
           VARS: .nais/default-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
+          TIMEOUT: 15m
 
   deploy-prod:
     name: Deploy to NAIS prod
@@ -110,3 +112,4 @@ jobs:
           RESOURCE: .nais/nais.yml
           VARS: .nais/prod-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
+          TIMEOUT: 15m

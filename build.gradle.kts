@@ -26,14 +26,14 @@ java {
 plugins {
     application
     java
-    val kotlinVersion = "1.6.20"
+    val kotlinVersion = "1.9.20"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jmailen.kotlinter") version "3.10.0"
-    id("com.github.ben-manes.versions") version "0.47.0"
+    id("com.github.ben-manes.versions") version "0.49.0"
     id("org.springframework.boot") version "2.7.5"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
-    id("io.spring.dependency-management") version "1.1.3"
+    id("io.spring.dependency-management") version "1.1.4"
     id("org.cyclonedx.bom") version "1.7.4"
 }
 

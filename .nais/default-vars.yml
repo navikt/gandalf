@@ -24,7 +24,7 @@ envs:
   - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_OIDC
     value: https://test.idporten.no/.well-known/openid-configuration
   - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_MASKINPORTEN
-    value: https://ver2.maskinporten.no/.well-known/oauth-authorization-server
+    value: https://test.maskinporten.no/.well-known/oauth-authorization-server
   - name: SPRING_LDAP_URL
     value: ldapgw.preprod.local
   - name: SPRING_LDAP_PORT
@@ -32,7 +32,12 @@ envs:
   - name: SPRING_LDAP_BASE
     value: DC=preprod,DC=local
 replicas:
-  min: 2
+  min: 1
   max: 2
+limits:
+  memory: 1Gi
+requests:
+  cpu: 20m
+  memory: 512Mi
 envFrom:
   secret: security-token-service
