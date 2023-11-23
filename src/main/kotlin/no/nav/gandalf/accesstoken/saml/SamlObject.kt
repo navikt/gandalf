@@ -196,6 +196,10 @@ class SamlObject : ClockSkew {
             ).also { log.warn(message) }
         }
         val valContext = DOMValidateContext(keySelector, signatureNode)
+        if (SUPPORT_RSA_SHA1) {
+            valContext.setProperty("org.jcp.xml.dsig.secureValidation", false)
+        }
+
         valContext.setIdAttributeNS(signatureNode!!.parentNode as Element, null, "ID")
         val factory = XMLSignatureFactory.getInstance("DOM")
         val signature = factory.unmarshalXMLSignature(valContext)
@@ -315,5 +319,6 @@ class SamlObject : ClockSkew {
 
     companion object {
         private var CLOCK_SKEW = 60L
+        private const val SUPPORT_RSA_SHA1 = true
     }
 }

@@ -31,9 +31,16 @@ envs:
   - name: SPRING_LDAP_BASE
     value: DC=test,DC=local
 replicas:
-  min: 2
+  min: 1
   max: 2
+limits:
+  memory: 748Mi
+requests:
+  cpu: 20m
+  memory: 512Mi
 envFrom:
   secret: security-token-service-t4
+
+
 
 
