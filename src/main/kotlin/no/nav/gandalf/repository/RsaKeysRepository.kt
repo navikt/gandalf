@@ -13,10 +13,10 @@ import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.persistence.EntityManager
-import javax.persistence.PersistenceContext
-import javax.persistence.TypedQuery
-import javax.transaction.Transactional
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
+import jakarta.persistence.TypedQuery
+import jakarta.transaction.Transactional
 
 private val log = KotlinLogging.logger { }
 

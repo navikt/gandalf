@@ -1,7 +1,6 @@
 package no.nav.gandalf.api
 
 import no.nav.gandalf.accesstoken.saml.SamlObject
-import org.apache.commons.codec.binary.Base64
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -13,6 +12,7 @@ import java.io.StringWriter
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 import java.time.ZonedDateTime
+import java.util.*
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
@@ -74,7 +74,7 @@ class WSTrustRequest(
     val decodedOidcToken: String?
         get() {
             if (onBehalfOf != null) {
-                return String(Base64.decodeBase64(onBehalfOf), Charset.forName("UTF-8"))
+                return String(Base64.getDecoder().decode(onBehalfOf), Charset.forName("UTF-8"))
             }
             return null
         }

@@ -24,7 +24,7 @@ import java.io.IOException
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Date
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import javax.xml.crypto.KeySelector
 import javax.xml.crypto.MarshalException
 import javax.xml.crypto.dsig.XMLSignatureException
