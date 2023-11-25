@@ -32,11 +32,11 @@ envs:
     value: DC=adeo,DC=no
 replicas:
   min: 4
-  max: 6
+  max: 8
 limits:
   memory: 1Gi
 requests:
-  cpu: 45m
+  cpu: 30m
   memory: 512Mi
 envFrom:
   secret: security-token-service

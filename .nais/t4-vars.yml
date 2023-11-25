@@ -32,11 +32,11 @@ envs:
     value: DC=test,DC=local
 replicas:
   min: 1
-  max: 2
+  max: 4
 limits:
-  memory: 748Mi
+  memory: 1Gi
 requests:
-  cpu: 20m
+  cpu: 10m
   memory: 512Mi
 envFrom:
   secret: security-token-service-t4

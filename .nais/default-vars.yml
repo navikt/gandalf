@@ -33,11 +33,11 @@ envs:
     value: DC=preprod,DC=local
 replicas:
   min: 1
-  max: 2
+  max: 4
 limits:
   memory: 1Gi
 requests:
-  cpu: 25m
+  cpu: 10m
   memory: 512Mi
 envFrom:
   secret: security-token-service
