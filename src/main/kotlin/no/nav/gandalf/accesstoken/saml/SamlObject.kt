@@ -288,7 +288,7 @@ class SamlObject : ClockSkew {
                 throw IllegalArgumentException("Failed to find PrivateKey in keystore")
             }
             val kiFac = signFac.keyInfoFactory
-            val x509IssuerSerial = kiFac.newX509IssuerSerial(cert.issuerDN.name, cert.serialNumber)
+            val x509IssuerSerial = kiFac.newX509IssuerSerial(cert.getIssuerX500Principal().name, cert.serialNumber)
             val dList: MutableList<Any?> = ArrayList()
             dList.add(cert)
             dList.add(x509IssuerSerial)
