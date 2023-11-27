@@ -1,6 +1,6 @@
 package no.nav.gandalf.accesstoken
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.jwk.JWK
@@ -8,6 +8,7 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.ParseException
+import jakarta.annotation.PostConstruct
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.oauth.OidcObject
 import no.nav.gandalf.accesstoken.saml.SamlObject
@@ -24,7 +25,6 @@ import java.io.IOException
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Date
-import jakarta.annotation.PostConstruct
 import javax.xml.crypto.KeySelector
 import javax.xml.crypto.MarshalException
 import javax.xml.crypto.dsig.XMLSignatureException
@@ -38,7 +38,8 @@ class AccessTokenIssuer(
     @Autowired private val keySelector: KeySelector,
     @Autowired private val keyStoreReader: KeyStoreReader,
     @Autowired private val externalIssuersConfig: ExternalIssuer,
-    @Autowired private val localIssuerConfig: LocalIssuer
+    @Autowired private val localIssuerConfig: LocalIssuer,
+    private val gsonBuilder: GsonBuilder
 ) : IssuerConfig {
 
     final override val issuer = localIssuerConfig.issuer
@@ -253,24 +254,23 @@ class AccessTokenIssuer(
         )
     }
 
-    fun getSubjectFromDifiToken(consumer: Any?) =
-        when {
-            consumer != null -> {
-                Gson().fromJson(consumer.toString(), Consumer::class.java).ID!!.split(":")[1]
-            }
-            else -> throw Exception("Could not Deserialize DIFI - Consumer object")
-        }
+    fun getSubjectFromDifiToken(consumer: Any?): String {
+        val gson = gsonBuilder.create()
+        val consumerObj = gson.fromJson(gson.toJson(consumer), Consumer::class.java)
+        return consumerObj.ID?.let { consumerObj.ID!!.split(":")[1] } ?: ""
+    }
 
     override fun getKeyByKeyId(keyId: String?): RSAKey? {
         return when {
             keyStore.publicJWKSet.keys.isEmpty() -> {
                 throw IllegalArgumentException("Failed to get keys from by issuer: $issuer")
             }
+
             else -> {
                 val keyIdResult: JWK? = keyStore.publicJWKSet.getKeyByKeyId(keyId)
                 when {
                     keyIdResult != null -> keyIdResult as RSAKey
-                    else -> keyIdResult
+                    else -> null
                 }
             }
         }
@@ -281,6 +281,7 @@ class AccessTokenIssuer(
             samlObj.identType.equals(IdentType.EKSTERNBRUKER.name, ignoreCase = true) -> {
                 "Level" + samlObj.authenticationLevel
             }
+
             else -> null
         }
     }
@@ -294,6 +295,7 @@ class AccessTokenIssuer(
     companion object {
 
         const val SAML_ISSUE_SKEW_SECONDS: Long = 3
+
         // seconds
         var OIDC_DURATION_TIME = 60 * 60.toLong()
         var OIDC_VERSION = "1.0"
@@ -317,12 +319,15 @@ class AccessTokenIssuer(
                 subject.lowercase().startsWith("srv") -> {
                     IdentType.SYSTEMRESSURS.value
                 }
+
                 subject.isSamHandler() -> {
                     IdentType.SAMHANDLER.value
                 }
+
                 acrLevel.isLeveledForExternal(subject) -> {
                     IdentType.EKSTERNBRUKER.value
                 }
+
                 else -> IdentType.INTERNBRUKER.value
             }
         }
@@ -334,9 +339,11 @@ class AccessTokenIssuer(
                 !isFnr(subject) -> {
                     false
                 }
+
                 isFnr(subject) && this in listOf("3", "4") -> {
                     true
                 }
+
                 else -> {
                     throw RuntimeException("Identype: $subject does not have the acrLevel 3 or 4")
                 }
