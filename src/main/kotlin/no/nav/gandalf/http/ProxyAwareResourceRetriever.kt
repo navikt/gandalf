@@ -52,9 +52,9 @@ class ProxyAwareResourceRetriever internal constructor(
     }
 
     @Throws(IOException::class)
-    override fun openConnection(url: URL): HttpURLConnection {
+    override fun openHTTPConnection(url: URL): HttpURLConnection {
         val urlToOpen = if (isUsePlainTextForHttps) urlWithPlainTextForHttps(url) else url
-        return super.openConnection(urlToOpen)
+        return super.openHTTPConnection(urlToOpen)
     }
 
     companion object {
