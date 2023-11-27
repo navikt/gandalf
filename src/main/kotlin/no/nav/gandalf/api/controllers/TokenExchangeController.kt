@@ -82,7 +82,7 @@ class TokenExchangeController {
             )
         ]
     )
-    @PostMapping("/token/exchange", consumes = ["application/x-www-form-urlencoded"])
+    @PostMapping("/token/exchange", "/token/exchange/", consumes = ["application/x-www-form-urlencoded"])
     fun exchangeSAMLToOIDCToSAMLToken(
         @Parameter(
             description = "'grant type' refers to the way an application gets an access token. OAuth 2.0 defines several grant types.",
@@ -203,7 +203,7 @@ class TokenExchangeController {
             )
         ]
     )
-    @PostMapping("/token/exchangedifi")
+    @PostMapping("/token/exchangedifi", "/token/exchangedifi/")
     fun exchangeDIFIOIDCToken(
         @Parameter(
             description = "Base64Encoded DIFI Access Token.",
