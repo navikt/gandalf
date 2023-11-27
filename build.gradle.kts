@@ -2,16 +2,18 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 object Version {
+    const val springSecurity = "6.2.0"
+    const val snakeYaml = "2.2"
     const val mockk = "1.12.3"
     const val kotest = "5.4.2"
     const val apacheHttp = "4.5.12"
     const val gradleVersion = "7.4.1"
-    const val json = "20220320"
+    const val json = "20231013"
     const val kotlinLoggin = "2.1.21"
     const val logbackStash = "7.0.1"
     const val mockOAuth2Server = "0.5.1"
     const val nimbus = "9.41"
-    const val openapi = "1.6.6"
+    const val openapi = "1.7.0"
     const val unboundid = "6.0.3"
     const val wiremock = "3.0.1"
     const val wiremockCloud = "4.0.4"
@@ -30,11 +32,10 @@ plugins {
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jmailen.kotlinter") version "3.10.0"
     id("com.github.ben-manes.versions") version "0.49.0"
-    id("org.springframework.boot") version "3.1.5"
+    id("org.springframework.boot") version "3.2.0"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.1.4"
-    id("org.cyclonedx.bom") version "1.7.4"
 }
 
 application {
@@ -74,19 +75,17 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.conscrypt:conscrypt-openjdk:2.5.2")
     implementation("org.springdoc:springdoc-openapi-ui:${Version.openapi}")
-    implementation("org.yaml:snakeyaml")
+    implementation("org.yaml:snakeyaml:${Version.snakeYaml}")
     runtimeOnly("com.oracle.database.jdbc:ojdbc8")
 
     // test
     testImplementation("com.h2database:h2:${Version.h2}")
     testImplementation("no.nav.security:mock-oauth2-server:${Version.mockOAuth2Server}")
-    //testImplementation("org.hibernate:hibernate-testing")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "com.vaadin.external.google", module = "android-json")
         exclude(module = "junit")
     }
-    testImplementation("org.springframework.security:spring-security-test")
-    //testImplementation("com.github.tomakehurst:wiremock-jre8:${Version.wiremock}")
+    testImplementation("org.springframework.security:spring-security-test:${Version.springSecurity}")
     testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:${Version.wiremockCloud}")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("io.kotest:kotest-assertions-core:${Version.kotest}")

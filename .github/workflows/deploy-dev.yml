@@ -30,7 +30,7 @@ jobs:
   build:
     name: Build and push Docker container
     needs: test
-    if: github.event_name != 'pull_request'
+    if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-20.04
     outputs:
       "image": ${{ steps.docker-build-push.outputs.image }}
