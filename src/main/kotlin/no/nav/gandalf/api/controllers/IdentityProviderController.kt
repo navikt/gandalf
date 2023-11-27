@@ -56,7 +56,7 @@ class IdentityProviderController {
             )
         ]
     )
-    @GetMapping("/jwks")
+    @GetMapping("/jwks", "/jwks/")
     fun getKeys(): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyJwks.startTimer()
         try {
@@ -91,7 +91,7 @@ class IdentityProviderController {
             )
         ]
     )
-    @GetMapping("rest/v1/sts/jwks")
+    @GetMapping("rest/v1/sts/jwks", "rest/v1/sts/jwks/")
     fun getDeprecatedKeys(): ResponseEntity<Any> {
         return getKeys()
     }
@@ -118,7 +118,7 @@ class IdentityProviderController {
             )
         ]
     )
-    @GetMapping("/.well-known/openid-configuration")
+    @GetMapping("/.well-known/openid-configuration", "/.well-known/openid-configuration/")
     fun getConfiguration(): ResponseEntity<Any> {
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -162,7 +162,7 @@ class IdentityProviderController {
             )
         ]
     )
-    @GetMapping("rest/v1/sts/.well-known/openid-configuration")
+    @GetMapping("rest/v1/sts/.well-known/openid-configuration", "rest/v1/sts/.well-known/openid-configuration/")
     fun getDeprecatedConfiguration(): ResponseEntity<Any> {
         return getConfiguration()
     }

@@ -23,7 +23,7 @@ class WSSAMLTokenController(
 ) {
 
     @Operation(hidden = true)
-    @PostMapping("/ws/samltoken")
+    @PostMapping("/ws/samltoken", "/ws/samltoken/")
     fun getSAMLTokenWS(
         @RequestBody xmlRequest: String?
     ): ResponseEntity<Any> {

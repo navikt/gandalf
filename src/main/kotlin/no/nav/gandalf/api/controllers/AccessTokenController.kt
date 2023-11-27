@@ -99,7 +99,7 @@ class AccessTokenController(
             )
         ]
     )
-    @GetMapping("/token")
+    @GetMapping("/token", "/token/")
     fun getOIDCToken(
         @Parameter(description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
         @RequestParam(
@@ -173,7 +173,7 @@ class AccessTokenController(
             )
         ]
     )
-    @PostMapping("/token")
+    @PostMapping("/token", "/token/")
     fun postOIDCToken(
         @Parameter(description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
         @RequestParam("grant_type", required = true, defaultValue = "client_credentials") grantType: String,
@@ -219,7 +219,7 @@ class AccessTokenController(
             )
         ]
     )
-    @GetMapping("/token2")
+    @GetMapping("/token2", "/token2/")
     fun getOIDCToken2(
         @RequestHeader("username") username: String?,
         @RequestHeader("password") password: String?
@@ -280,7 +280,7 @@ class AccessTokenController(
             )
         ]
     )
-    @GetMapping("/samltoken")
+    @GetMapping("/samltoken", "/samltoken/")
     fun getSAMLToken(): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = requestLatencySAMLToken.startTimer()
         try {
