@@ -10,7 +10,7 @@ object Version {
     const val gradleVersion = "7.4.1"
     const val json = "20231013"
     const val kotlinLoggin = "2.1.21"
-    const val logbackStash = "7.0.1"
+    const val logbackStash = "7.4"
     const val mockOAuth2Server = "0.5.1"
     const val nimbus = "9.41"
     const val openapi = "1.7.0"
