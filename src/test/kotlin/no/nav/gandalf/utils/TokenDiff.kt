@@ -121,5 +121,7 @@ private fun isMemberOf(n: Node, nList: NodeList): Boolean {
 private fun getNodeName(n: Node): String? {
     return if (n.nodeName == "saml2:Attribute") {
         "saml2:Attribute:" + n.attributes.getNamedItem("Name").nodeValue
-    } else n.nodeName
+    } else {
+        n.nodeName
+    }
 }
