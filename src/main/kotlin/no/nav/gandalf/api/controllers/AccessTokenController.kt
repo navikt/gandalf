@@ -59,7 +59,6 @@ private val log = KotlinLogging.logger { }
 class AccessTokenController(
     @Autowired val authenticationProvider: CustomAuthenticationProvider,
 ) {
-
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
@@ -79,7 +78,7 @@ class AccessTokenController(
                             mediaType = "application/json",
                             schema = Schema(implementation = AccessTokenResponse::class),
                         )
-                        ),
+                    ),
                 ],
             ),
             ApiResponse(
@@ -101,7 +100,9 @@ class AccessTokenController(
     )
     @GetMapping("/token", "/token/")
     fun getOIDCToken(
-        @Parameter(description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
+        @Parameter(
+            description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret",
+        )
         @RequestParam(
             "grant_type",
             required = true,
@@ -117,10 +118,11 @@ class AccessTokenController(
                     return badRequestResponse("grant_type = $grantType, scope = $scope")
                 }
                 else -> {
-                    val user = requireNotNull(userDetails()) {
-                        tokenNotOk.inc()
-                        return unauthorizedResponse(Throwable(), "Unauthorized")
-                    }
+                    val user =
+                        requireNotNull(userDetails()) {
+                            tokenNotOk.inc()
+                            return unauthorizedResponse(Throwable(), "Unauthorized")
+                        }
                     return try {
                         val oidcToken = issuer.issueToken(user)
                         tokenOK.inc()
@@ -153,7 +155,7 @@ class AccessTokenController(
                             mediaType = "application/json",
                             schema = Schema(implementation = AccessTokenResponse::class),
                         )
-                        ),
+                    ),
                 ],
             ),
             ApiResponse(
@@ -175,7 +177,9 @@ class AccessTokenController(
     )
     @PostMapping("/token", "/token/")
     fun postOIDCToken(
-        @Parameter(description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret")
+        @Parameter(
+            description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret",
+        )
         @RequestParam("grant_type", required = true, defaultValue = "client_credentials") grantType: String,
         @Parameter(description = "Indicate that the application intends to use OIDC to verify the user's identity")
         @RequestParam("scope", required = true, defaultValue = "openid") scope: String,
@@ -199,7 +203,7 @@ class AccessTokenController(
                             mediaType = "application/json",
                             schema = Schema(implementation = AccessToken2Response::class),
                         )
-                        ),
+                    ),
                 ],
             ),
             ApiResponse(
@@ -260,7 +264,7 @@ class AccessTokenController(
                             mediaType = "application/json",
                             schema = Schema(implementation = ExchangeTokenResponse::class),
                         )
-                        ),
+                    ),
                 ],
             ),
             ApiResponse(
@@ -284,16 +288,18 @@ class AccessTokenController(
     fun getSAMLToken(): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = requestLatencySAMLToken.startTimer()
         try {
-            val user = requireNotNull(userDetails()) {
-                samlTokenNotOk.inc()
-                return unauthorizedResponse(Throwable(), "Unauthorized")
-            }
+            val user =
+                requireNotNull(userDetails()) {
+                    samlTokenNotOk.inc()
+                    return unauthorizedResponse(Throwable(), "Unauthorized")
+                }
             log.info("Issue SAML token for: $user")
             return try {
                 val samlToken = issuer.issueSamlToken(user, user, AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL)
-                val samlObj = SamlObject().apply {
-                    this.read(samlToken)
-                }
+                val samlObj =
+                    SamlObject().apply {
+                        this.read(samlToken)
+                    }
                 samlTokenOk.labels(user).inc()
                 return ResponseEntity
                     .status(HttpStatus.OK)

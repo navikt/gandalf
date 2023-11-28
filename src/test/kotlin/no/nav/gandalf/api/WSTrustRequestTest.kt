@@ -28,7 +28,6 @@ import org.springframework.test.context.junit4.SpringRunner
 @DirtiesContext
 @ActiveProfiles("test")
 class WSTrustRequestTest {
-
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 

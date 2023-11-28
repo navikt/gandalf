@@ -25,7 +25,6 @@ import javax.xml.crypto.KeySelector
 @AutoConfigureWireMock(port = 0)
 @DirtiesContext
 class SamlObjectTest {
-
     @Autowired
     private lateinit var keySelector: KeySelector
 

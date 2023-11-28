@@ -29,7 +29,6 @@ class X509KeySelector(
     @Value("\${nav.truststore.path}") private val truststoreFile: String?,
     @Value("\${nav.truststore.password}") private val truststorePassword: String?,
 ) : KeySelector() {
-
     private var trustManager: X509TrustManager? = null
 
     init {
@@ -37,7 +36,10 @@ class X509KeySelector(
         setOrThrow(TRUSTSTORE_PASSWORD_PROPERTYNAME, truststorePassword)
     }
 
-    private final fun setOrThrow(propertyName: String, value: String?) {
+    private final fun setOrThrow(
+        propertyName: String,
+        value: String?,
+    ) {
         System.setProperty(
             propertyName,
             value ?: throw NullPointerException("$propertyName, is not set!"),
@@ -83,11 +85,15 @@ class X509KeySelector(
             readKeyStoreAndHandle {
                 when {
                     truststoreFile.isNullOrEmpty() -> {
-                        throw RuntimeException("Failed to load truststore, system property '$TRUSTSTORE_FILENAME_PROPERTYNAME' is null or empty!")
+                        throw RuntimeException(
+                            "Failed to load truststore, system property '$TRUSTSTORE_FILENAME_PROPERTYNAME' is null or empty!",
+                        )
                     }
                     truststorePassword.isNullOrEmpty() -> {
                         log.error("System property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
-                        throw RuntimeException("Failed to load truststore, system property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
+                        throw RuntimeException(
+                            "Failed to load truststore, system property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!",
+                        )
                     }
                     else -> {
                         trustStore = KeyStore.getInstance("JKS")
@@ -101,13 +107,14 @@ class X509KeySelector(
                 }
             }
 
-            val tmfactory = trustManageFacHandle {
-                TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()).apply {
-                    this.run {
-                        init(trustStore)
+            val tmfactory =
+                trustManageFacHandle {
+                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()).apply {
+                        this.run {
+                            init(trustStore)
+                        }
                     }
                 }
-            }
             for (trustManager in tmfactory.trustManagers) when (trustManager) {
                 is X509TrustManager -> {
                     return trustManager
@@ -120,7 +127,11 @@ class X509KeySelector(
     companion object {
         const val TRUSTSTORE_FILENAME_PROPERTYNAME = "javax.net.ssl.trustStore"
         const val TRUSTSTORE_PASSWORD_PROPERTYNAME = "javax.net.ssl.trustStorePassword"
-        fun algEquals(algURI: String, algName: String): Boolean {
+
+        fun algEquals(
+            algURI: String,
+            algName: String,
+        ): Boolean {
             return algName.equals(
                 "RSA",
                 ignoreCase = true,
@@ -128,9 +139,7 @@ class X509KeySelector(
         }
     }
 
-    fun trustManageFacHandle(
-        block: () -> TrustManagerFactory,
-    ): TrustManagerFactory {
+    fun trustManageFacHandle(block: () -> TrustManagerFactory): TrustManagerFactory {
         try {
             return block.invoke()
         } catch (e: NoSuchAlgorithmException) {
@@ -142,9 +151,7 @@ class X509KeySelector(
         }
     }
 
-    fun readKeyStoreAndHandle(
-        block: () -> Unit,
-    ) {
+    fun readKeyStoreAndHandle(block: () -> Unit) {
         try {
             block.invoke()
         } catch (e: KeyStoreException) {

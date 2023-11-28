@@ -45,7 +45,10 @@ class RsaKeys {
         expiry = expires
     }
 
-    fun rotateKeys(nextKey: RSAKey, expires: LocalDateTime?) {
+    fun rotateKeys(
+        nextKey: RSAKey,
+        expires: LocalDateTime?,
+    ) {
         previousKey = currentKey
         currentKey = this.nextKey
         this.nextKey = nextKey.toJSONString()

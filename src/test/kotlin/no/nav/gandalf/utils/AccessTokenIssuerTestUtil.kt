@@ -30,35 +30,46 @@ internal const val azureADJwksUrl = "/discovery/v2.0/keys"
 
 private val objectMapper: ObjectMapper = jacksonObjectMapper()
 
-internal fun endpointStub(status: Int = HttpStatus.SC_OK, path: String, bodyFile: String) =
-    stubFor(
-        WireMock.get(WireMock.urlEqualTo(path))
-            .willReturn(
-                aResponse()
-                    .withStatus(status)
-                    .withHeader("Content-Type", "application/json; charset=UTF-8")
-                    .withBodyFile(bodyFile),
-            ),
-    )
+internal fun endpointStub(
+    status: Int = HttpStatus.SC_OK,
+    path: String,
+    bodyFile: String,
+) = stubFor(
+    WireMock.get(WireMock.urlEqualTo(path))
+        .willReturn(
+            aResponse()
+                .withStatus(status)
+                .withHeader("Content-Type", "application/json; charset=UTF-8")
+                .withBodyFile(bodyFile),
+        ),
+)
 
-internal fun wellKnownStub(path: String, jwksUrl: String, bodyFile: String) {
+internal fun wellKnownStub(
+    path: String,
+    jwksUrl: String,
+    bodyFile: String,
+) {
     val content = Files.readString(Path.of("src/test/resources/__files/$bodyFile"))
-    val jsonNode: JsonNode = objectMapper.readValue<JsonNode>(content).apply {
-        (this as ObjectNode).put("jwks_uri", jwksUrl)
-    }
+    val jsonNode: JsonNode =
+        objectMapper.readValue<JsonNode>(content).apply {
+            (this as ObjectNode).put("jwks_uri", jwksUrl)
+        }
     endpointStubWithBody(path = path, body = jsonNode)
 }
 
-internal fun endpointStubWithBody(status: Int = HttpStatus.SC_OK, path: String, body: Any) =
-    stubFor(
-        WireMock.get(WireMock.urlEqualTo(path))
-            .willReturn(
-                aResponse()
-                    .withStatus(status)
-                    .withHeader("Content-Type", "application/json; charset=UTF-8")
-                    .withBody(objectMapper.writeValueAsString(body)),
-            ),
-    )
+internal fun endpointStubWithBody(
+    status: Int = HttpStatus.SC_OK,
+    path: String,
+    body: Any,
+) = stubFor(
+    WireMock.get(WireMock.urlEqualTo(path))
+        .willReturn(
+            aResponse()
+                .withStatus(status)
+                .withHeader("Content-Type", "application/json; charset=UTF-8")
+                .withBody(objectMapper.writeValueAsString(body)),
+        ),
+)
 
 // Original REST-STS did not have token.
 internal fun getAzureAdOIDC() =

@@ -9,7 +9,6 @@ import java.net.InetAddress
 @SpringBootApplication
 @Profile("local")
 class GandalfApplicationLocal {
-
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {

@@ -22,7 +22,6 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class RsaKeysRepository {
-
     @PersistenceContext
     private lateinit var entityManager: EntityManager
     private var keyRotationTimeSeconds = DEFAULT_KEY_ROTATION
@@ -47,8 +46,9 @@ class RsaKeysRepository {
             return rsaKeys
         }
 
-    private fun dumpIds(r: RsaKeys) = "Keys: C ${r.getCurrentKey().keyID} P ${r.getPreviousKey()
-        .keyID} N ${r.getNextKey().keyID} exp ${r.expiry}"
+    private fun dumpIds(r: RsaKeys) =
+        "Keys: C ${r.getCurrentKey().keyID} P ${r.getPreviousKey()
+            .keyID} N ${r.getNextKey().keyID} exp ${r.expiry}"
 
     private fun read(): RsaKeys {
         val query: TypedQuery<RsaKeys> = entityManager.createQuery("FROM RsaKeys", RsaKeys::class.java)
@@ -76,8 +76,10 @@ class RsaKeysRepository {
     }
 
     companion object {
-        const val DEFAULT_KEY_ROTATION = 24 * 60 * 60 // i seconds, satt til 1 døgn
-            .toLong()
+        const val DEFAULT_KEY_ROTATION =
+            24 * 60 *
+                60 // i seconds, satt til 1 døgn
+                    .toLong()
 
         @Throws(NoSuchAlgorithmException::class, JOSEException::class)
         fun generateNewRSAKey(): RSAKey {

@@ -41,14 +41,17 @@ import org.springframework.test.context.junit4.SpringRunner
 )
 @AutoConfigureWireMock(port = 0)
 abstract class SpringBootWireMockSetup {
-
     @Autowired
     private lateinit var server: WireMockServer
 
     @Before
     fun setupKnownIssuers() {
         wellKnownStub(difiOIDCConfigurationUrl, server.url(difiOIDCJwksUrl), difiOIDCConfigurationResponseFileName)
-        wellKnownStub(difiMASKINPORTENCConfigurationUrl, server.url(difiMASKINPORTENCJwksUrl), difiMASKINPORTENConfigurationResponseFileName)
+        wellKnownStub(
+            difiMASKINPORTENCConfigurationUrl,
+            server.url(difiMASKINPORTENCJwksUrl),
+            difiMASKINPORTENConfigurationResponseFileName,
+        )
         wellKnownStub(TOKENX_WELLKNOWN_PATH, server.url(TOKENX_JWKS_PATH), "tokenx-configuration.json")
         endpointStub(HttpStatus.SC_OK, TOKENX_JWKS_PATH, "tokenx-jwks.json")
         endpointStub(HttpStatus.SC_OK, azureADJwksUrl, azureADResponseFileName)

@@ -28,7 +28,6 @@ import java.util.Date
 @ActiveProfiles("test")
 @DirtiesContext
 class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
-
     @Autowired
     private lateinit var mvc: MockMvc
 
@@ -112,12 +111,20 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
     }
 }
 
-internal fun setupValidateRequest(username: String, password: String, issuer: AccessTokenIssuer): String {
+internal fun setupValidateRequest(
+    username: String,
+    password: String,
+    issuer: AccessTokenIssuer,
+): String {
     val samlToken: String? = issuer.issueSamlToken(username, username, "0")
     return getValidateSamlRequest(username, password, samlToken!!)
 }
 
-internal fun setupOIDCtoSAMLRequest(username: String, password: String, issuer: AccessTokenIssuer): String {
+internal fun setupOIDCtoSAMLRequest(
+    username: String,
+    password: String,
+    issuer: AccessTokenIssuer,
+): String {
     val oidcToken: String = issuer.issueToken(username).serialize()
     return getOidcToSamlRequest(username, password, oidcToken)
 }

@@ -26,7 +26,6 @@ import wiremock.org.apache.hc.core5.http.message.BasicNameValuePair
 @ActiveProfiles("test")
 @DirtiesContext
 class AccessTokenControllerTest : SpringBootWireMockSetup() {
-
     @Autowired
     private lateinit var mvc: MockMvc
 
@@ -96,7 +95,13 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
-            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPD,OU=ServiceAccounts,dc=test,dc=local' because no such entry exists in the server."))
+            .andExpect(
+                jsonPath(
+                    "$.error_description",
+                ).value(
+                    "Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPD,OU=ServiceAccounts,dc=test,dc=local' because no such entry exists in the server.",
+                ),
+            )
     }
 
     // POST Path: /token
@@ -201,6 +206,12 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
-            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPDP,OU=ServiceAccounts,dc=test,dc=local' because the provided password was incorrect."))
+            .andExpect(
+                jsonPath(
+                    "$.error_description",
+                ).value(
+                    "Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPDP,OU=ServiceAccounts,dc=test,dc=local' because the provided password was incorrect.",
+                ),
+            )
     }
 }

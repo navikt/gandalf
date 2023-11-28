@@ -46,7 +46,6 @@ private val log = KotlinLogging.logger { }
     description = "Exchange SAML (Datapower STS) -> OIDC & Exchange OIDC (OpenAm, Azure, IDP) -> SAML",
 )
 class TokenExchangeController {
-
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
@@ -62,7 +61,7 @@ class TokenExchangeController {
                             mediaType = "application/json",
                             schema = Schema(implementation = ExchangeTokenResponse::class),
                         )
-                        ),
+                    ),
                 ],
             ),
             ApiResponse(
@@ -100,7 +99,10 @@ class TokenExchangeController {
         )
         @RequestParam("subject_token") subjectToken: String?,
         @Parameter(
-            description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), that indicates the type of the security token in the 'subject_token' parameter.",
+            description =
+                "An identifier, as described in Token Type Identifiers " +
+                    "(OAuth 2.0 Token Exchange Section 3), that indicates the type of the security " +
+                    "token in the 'subject_token' parameter.",
             required = true,
         )
         @RequestParam("subject_token_type") subTokenType: String?,
@@ -108,10 +110,11 @@ class TokenExchangeController {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
         try {
             log.info("Exchange $subTokenType to $reqTokenType")
-            val user = requireNotNull(userDetails()) {
-                ApplicationMetric.exchangeTokenNotOk.inc()
-                return unauthorizedResponse(Throwable(), "Unauthorized")
-            }
+            val user =
+                requireNotNull(userDetails()) {
+                    ApplicationMetric.exchangeTokenNotOk.inc()
+                    return unauthorizedResponse(Throwable(), "Unauthorized")
+                }
             if (grantType.isNullOrEmpty() || grantType != "urn:ietf:params:oauth:grant-type:token-exchange") {
                 ApplicationMetric.exchangeTokenNotOk.inc()
                 return badRequestResponse("Unknown grant_type")
@@ -137,6 +140,7 @@ class TokenExchangeController {
                         badRequestResponse(e.message ?: "")
                     }
                 }
+
                 subTokenType.equals("urn:ietf:params:oauth:token-type:access_token") &&
                     (reqTokenType.isNullOrEmpty() || reqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
                     log.info("Exchange OIDC to SAML token")
@@ -161,6 +165,7 @@ class TokenExchangeController {
                         return badRequestResponse(e.message ?: "")
                     }
                 }
+
                 else -> {
                     ApplicationMetric.exchangeTokenNotOk.inc()
                     return badRequestResponse("Unsupported token exchange for subject/requested token type")
@@ -183,7 +188,7 @@ class TokenExchangeController {
                             mediaType = "application/json",
                             schema = Schema(implementation = AccessTokenResponse::class),
                         )
-                        ),
+                    ),
                 ],
             ),
             ApiResponse(

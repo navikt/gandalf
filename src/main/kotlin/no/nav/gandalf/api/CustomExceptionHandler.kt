@@ -12,15 +12,20 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @SuppressWarnings("unchecked", "rawtypes")
 @ControllerAdvice
 class CustomExceptionHandler : ResponseEntityExceptionHandler() {
-
     @ExceptionHandler(Exception::class)
-    fun handleAllExceptions(ex: Exception, request: WebRequest?): ResponseEntity<Any?> {
+    fun handleAllExceptions(
+        ex: Exception,
+        request: WebRequest?,
+    ): ResponseEntity<Any?> {
         val error = ErrorDescriptiveResponse("Server Error", ex.localizedMessage)
         return ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @ExceptionHandler(LDAPException::class)
-    fun handleLdapError(ex: LDAPException, request: WebRequest?): ResponseEntity<Any?> {
+    fun handleLdapError(
+        ex: LDAPException,
+        request: WebRequest?,
+    ): ResponseEntity<Any?> {
         val error = ErrorDescriptiveResponse(INVALID_CLIENT, ex.localizedMessage)
         return ResponseEntity(error, HttpStatus.UNAUTHORIZED)
     }

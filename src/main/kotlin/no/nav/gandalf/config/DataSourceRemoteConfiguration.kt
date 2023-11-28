@@ -20,7 +20,6 @@ class DataSourceRemoteConfiguration(
     @Value("\${spring.datasource.password}")
     val password: String,
 ) {
-
     @Bean
     fun getDataSource(): DataSource? {
         val dataSourceBuilder = DataSourceBuilder.create()

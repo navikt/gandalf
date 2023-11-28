@@ -21,7 +21,6 @@ import org.springframework.transaction.support.TransactionTemplate
 @SpringBootTest
 @ActiveProfiles("test")
 class RsaKeysProviderTest {
-
     @Autowired
     private val provider: RsaKeysProvider? = null
 

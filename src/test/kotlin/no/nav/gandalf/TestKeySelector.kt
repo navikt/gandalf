@@ -15,9 +15,13 @@ import javax.xml.crypto.dsig.keyinfo.X509Data
 @Component
 @Primary
 class TestKeySelector : KeySelector() {
-
     @Throws(KeySelectorException::class)
-    override fun select(keyInfo: KeyInfo, purpose: Purpose, method: AlgorithmMethod, context: XMLCryptoContext): KeySelectorResult {
+    override fun select(
+        keyInfo: KeyInfo,
+        purpose: Purpose,
+        method: AlgorithmMethod,
+        context: XMLCryptoContext,
+    ): KeySelectorResult {
         for (`object` in keyInfo.content) {
             val info = `object` as XMLStructure
             if (info is X509Data) {

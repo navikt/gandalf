@@ -19,10 +19,11 @@ private val log = KotlinLogging.logger { }
 
 @RestControllerAdvice
 object Util {
-    internal val tokenHeaders = HttpHeaders().apply {
-        add("Cache-Control", "no-store")
-        add("Pragma", "no-cache")
-    }
+    internal val tokenHeaders =
+        HttpHeaders().apply {
+            add("Cache-Control", "no-store")
+            add("Pragma", "no-cache")
+        }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     internal fun serverErrorResponse(e: Throwable): ResponseEntity<Any> {
@@ -33,7 +34,10 @@ object Util {
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    internal fun unauthorizedResponse(e: Throwable, errorMessage: String): ResponseEntity<Any> {
+    internal fun unauthorizedResponse(
+        e: Throwable,
+        errorMessage: String,
+    ): ResponseEntity<Any> {
         log.error(e) { errorMessage }
         return ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)

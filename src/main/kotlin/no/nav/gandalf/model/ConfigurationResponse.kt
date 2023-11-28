@@ -31,5 +31,7 @@ data class ConfigurationResponse(
 }
 
 internal fun toTokenPath(issuer: String) = issuer + ConfigurationResponse.TOKEN_PATH
+
 internal fun toExchangePath(issuer: String) = issuer + ConfigurationResponse.EXCHANGE_PATH
+
 internal fun toJwksPath(issuer: String) = issuer + ConfigurationResponse.JWKS_PATH

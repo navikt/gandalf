@@ -21,7 +21,6 @@ class WSSAMLTokenController(
     @Autowired val provider: CustomAuthenticationProvider,
     @Autowired val issuer: AccessTokenIssuer,
 ) {
-
     @Operation(hidden = true)
     @PostMapping("/ws/samltoken", "/ws/samltoken/")
     fun getSAMLTokenWS(
@@ -65,11 +64,12 @@ class WSSAMLTokenController(
                 wsReq.isIssueSamlFromUNT -> {
                     println("isIssueSamlFromUNT")
                     return try {
-                        val samlToken: String = issuer.issueSamlToken(
-                            wsReq.username!!,
-                            wsReq.username,
-                            AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL,
-                        )
+                        val samlToken: String =
+                            issuer.issueSamlToken(
+                                wsReq.username!!,
+                                wsReq.username,
+                                AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL,
+                            )
                         ApplicationMetric.wsSAMLTokenOk.inc()
                         ResponseEntity.status(HttpStatus.OK).body(wsReq.getResponse(samlToken))
                     } catch (e: Throwable) {

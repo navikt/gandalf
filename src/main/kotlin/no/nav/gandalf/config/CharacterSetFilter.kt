@@ -8,7 +8,6 @@ import jakarta.servlet.ServletResponse
 import java.io.IOException
 
 class CharacterSetFilter : Filter {
-
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(
         request: ServletRequest,

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.annotation.PostConstruct
 import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.utils.ControllerUtil
+import no.nav.gandalf.utils.DATAPOWER_SAML_BASE64_ENCODED
 import no.nav.gandalf.utils.EXCHANGE
 import no.nav.gandalf.utils.EXCHANGE_DIFI
 import no.nav.gandalf.utils.GRANT_TYPE
@@ -16,7 +17,6 @@ import no.nav.gandalf.utils.SUBJECT_TOKEN_TYPE
 import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN_SUBJECT
 import no.nav.gandalf.utils.TOKEN_TYPE
-import no.nav.gandalf.utils.getDatapowerSAMLBase64Encoded
 import no.nav.gandalf.utils.getDifiOidcToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
 import no.nav.security.mock.oauth2.http.objectMapper
@@ -40,7 +40,6 @@ import wiremock.org.apache.hc.core5.http.message.BasicNameValuePair
 @ActiveProfiles("test")
 @DirtiesContext
 class TokenExchangeControllerTest : SpringBootWireMockSetup() {
-
     @Autowired
     private lateinit var mvc: MockMvc
 
@@ -54,13 +53,14 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
     // Path: /token/exchange
     @Test
     fun `Get Valid SAML and Exchange to OIDC`() {
-        val result = mvc.perform(
-            MockMvcRequestBuilders.get(SAML_TOKEN)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.access_token").isString).andReturn()
+        val result =
+            mvc.perform(
+                MockMvcRequestBuilders.get(SAML_TOKEN)
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            )
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.access_token").isString).andReturn()
 
         val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
 
@@ -90,13 +90,14 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
 
     @Test
     fun `Get Valid SAML and Exchange to OIDC with Querry parmams should return 415`() {
-        val result = mvc.perform(
-            MockMvcRequestBuilders.get(SAML_TOKEN)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.access_token").isString).andReturn()
+        val result =
+            mvc.perform(
+                MockMvcRequestBuilders.get(SAML_TOKEN)
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            )
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.access_token").isString).andReturn()
 
         val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
 
@@ -123,7 +124,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                             REQUESTED_TOKEN_TYPE,
                             "urn:ietf:params:oauth:token-type:access_token",
                         ),
-                        BasicNameValuePair(SUBJECT_TOKEN, getDatapowerSAMLBase64Encoded),
+                        BasicNameValuePair(SUBJECT_TOKEN, DATAPOWER_SAML_BASE64_ENCODED),
                         BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
                     ),
                 )
@@ -148,7 +149,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                             REQUESTED_TOKEN_TYPE,
                             "urn:ietf:params:oauth:token-type:access_token",
                         ),
-                        BasicNameValuePair(SUBJECT_TOKEN, getDatapowerSAMLBase64Encoded),
+                        BasicNameValuePair(SUBJECT_TOKEN, DATAPOWER_SAML_BASE64_ENCODED),
                         BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
                     ),
                 )
@@ -185,19 +186,20 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
 
     @Test
     fun `OIDC to SAML Exchange Successfully`() {
-        val result = mvc.perform(
-            MockMvcRequestBuilders.get(TOKEN)
-                .param(GRANT_TYPE, "client_credentials")
-                .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
-            .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
-            .andExpect(jsonPath("$.access_token").isString)
-            .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
-            .andExpect(jsonPath("$.expires_in").value(3600)).andReturn()
+        val result =
+            mvc.perform(
+                MockMvcRequestBuilders.get(TOKEN)
+                    .param(GRANT_TYPE, "client_credentials")
+                    .param(SCOPE, "openid")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            )
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
+                .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
+                .andExpect(jsonPath("$.access_token").isString)
+                .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
+                .andExpect(jsonPath("$.expires_in").value(3600)).andReturn()
 
         val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
 

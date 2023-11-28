@@ -36,7 +36,6 @@ private val log = KotlinLogging.logger { }
     description = "Validate tokens, SAML & OIDC (Datapower, IDP & IDP, AZURE, OPENAM)",
 )
 class ValidateController {
-
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
@@ -52,7 +51,7 @@ class ValidateController {
                             mediaType = "application/json",
                             schema = Schema(implementation = Validation::class),
                         )
-                        ),
+                    ),
                 ],
             ),
             ApiResponse(
@@ -103,7 +102,7 @@ class ValidateController {
                             mediaType = "application/json",
                             schema = Schema(implementation = Validation::class),
                         )
-                        ),
+                    ),
                 ],
             ),
             ApiResponse(

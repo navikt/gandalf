@@ -62,7 +62,6 @@ private const val ACCESS_TOKEN_TYPE = "bearer"
 @AutoConfigureMockMvc
 @DirtiesContext
 class AccessTokenIssuerTest : SpringBootWireMockSetup() {
-
     @Autowired
     private lateinit var env: LocalIssuer
 
@@ -194,9 +193,10 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
         val now: ZonedDateTime = samlObj.notOnOrAfter!!.plusSeconds(65)
         // exchangeToken med invalid date
         val nowWithSkew = now.toInstant().minusSeconds(samlObj.getMaxClockSkew())
-        val exception: RuntimeException = Assert.assertThrows(RuntimeException::class.java) {
-            issuer.exchangeSamlToOidcToken(samlToken, now)
-        }
+        val exception: RuntimeException =
+            Assert.assertThrows(RuntimeException::class.java) {
+                issuer.exchangeSamlToOidcToken(samlToken, now)
+            }
         val expectedMessage =
             "{\"error_description\":\"Invalid SAML token: condition notOnOrAfter: ${samlObj.notOnOrAfter}, " +
                 "is not on or after: $nowWithSkew\",\"error\":\"invalid_request\"}"
@@ -213,9 +213,10 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
         val now = notOnOrAfter!!.plusSeconds(62)
         // exchangeToken med invalid date
         val nowWithSkew = now.toInstant().minusSeconds(samlObj.getMaxClockSkew())
-        val exception: RuntimeException = Assert.assertThrows(RuntimeException::class.java) {
-            issuer.exchangeSamlToOidcToken(samlToken, now)
-        }
+        val exception: RuntimeException =
+            Assert.assertThrows(RuntimeException::class.java) {
+                issuer.exchangeSamlToOidcToken(samlToken, now)
+            }
         val expectedMessage =
             "{\"error_description\":\"Invalid SAML token: condition notOnOrAfter: $notOnOrAfter, " +
                 "is not on or after: $nowWithSkew\",\"error\":\"invalid_request\"}"
@@ -232,9 +233,10 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
         val now = notBefore!!.minusSeconds(65)
         // exchangeToken med invalid date
         val nowWithSkew = now.toInstant().plusSeconds(samlObj.getMaxClockSkew())
-        val exception: RuntimeException = Assert.assertThrows(RuntimeException::class.java) {
-            issuer.exchangeSamlToOidcToken(samlToken, now)
-        }
+        val exception: RuntimeException =
+            Assert.assertThrows(RuntimeException::class.java) {
+                issuer.exchangeSamlToOidcToken(samlToken, now)
+            }
         val expectedMessage =
             "{\"error_description\":\"Invalid SAML token: condition " +
                 "nbf: $notBefore, is before: $nowWithSkew\",\"error\":\"invalid_request\"}"
@@ -250,9 +252,10 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
         val notOnOrAfter: ZonedDateTime? = samlObj.notOnOrAfter
         val now = notOnOrAfter!!.minusSeconds(2)
         // exchangeToken med altered samlToken
-        val exception: RuntimeException = Assert.assertThrows(RuntimeException::class.java) {
-            issuer.exchangeSamlToOidcToken(samlToken, now)
-        }
+        val exception: RuntimeException =
+            Assert.assertThrows(RuntimeException::class.java) {
+                issuer.exchangeSamlToOidcToken(samlToken, now)
+            }
         val expectedMessage =
             "{\"error_description\":\"Invalid SAML token: Signature validation failed on reference #SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae\",\"error\":\"invalid_request\"}"
         val actualMessage = exception.message
@@ -276,12 +279,13 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
             val dpSamlToken: String = getDpSamlToken()
             val samlObj = SamlObject()
             samlObj.read(dpSamlToken)
-            val samlToken = issuer.issueSamlToken(
-                env.issuerUsername,
-                env.issuerUsername,
-                AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL,
-                samlObj.issueInstant!!,
-            )
+            val samlToken =
+                issuer.issueSamlToken(
+                    env.issuerUsername,
+                    env.issuerUsername,
+                    AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL,
+                    samlObj.issueInstant!!,
+                )
             val diff: List<String>? = diffTokens(dpSamlToken, samlToken)
             val realDiff: MutableList<String> = ArrayList()
             diff!!.forEach { line ->
@@ -538,24 +542,29 @@ internal fun hasDifferences(line: String) =
             notOnOrAfterSubjectConfirmationDataHasDifferences(line) ||
             notBeforeConditionDifferences(line) ||
             notOnOrAfterConditionHasDifferences(line)
-        )
+    )
 
-internal fun attributeIdDifferences(line: String) = line.contains(
-    "Assertion Attribute ID has different",
-) && line.contains("token2 has SAML-")
+internal fun attributeIdDifferences(line: String) =
+    line.contains(
+        "Assertion Attribute ID has different",
+    ) && line.contains("token2 has SAML-")
 
-internal fun notBeforeSubjectConfirmationDataHasDifferences(line: String) = line.contains(
-    "Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z",
-)
+internal fun notBeforeSubjectConfirmationDataHasDifferences(line: String) =
+    line.contains(
+        "Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z",
+    )
 
-internal fun notOnOrAfterSubjectConfirmationDataHasDifferences(line: String) = line.contains(
-    "Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z",
-)
+internal fun notOnOrAfterSubjectConfirmationDataHasDifferences(line: String) =
+    line.contains(
+        "Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z",
+    )
 
-internal fun notBeforeConditionDifferences(line: String) = line.contains(
-    "Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z",
-)
+internal fun notBeforeConditionDifferences(line: String) =
+    line.contains(
+        "Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z",
+    )
 
-internal fun notOnOrAfterConditionHasDifferences(line: String) = line.contains(
-    "Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z",
-)
+internal fun notOnOrAfterConditionHasDifferences(line: String) =
+    line.contains(
+        "Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z",
+    )

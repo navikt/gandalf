@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class Observability {
-
     @Operation(hidden = true)
     @GetMapping("/isAlive")
     fun isAlive() = true
@@ -33,7 +32,7 @@ class Observability {
                             mediaType = "application/json",
                             schema = Schema(implementation = Ping::class),
                         )
-                        ),
+                    ),
                 ],
             ),
             ApiResponse(
@@ -44,9 +43,10 @@ class Observability {
         ],
     )
     @GetMapping("/ping")
-    fun ping() = ResponseEntity
-        .status(HttpStatus.OK)
-        .body(Ping(true))
+    fun ping() =
+        ResponseEntity
+            .status(HttpStatus.OK)
+            .body(Ping(true))
 }
 
 data class Ping(
