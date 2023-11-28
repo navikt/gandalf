@@ -27,13 +27,13 @@ class LdapTest {
         remote = "false",
         timeout = 1_000,
         srvTestPassword = "password",
-        srvTestUsername = "srvPDP"
+        srvTestUsername = "srvPDP",
     )
 
     @Test
     fun `Authenticated User Under OU=ServiceAccounts`() {
         val ldap = LDAPAuthentication(
-            LDAPConnectionSetup(ldapConfig = ldapConfig)
+            LDAPConnectionSetup(ldapConfig = ldapConfig),
         )
         val authenticatedUser = User("srvPDP", "password")
         assert(ldap.result(user = authenticatedUser))
@@ -42,7 +42,7 @@ class LdapTest {
     @Test
     fun `Authenticated User Under OU=ApplAccounts,OU=ServiceAccounts`() {
         val ldap = LDAPAuthentication(
-            LDAPConnectionSetup(ldapConfig = ldapConfig)
+            LDAPConnectionSetup(ldapConfig = ldapConfig),
         )
         val authenticatedUser = User("srvaltutkanal", "password")
         assert(ldap.result(user = authenticatedUser))
@@ -51,7 +51,7 @@ class LdapTest {
     @Test
     fun `UnAuthorized User`() {
         val ldap = LDAPAuthentication(
-            LDAPConnectionSetup(ldapConfig = ldapConfig)
+            LDAPConnectionSetup(ldapConfig = ldapConfig),
         )
         val unauthorized = User("srvPDS", "password")
         assertThrows<LDAPException> { ldap.result(user = unauthorized) }

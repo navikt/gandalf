@@ -37,7 +37,7 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
     fun `Validate Valid SAML Token`() {
         val result = mvc.perform(
             MockMvcRequestBuilders.get(SAML_TOKEN)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -51,7 +51,7 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.post(SAML_TOKEN_VALIDATE)
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
-                .param(TOKEN_SUBJECT, mockedToken.access_token)
+                .param(TOKEN_SUBJECT, mockedToken.access_token),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -63,13 +63,13 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.post(SAML_TOKEN_VALIDATE)
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
-                .param(TOKEN_SUBJECT, getDatapowerSAMLBase64Encoded)
+                .param(TOKEN_SUBJECT, getDatapowerSAMLBase64Encoded),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status").value(false))
             .andExpect(
-                jsonPath("$.message").isString
+                jsonPath("$.message").isString,
             )
     }
 
@@ -79,7 +79,7 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.get(TOKEN)
                 .param(GRANT_TYPE, "client_credentials")
                 .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -94,7 +94,7 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.post(OIDC_TOKEN_VALIDATE)
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
-                .param(TOKEN_SUBJECT, mockedToken.access_token)
+                .param(TOKEN_SUBJECT, mockedToken.access_token),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -106,7 +106,7 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.post(OIDC_TOKEN_VALIDATE)
                 .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
-                .param(TOKEN_SUBJECT, getOpenAmOIDC())
+                .param(TOKEN_SUBJECT, getOpenAmOIDC()),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))

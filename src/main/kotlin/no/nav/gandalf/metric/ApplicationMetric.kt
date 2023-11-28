@@ -154,6 +154,7 @@ class ApplicationMetric {
             .namespace(latencyMetricPrefix)
             .name("seconds_ws_samltoken")
             .register(default)
+
         // Cert
         internal val certCount: Counter = Counter.build()
             .help("Count days until expiry.")
@@ -161,6 +162,7 @@ class ApplicationMetric {
             .labelNames("key_alias")
             .name("cert_count")
             .register(default)
+
         // Ldap
         internal val ldapDuration: Histogram = Histogram.build()
             .help("AD - time for checking.")

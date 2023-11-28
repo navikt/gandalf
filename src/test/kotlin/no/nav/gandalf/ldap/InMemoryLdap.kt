@@ -24,7 +24,7 @@ class InMemoryLdap : AutoCloseable {
             val tlsCF = SSLUtil(TrustAllTrustManager()).createSSLSocketFactory()
             val tlsSF = SSLUtil(
                 KeyStoreKeyManager(kStore, "password".toCharArray(), "JKS", "inmds"),
-                TrustStoreTrustManager(kStore)
+                TrustStoreTrustManager(kStore),
             ).createSSLServerSocketFactory()
 
             setListenerConfigs(
@@ -33,8 +33,8 @@ class InMemoryLdap : AutoCloseable {
                     null,
                     LPORT,
                     tlsSF,
-                    tlsCF
-                )
+                    tlsCF,
+                ),
             )
 
             // require authentication for most operations except bind
@@ -43,7 +43,7 @@ class InMemoryLdap : AutoCloseable {
                 OperationType.SEARCH,
                 OperationType.ADD,
                 OperationType.MODIFY,
-                OperationType.DELETE
+                OperationType.DELETE,
             )
             // let the embedded server use identical schema as apache DS configured for AD support (group and sAMAcc..)
             schema = Schema.getSchema("src/test/resources/apacheDS.ldif")

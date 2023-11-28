@@ -99,7 +99,7 @@ class OidcObject : ClockSkew {
             null -> {
                 throw IllegalArgumentException(
                     "Validation failed: failed to find key " +
-                        signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer
+                        signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer,
                 )
             }
             else -> {
@@ -216,7 +216,7 @@ class OidcObject : ClockSkew {
         copyOidc: OidcObject,
         copyClaimsList: List<String?>,
         key: RSAKey,
-        alg: JWSAlgorithm
+        alg: JWSAlgorithm,
     ): SignedJWT {
         // copy claims in copyClaimsList from copyOidc to this and add extra claims from copyOidc to this
         val copyClaims: Map<String?, Any> = copyOidc.signedJWT!!.jwtClaimsSet.claims

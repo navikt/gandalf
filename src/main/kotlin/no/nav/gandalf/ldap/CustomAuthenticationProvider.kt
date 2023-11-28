@@ -11,7 +11,7 @@ import javax.naming.AuthenticationException
 
 @Component
 class CustomAuthenticationProvider(
-    @Autowired val ldapConnectionSetup: LDAPConnectionSetup
+    @Autowired val ldapConnectionSetup: LDAPConnectionSetup,
 ) : AuthenticationProvider {
 
     @Throws(AuthenticationException::class)
@@ -21,7 +21,9 @@ class CustomAuthenticationProvider(
         return try {
             if (authenticate(ldapConnectionSetup, User(name, password))) {
                 UsernamePasswordAuthenticationToken(name, password, ArrayList())
-            } else null
+            } else {
+                null
+            }
         } catch (t: Throwable) {
             throw BadCredentialsException("Authentication failed, ${t.message}")
         }

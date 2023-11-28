@@ -23,7 +23,7 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class KeyStoreReader(
-    @Autowired val keystoreReaderConfig: KeystoreReaderConfig
+    @Autowired val keystoreReaderConfig: KeystoreReaderConfig,
 ) {
     private var keyStore: KeyStore? = null
     private var privateKey: PrivateKey? = null
@@ -100,8 +100,8 @@ class KeyStoreReader(
     fun numberOfDaysUtilCertificateExpire() = ChronoUnit.DAYS.between(
         LocalDate.now(),
         LocalDate.parse(
-            SimpleDateFormat("yyyy-MM-dd").format(cert?.notAfter)
-        )
+            SimpleDateFormat("yyyy-MM-dd").format(cert?.notAfter),
+        ),
     ).toDouble().apply {
         log.debug { "Signing certificate expires in: $this" }
         return when {
@@ -113,7 +113,7 @@ class KeyStoreReader(
     }
 
     fun readKeyStoreAndHandle(
-        block: () -> Unit
+        block: () -> Unit,
     ) {
         try {
             block.invoke()

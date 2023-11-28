@@ -13,6 +13,13 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.saml.SamlObject
+import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
+import no.nav.gandalf.api.INVALID_CLIENT
+import no.nav.gandalf.api.INVALID_REQUEST
+import no.nav.gandalf.api.Util.badRequestResponse
+import no.nav.gandalf.api.Util.tokenHeaders
+import no.nav.gandalf.api.Util.unauthorizedResponse
+import no.nav.gandalf.api.Util.userDetails
 import no.nav.gandalf.metric.ApplicationMetric
 import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.ErrorDescriptiveResponse
@@ -28,13 +35,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.nio.charset.StandardCharsets
-import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
-import no.nav.gandalf.api.INVALID_CLIENT
-import no.nav.gandalf.api.INVALID_REQUEST
-import no.nav.gandalf.api.Util.badRequestResponse
-import no.nav.gandalf.api.Util.tokenHeaders
-import no.nav.gandalf.api.Util.unauthorizedResponse
-import no.nav.gandalf.api.Util.userDetails
 import java.util.Base64
 
 private val log = KotlinLogging.logger { }
@@ -43,7 +43,7 @@ private val log = KotlinLogging.logger { }
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
 @Tag(
     name = "OIDC/SAML Token Exchange",
-    description = "Exchange SAML (Datapower STS) -> OIDC & Exchange OIDC (OpenAm, Azure, IDP) -> SAML"
+    description = "Exchange SAML (Datapower STS) -> OIDC & Exchange OIDC (OpenAm, Azure, IDP) -> SAML",
 )
 class TokenExchangeController {
 
@@ -60,50 +60,50 @@ class TokenExchangeController {
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = ExchangeTokenResponse::class)
+                            schema = Schema(implementation = ExchangeTokenResponse::class),
                         )
-                        )
-                ]
+                        ),
+                ],
             ),
             ApiResponse(
                 responseCode = "401",
                 description = INVALID_CLIENT,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
             ),
             ApiResponse(
                 responseCode = "400",
                 description = INVALID_REQUEST,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()]
-            )
-        ]
+                content = [Content()],
+            ),
+        ],
     )
     @PostMapping("/token/exchange", "/token/exchange/", consumes = ["application/x-www-form-urlencoded"])
     fun exchangeSAMLToOIDCToSAMLToken(
         @Parameter(
             description = "'grant type' refers to the way an application gets an access token. OAuth 2.0 defines several grant types.",
-            required = true
+            required = true,
         )
         @RequestParam("grant_type") grantType: String?,
         @Parameter(
             description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), for the type of the requested security token.",
-            required = false
+            required = false,
         )
         @RequestParam("requested_token_type", required = false) reqTokenType: String?,
         @Parameter(
             description = "Represents the identity of the party on behalf of whom the token is being requested.",
-            required = true
+            required = true,
         )
         @RequestParam("subject_token") subjectToken: String?,
         @Parameter(
             description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), that indicates the type of the security token in the 'subject_token' parameter.",
-            required = true
+            required = true,
         )
-        @RequestParam("subject_token_type") subTokenType: String?
+        @RequestParam("subject_token_type") subTokenType: String?,
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
         try {
@@ -153,8 +153,8 @@ class TokenExchangeController {
                                     "Bearer",
                                     if (reqTokenType.isNullOrEmpty()) "urn:ietf:params:oauth:token-type:saml2" else reqTokenType,
                                     samlObj.expiresIn(),
-                                    true
-                                )
+                                    true,
+                                ),
                             )
                     } catch (e: Throwable) {
                         ApplicationMetric.exchangeTokenNotOk.inc()
@@ -181,35 +181,35 @@ class TokenExchangeController {
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = AccessTokenResponse::class)
+                            schema = Schema(implementation = AccessTokenResponse::class),
                         )
-                        )
-                ]
+                        ),
+                ],
             ),
             ApiResponse(
                 responseCode = "401",
                 description = INVALID_CLIENT,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
             ),
             ApiResponse(
                 responseCode = "400",
                 description = INVALID_REQUEST,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()]
-            )
-        ]
+                content = [Content()],
+            ),
+        ],
     )
     @PostMapping("/token/exchangedifi", "/token/exchangedifi/")
     fun exchangeDIFIOIDCToken(
         @Parameter(
             description = "Base64Encoded DIFI Access Token.",
-            required = true
+            required = true,
         )
-        @RequestHeader("token", required = true) difiToken: String?
+        @RequestHeader("token", required = true) difiToken: String?,
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchangeDIFI.startTimer()
         try {

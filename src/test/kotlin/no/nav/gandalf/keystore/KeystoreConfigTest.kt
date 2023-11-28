@@ -19,12 +19,12 @@ class KeystoreConfigTest {
         val keystoreReaderConfig = KeystoreReaderConfig(
             keystoreFile = base64EncodedFile,
             keystorePassword = "testkeystore1234",
-            profile = "remote"
+            profile = "remote",
         )
         // Decoded file, som blitt lagret på temp uri - skal vare identisk med orginalen
         assert(
             File(keystoreReaderConfig.loadKeyStoreFromBase64ToFile())
-                .readText() == File(file.uri).readText()
+                .readText() == File(file.uri).readText(),
         )
     }
 
@@ -33,7 +33,7 @@ class KeystoreConfigTest {
         val keystoreReaderConfig = KeystoreReaderConfig(
             keystoreFile = null,
             keystorePassword = "testkeystore1234",
-            profile = "remote"
+            profile = "remote",
         )
         assertThrows<RuntimeException> {
             keystoreReaderConfig.loadKeyStoreFromBase64ToFile()

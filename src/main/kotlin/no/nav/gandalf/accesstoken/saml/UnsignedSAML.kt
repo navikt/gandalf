@@ -9,8 +9,8 @@ internal fun getUnsignedSaml(samlObject: SamlObject): String {
         "</saml2:NameID><saml2:SubjectConfirmation Method=\"urn:oasis:names:tc:SAML:2.0:cm:bearer\">" +
         "<saml2:SubjectConfirmationData NotBefore=\"" + samlObject.dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" + samlObject.notOnOrAfter + "\"/></saml2:SubjectConfirmation></saml2:Subject>" +
         "<saml2:Conditions NotBefore=\"" + samlObject.dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" + samlObject.notOnOrAfter!!.format(
-        format
-    ) + "\"/><saml2:AttributeStatement>" +
+            format,
+        ) + "\"/><saml2:AttributeStatement>" +
         "<saml2:Attribute Name=\"identType\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>" + samlObject.identType + "</saml2:AttributeValue></saml2:Attribute>" +
         (if (samlObject.authenticationLevel != null) "<saml2:Attribute Name=\"authenticationLevel\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>${samlObject.authenticationLevel}</saml2:AttributeValue></saml2:Attribute>" else "") +
         (if (samlObject.consumerId != null) "<saml2:Attribute Name=\"consumerId\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>${samlObject.consumerId}</saml2:AttributeValue></saml2:Attribute>" else "") +

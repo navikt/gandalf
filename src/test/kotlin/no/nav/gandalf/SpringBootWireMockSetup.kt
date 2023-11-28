@@ -37,7 +37,7 @@ import org.springframework.test.context.junit4.SpringRunner
         "$PROP_JWKS_ENDPOINT_PREFIX.azureb2c=$WIREMOCK_URL$azureADJwksUrl",
         "$PROP_JWKS_ENDPOINT_PREFIX.openam=$WIREMOCK_URL$openAMJwksUrl",
     ],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @AutoConfigureWireMock(port = 0)
 abstract class SpringBootWireMockSetup {

@@ -16,7 +16,7 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class LDAPConnectionSetup(
-    @Autowired val ldapConfig: LdapConfig
+    @Autowired val ldapConfig: LdapConfig,
 ) : AutoCloseable {
 
     private val connectOptions = LDAPConnectionOptions().apply {
@@ -25,7 +25,7 @@ class LDAPConnectionSetup(
 
     private final var ldapConnection = LDAPConnection(
         SSLUtil(TrustAllTrustManager()).createSSLSocketFactory(),
-        connectOptions
+        connectOptions,
     )
 
     init {
@@ -38,7 +38,7 @@ class LDAPConnectionSetup(
                 setDisconnectInfo(
                     DisconnectType.IO_ERROR,
                     "Error when connecting to LDAPS $ldapConfig",
-                    e
+                    e,
                 )
             }
         }

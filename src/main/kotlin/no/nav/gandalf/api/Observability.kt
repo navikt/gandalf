@@ -31,17 +31,17 @@ class Observability {
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = Ping::class)
+                            schema = Schema(implementation = Ping::class),
                         )
-                        )
-                ]
+                        ),
+                ],
             ),
             ApiResponse(
                 responseCode = "200",
                 description = "Application response OK",
-                content = [Content()]
-            )
-        ]
+                content = [Content()],
+            ),
+        ],
     )
     @GetMapping("/ping")
     fun ping() = ResponseEntity
@@ -50,5 +50,5 @@ class Observability {
 }
 
 data class Ping(
-    val status: Boolean
+    val status: Boolean,
 )

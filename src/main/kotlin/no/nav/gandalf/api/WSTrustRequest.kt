@@ -35,7 +35,7 @@ class WSTrustRequest(
     var keyType: String? = null,
     var tokenType: String? = null,
     var onBehalfOf: String? = null,
-    var validateTarget: String? = null
+    var validateTarget: String? = null,
 ) {
 
     val isIssueSamlFromUNT: Boolean

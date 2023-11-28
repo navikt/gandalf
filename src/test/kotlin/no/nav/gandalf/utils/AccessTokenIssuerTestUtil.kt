@@ -37,8 +37,8 @@ internal fun endpointStub(status: Int = HttpStatus.SC_OK, path: String, bodyFile
                 aResponse()
                     .withStatus(status)
                     .withHeader("Content-Type", "application/json; charset=UTF-8")
-                    .withBodyFile(bodyFile)
-            )
+                    .withBodyFile(bodyFile),
+            ),
     )
 
 internal fun wellKnownStub(path: String, jwksUrl: String, bodyFile: String) {
@@ -56,8 +56,8 @@ internal fun endpointStubWithBody(status: Int = HttpStatus.SC_OK, path: String, 
                 aResponse()
                     .withStatus(status)
                     .withHeader("Content-Type", "application/json; charset=UTF-8")
-                    .withBody(objectMapper.writeValueAsString(body))
-            )
+                    .withBody(objectMapper.writeValueAsString(body)),
+            ),
     )
 
 // Original REST-STS did not have token.

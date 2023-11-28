@@ -3,6 +3,10 @@ package no.nav.gandalf.repository
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
+import jakarta.persistence.TypedQuery
+import jakarta.transaction.Transactional
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.domain.RsaKeys
@@ -13,10 +17,6 @@ import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.time.LocalDateTime
 import java.util.UUID
-import jakarta.persistence.EntityManager
-import jakarta.persistence.PersistenceContext
-import jakarta.persistence.TypedQuery
-import jakarta.transaction.Transactional
 
 private val log = KotlinLogging.logger { }
 

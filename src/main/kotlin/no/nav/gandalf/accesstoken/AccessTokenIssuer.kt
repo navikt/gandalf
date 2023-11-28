@@ -39,7 +39,7 @@ class AccessTokenIssuer(
     @Autowired private val keyStoreReader: KeyStoreReader,
     @Autowired private val externalIssuersConfig: ExternalIssuer,
     @Autowired private val localIssuerConfig: LocalIssuer,
-    private val gsonBuilder: GsonBuilder
+    private val gsonBuilder: GsonBuilder,
 ) : IssuerConfig {
 
     final override val issuer = localIssuerConfig.issuer
@@ -53,25 +53,25 @@ class AccessTokenIssuer(
             this,
             IssuerConfig.from(
                 externalIssuersConfig.issuerOpenAm,
-                externalIssuersConfig.jwksEndpointOpenAm
+                externalIssuersConfig.jwksEndpointOpenAm,
             ),
             IssuerConfig.from(
                 externalIssuersConfig.issuerAzureB2C,
-                externalIssuersConfig.jwksEndpointAzureB2C
+                externalIssuersConfig.jwksEndpointAzureB2C,
             ),
             IssuerConfig.from(
                 externalIssuersConfig.issuerAzureAd,
-                externalIssuersConfig.jwksEndpointAzuread
+                externalIssuersConfig.jwksEndpointAzuread,
             ),
             IssuerConfig.from(
-                externalIssuersConfig.configurationDIFIOIDCUrl
+                externalIssuersConfig.configurationDIFIOIDCUrl,
             ),
             IssuerConfig.from(
-                externalIssuersConfig.configurationDIFIMaskinportenUrl
+                externalIssuersConfig.configurationDIFIMaskinportenUrl,
             ),
             IssuerConfig.from(
-                externalIssuersConfig.configurationTokenX
-            )
+                externalIssuersConfig.configurationTokenX,
+            ),
         )
     }
 
@@ -109,7 +109,7 @@ class AccessTokenIssuer(
         username: String,
         consumerId: String?,
         authLevel: String?,
-        issueTime: ZonedDateTime = ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS)
+        issueTime: ZonedDateTime = ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS),
     ): String {
         val samlObj = SamlObject(issueTime)
         samlObj.issuer = SAML_ISSUER
@@ -126,7 +126,7 @@ class AccessTokenIssuer(
         SAXException::class,
         IOException::class,
         MarshalException::class,
-        XMLSignatureException::class
+        XMLSignatureException::class,
     )
     fun validateSamlToken(samlToken: String?): SamlObject {
         // read Saml token
@@ -143,7 +143,7 @@ class AccessTokenIssuer(
         SAXException::class,
         IOException::class,
         MarshalException::class,
-        XMLSignatureException::class
+        XMLSignatureException::class,
     )
     fun validateSamlToken(samlToken: String?, keySelector: KeySelector) {
         // read Saml token
@@ -185,7 +185,7 @@ class AccessTokenIssuer(
     fun exchangeOidcToSamlToken(
         token: String,
         username: String?,
-        now: Date = OidcObject.toDate(ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS))
+        now: Date = OidcObject.toDate(ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS)),
     ): String {
         log.info("Issuing SAML from JWT: exchangeOidcToSamlToken")
         val oidcObj = validateOidcToken(token, now)
@@ -250,7 +250,7 @@ class AccessTokenIssuer(
             difiOidcObj,
             copyClaims,
             keyStore.currentRSAKey,
-            OIDC_SIGNINGALG
+            OIDC_SIGNINGALG,
         )
     }
 

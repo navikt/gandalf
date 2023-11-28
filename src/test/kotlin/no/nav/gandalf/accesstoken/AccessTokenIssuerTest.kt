@@ -8,8 +8,8 @@ import io.kotest.assertions.asClue
 import io.kotest.matchers.date.before
 import io.kotest.matchers.shouldBe
 import junit.framework.TestCase
-import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.SpringBootWireMockSetup
+import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_DURATION_TIME
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.OIDC_VERSION
 import no.nav.gandalf.accesstoken.AccessTokenIssuer.Companion.getIdentType
@@ -280,7 +280,7 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
                 env.issuerUsername,
                 env.issuerUsername,
                 AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL,
-                samlObj.issueInstant!!
+                samlObj.issueInstant!!,
             )
             val diff: List<String>? = diffTokens(dpSamlToken, samlToken)
             val realDiff: MutableList<String> = ArrayList()
@@ -541,21 +541,21 @@ internal fun hasDifferences(line: String) =
         )
 
 internal fun attributeIdDifferences(line: String) = line.contains(
-    "Assertion Attribute ID has different"
+    "Assertion Attribute ID has different",
 ) && line.contains("token2 has SAML-")
 
 internal fun notBeforeSubjectConfirmationDataHasDifferences(line: String) = line.contains(
-    "Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z"
+    "Node saml2:SubjectConfirmationData Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z",
 )
 
 internal fun notOnOrAfterSubjectConfirmationDataHasDifferences(line: String) = line.contains(
-    "Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z"
+    "Node saml2:SubjectConfirmationData Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z",
 )
 
 internal fun notBeforeConditionDifferences(line: String) = line.contains(
-    "Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z"
+    "Node saml2:Conditions Attribute NotBefore has different content: token1 has 2018-10-24T08:58:33Z token2 has 2018-10-24T08:58:36Z",
 )
 
 internal fun notOnOrAfterConditionHasDifferences(line: String) = line.contains(
-    "Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z"
+    "Node saml2:Conditions Attribute NotOnOrAfter has different content: token1 has 2018-10-24T09:58:39Z token2 has 2018-10-24T09:58:36Z",
 )

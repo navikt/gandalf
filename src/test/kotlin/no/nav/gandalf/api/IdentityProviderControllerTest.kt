@@ -32,7 +32,7 @@ class IdentityProviderControllerTest : SpringBootWireMockSetup() {
     fun `Get JWKS Should only return Public keys`() {
         val response = mvc.perform(
             MockMvcRequestBuilders.get(JWKS)
-                .with(SecurityMockMvcRequestPostProcessors.anonymous())
+                .with(SecurityMockMvcRequestPostProcessors.anonymous()),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -52,7 +52,7 @@ class IdentityProviderControllerTest : SpringBootWireMockSetup() {
         val stsEndpoint = "https://security-token-service.nais.preprod.local"
         mvc.perform(
             MockMvcRequestBuilders.get(WELL_KNOWN)
-                .with(SecurityMockMvcRequestPostProcessors.anonymous())
+                .with(SecurityMockMvcRequestPostProcessors.anonymous()),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -69,7 +69,7 @@ class IdentityProviderControllerTest : SpringBootWireMockSetup() {
         val stsEndpoint = "https://security-token-service.nais.preprod.local"
         mvc.perform(
             MockMvcRequestBuilders.get("/rest/v1/sts/.well-known/openid-configuration")
-                .with(SecurityMockMvcRequestPostProcessors.anonymous())
+                .with(SecurityMockMvcRequestPostProcessors.anonymous()),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))

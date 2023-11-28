@@ -1,5 +1,6 @@
 package no.nav.gandalf.api
 
+import jakarta.annotation.PostConstruct
 import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
@@ -19,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import jakarta.annotation.PostConstruct
 import wiremock.org.apache.hc.core5.http.message.BasicNameValuePair
 
 @AutoConfigureMockMvc
@@ -43,7 +43,7 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.get(TOKEN)
                 .param(GRANT_TYPE, "client_credentials")
                 .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -62,7 +62,7 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.get(TOKEN)
                 .param(GRANT_TYPE, unknownGrantType)
                 .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
@@ -74,14 +74,14 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.get(TOKEN)
                 .param(GRANT_TYPE, "client_credentials")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
 
         mvc.perform(
             MockMvcRequestBuilders.get(TOKEN)
                 .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
@@ -92,7 +92,7 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.get(TOKEN)
                 .param(GRANT_TYPE, "client_credentials")
                 .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPD", "passwor"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPD", "passwor")),
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
@@ -107,7 +107,7 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.post(TOKEN)
                 .param(GRANT_TYPE, "client_credentials")
                 .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -126,10 +126,10 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
                 .formPostBody(
                     listOf(
                         BasicNameValuePair(GRANT_TYPE, "client_credentials"),
-                        BasicNameValuePair(SCOPE, "openid")
-                    )
+                        BasicNameValuePair(SCOPE, "openid"),
+                    ),
                 )
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -146,7 +146,7 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.get(TOKEN2)
                 .header("username", "srvPDP")
-                .header("password", "password")
+                .header("password", "password"),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -162,7 +162,7 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.get(TOKEN2)
                 .header("username", "srvPD")
-                .header("password", "passwor")
+                .header("password", "passwor"),
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -173,7 +173,7 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.get(TOKEN2)
                 .header("username", "srvPDP")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().is4xxClientError)
     }
@@ -183,7 +183,7 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
     fun `Get SAML Token`() {
         mvc.perform(
             MockMvcRequestBuilders.get(SAML_TOKEN)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -197,7 +197,7 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
     fun `UnAuthorized SAML Token`() {
         mvc.perform(
             MockMvcRequestBuilders.get(SAML_TOKEN)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "pasword"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "pasword")),
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))

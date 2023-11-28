@@ -15,7 +15,7 @@ class ProxyAwareResourceRetriever internal constructor(
     private val isUsePlainTextForHttps: Boolean,
     connectTimeout: Int,
     readTimeout: Int,
-    sizeLimit: Int
+    sizeLimit: Int,
 ) :
     DefaultResourceRetriever(connectTimeout, readTimeout, sizeLimit) {
 
@@ -25,7 +25,7 @@ class ProxyAwareResourceRetriever internal constructor(
         usePlainTextForHttps,
         DEFAULT_HTTP_CONNECT_TIMEOUT,
         DEFAULT_HTTP_READ_TIMEOUT,
-        DEFAULT_HTTP_SIZE_LIMIT
+        DEFAULT_HTTP_SIZE_LIMIT,
     ) {
     }
 
@@ -43,7 +43,7 @@ class ProxyAwareResourceRetriever internal constructor(
                 )
             logger.debug(
                 "using plaintext connection for https url, new url is {}",
-                newUrl
+                newUrl,
             )
             URI.create(newUrl).toURL()
         } catch (e: URISyntaxException) {
@@ -69,7 +69,7 @@ class ProxyAwareResourceRetriever internal constructor(
         if (proxyUrl != null) {
             proxy = Proxy(
                 Proxy.Type.HTTP,
-                InetSocketAddress(proxyUrl.host, proxyUrl.port)
+                InetSocketAddress(proxyUrl.host, proxyUrl.port),
             )
         }
     }

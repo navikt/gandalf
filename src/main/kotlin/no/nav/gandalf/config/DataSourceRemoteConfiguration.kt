@@ -18,7 +18,7 @@ class DataSourceRemoteConfiguration(
     @Value("\${spring.datasource.username}")
     val username: String,
     @Value("\${spring.datasource.password}")
-    val password: String
+    val password: String,
 ) {
 
     @Bean

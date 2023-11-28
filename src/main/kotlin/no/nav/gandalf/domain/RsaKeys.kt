@@ -2,13 +2,13 @@ package no.nav.gandalf.domain
 
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.oauth2.sdk.ParseException
-import no.nav.gandalf.util.TimestampConverter
-import java.time.LocalDateTime
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import no.nav.gandalf.util.TimestampConverter
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "RSAKEYS")

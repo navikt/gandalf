@@ -13,7 +13,7 @@ class ExchangeTokenService {
             access_token = oidcToken.serialize(),
             token_type = "Bearer",
             expires_in = (oidcToken.jwtClaimsSet.expirationTime.time - oidcToken.jwtClaimsSet.issueTime.time) / 1000,
-            issued_token_type = "urn:ietf:params:oauth:token-type:access_token"
+            issued_token_type = "urn:ietf:params:oauth:token-type:access_token",
         )
 
     fun constructResponse(accessToken: String, tokenType: String, issuedTokenType: String, expiresIn: Long, UrlEncoding: Boolean) =
@@ -28,6 +28,6 @@ class ExchangeTokenService {
             },
             token_type = tokenType,
             expires_in = expiresIn,
-            issued_token_type = issuedTokenType
+            issued_token_type = issuedTokenType,
         )
 }

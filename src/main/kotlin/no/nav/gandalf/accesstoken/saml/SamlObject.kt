@@ -1,6 +1,14 @@
 package no.nav.gandalf.accesstoken.saml
 
 import com.nimbusds.oauth2.sdk.OAuth2Error
+import no.nav.gandalf.accesstoken.ClockSkew
+import no.nav.gandalf.accesstoken.OAuthException
+import no.nav.gandalf.keystore.KeyStoreReader
+import org.slf4j.LoggerFactory
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
 import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter
@@ -30,14 +38,6 @@ import javax.xml.parsers.ParserConfigurationException
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
-import no.nav.gandalf.accesstoken.ClockSkew
-import no.nav.gandalf.accesstoken.OAuthException
-import no.nav.gandalf.keystore.KeyStoreReader
-import org.slf4j.LoggerFactory
-import org.w3c.dom.Element
-import org.w3c.dom.Node
-import org.xml.sax.InputSource
-import org.xml.sax.SAXException
 
 class SamlObject : ClockSkew {
     var issuer: String? = null
@@ -173,7 +173,7 @@ class SamlObject : ClockSkew {
         if (dateNotBefore != null && nbfClockSkew.isBefore(dateNotBefore!!.toInstant())) {
             message = "Invalid SAML token: condition nbf: $dateNotBefore, is before: $nbfClockSkew"
             throw OAuthException(
-                OAuth2Error.INVALID_REQUEST.setDescription(message)
+                OAuth2Error.INVALID_REQUEST.setDescription(message),
             ).also { log.warn(message) }
         }
         // validate NotOnOrAfter
@@ -182,7 +182,7 @@ class SamlObject : ClockSkew {
         ) {
             message = "Invalid SAML token: condition notOnOrAfter: $notOnOrAfter, is not on or after: $noaClockSkew"
             throw OAuthException(
-                OAuth2Error.INVALID_REQUEST.setDescription(message).also { log.warn(message) }
+                OAuth2Error.INVALID_REQUEST.setDescription(message).also { log.warn(message) },
             )
         }
 
@@ -192,7 +192,7 @@ class SamlObject : ClockSkew {
         if (signatureNode == null) {
             message = "Invalid SAML token: Signature is missing"
             throw OAuthException(
-                OAuth2Error.INVALID_REQUEST.setDescription(message)
+                OAuth2Error.INVALID_REQUEST.setDescription(message),
             ).also { log.warn(message) }
         }
         val valContext = DOMValidateContext(keySelector, signatureNode)
@@ -207,14 +207,14 @@ class SamlObject : ClockSkew {
             if (!signature.signatureValue.validate(valContext)) {
                 message = "Invalid SAML token: Signature validation failed"
                 throw OAuthException(
-                    OAuth2Error.INVALID_REQUEST.setDescription(message)
+                    OAuth2Error.INVALID_REQUEST.setDescription(message),
                 ).also { log.warn(message) }
             }
             for (ref in signature.signedInfo.references) {
                 if (!(ref as Reference).validate(valContext)) {
                     message = "Invalid SAML token: Signature validation failed on reference ${ref.uri}"
                     throw OAuthException(
-                        OAuth2Error.INVALID_REQUEST.setDescription(message)
+                        OAuth2Error.INVALID_REQUEST.setDescription(message),
                     ).also { log.warn(message) }
                 }
             }
@@ -228,7 +228,9 @@ class SamlObject : ClockSkew {
     fun expiresIn(): Long {
         return if (notOnOrAfter != null) {
             ChronoUnit.SECONDS.between(now, notOnOrAfter)
-        } else -1
+        } else {
+            -1
+        }
     }
 
     private fun setId(id: String) {
@@ -275,7 +277,7 @@ class SamlObject : ClockSkew {
             val si = signFac.newSignedInfo(
                 signFac.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE, null as C14NMethodParameterSpec?),
                 signFac.newSignatureMethod(SignatureMethod.RSA_SHA1, null),
-                listOf(ref)
+                listOf(ref),
             )
             val cert: X509Certificate? = keyStoreReader.signingCertificate
             if (cert == null) {

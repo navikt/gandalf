@@ -2,7 +2,6 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
-import java.time.ZonedDateTime
 import no.nav.gandalf.accesstoken.oauth.OidcObject
 import no.nav.gandalf.service.RsaKeysProvider
 import no.nav.gandalf.utils.compare
@@ -20,6 +19,7 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.ZonedDateTime
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -44,7 +44,7 @@ class OIDCObjectTest {
             // get token based on values from original token for comparison
             val oidcObj = OidcObject(
                 AccessTokenIssuer.toZonedDateTime(jwtOriginal.issueTime),
-                AccessTokenIssuer.OIDC_DURATION_TIME
+                AccessTokenIssuer.OIDC_DURATION_TIME,
             )
             oidcObj.id = jwtOriginal.jwtid
             oidcObj.subject = username
@@ -70,7 +70,7 @@ class OIDCObjectTest {
             // get token based on values from original token for comparison
             var oidcObj = OidcObject(
                 AccessTokenIssuer.toZonedDateTime(jwtOriginal.issueTime),
-                AccessTokenIssuer.toZonedDateTime(jwtOriginal.expirationTime)
+                AccessTokenIssuer.toZonedDateTime(jwtOriginal.expirationTime),
             )
             oidcObj.id = jwtOriginal.jwtid
             oidcObj.subject = username
