@@ -10,8 +10,9 @@ val gradleVersion = "8.4"
 val json = "20231013"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "7.4"
+val logbackClassic = "1.4.13"
 val mockOAuth2Server = "2.0.1"
-val nimbus = "11.6"
+val nimbus = "11.7"
 val openapi = "1.7.0"
 val unboundid = "6.0.10"
 val wiremock = "3.0.1"
@@ -48,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    implementation("ch.qos.logback:logback-classic")
+    implementation("ch.qos.logback:logback-classic:${logbackClassic}")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonDatatype}")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonDatatype}")
     implementation("com.google.code.gson:gson")
