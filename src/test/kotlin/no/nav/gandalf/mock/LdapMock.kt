@@ -8,7 +8,6 @@ private val log = KotlinLogging.logger { }
 
 @Configuration
 class LdapMock {
-
     final val inMemoryLdap = InMemoryLdap()
 
     init {

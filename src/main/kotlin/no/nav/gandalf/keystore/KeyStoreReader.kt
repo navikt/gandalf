@@ -62,7 +62,9 @@ class KeyStoreReader(
         log.debug("Using keystorefile: $keystoreFile")
         readKeyStoreAndHandle {
             when {
-                keystoreFile.isNullOrEmpty() -> throw RuntimeException("Failed to load keystore, system property '$keystoreFile' is null or empty!")
+                keystoreFile.isNullOrEmpty() -> throw RuntimeException(
+                    "Failed to load keystore, system property '$keystoreFile' is null or empty!"
+                )
                 keystoreReaderConfig.keystorePassword.isNullOrEmpty() -> {
                     throw RuntimeException("Failed to load keystore, system property 'local-keystore.password' is null or empty!")
                 }
@@ -97,24 +99,23 @@ class KeyStoreReader(
         }
     }
 
-    fun numberOfDaysUtilCertificateExpire() = ChronoUnit.DAYS.between(
-        LocalDate.now(),
-        LocalDate.parse(
-            SimpleDateFormat("yyyy-MM-dd").format(cert?.notAfter)
-        )
-    ).toDouble().apply {
-        log.debug { "Signing certificate expires in: $this" }
-        return when {
-            this > 0 -> {
-                this
+    fun numberOfDaysUtilCertificateExpire() =
+        ChronoUnit.DAYS.between(
+            LocalDate.now(),
+            LocalDate.parse(
+                SimpleDateFormat("yyyy-MM-dd").format(cert?.notAfter)
+            )
+        ).toDouble().apply {
+            log.debug { "Signing certificate expires in: $this" }
+            return when {
+                this > 0 -> {
+                    this
+                }
+                else -> 1.0
             }
-            else -> 1.0
         }
-    }
 
-    fun readKeyStoreAndHandle(
-        block: () -> Unit
-    ) {
+    fun readKeyStoreAndHandle(block: () -> Unit) {
         try {
             block.invoke()
         } catch (e: KeyStoreException) {

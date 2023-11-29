@@ -1,6 +1,7 @@
 package no.nav.gandalf.keystore
 
 import com.nimbusds.jose.jwk.RSAKey
+import jakarta.transaction.Transactional
 import no.nav.gandalf.service.RsaKeysProvider
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,13 +16,11 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.TransactionCallbackWithoutResult
 import org.springframework.transaction.support.TransactionTemplate
-import jakarta.transaction.Transactional
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @ActiveProfiles("test")
 class RsaKeysProviderTest {
-
     @Autowired
     private val provider: RsaKeysProvider? = null
 
@@ -48,7 +47,6 @@ class RsaKeysProviderTest {
     // @Ignore // Denne bør kjøres manuelt, siden verifikasjonen sees i det som logges (istedenfor å lage uønskede innsyns-/get-metoder for å hente ut innholdet i keys.
     @Throws(Exception::class)
     fun concurrentExpiry() {
-
         // Sett expiry til 1 sekund, initier databasen med en les
         provider!!.setKeyRotationTimeSeconds(1)
         readKeysInTransaction()

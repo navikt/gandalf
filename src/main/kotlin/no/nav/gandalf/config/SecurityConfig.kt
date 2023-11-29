@@ -85,10 +85,11 @@ class SecurityConfig(
     fun openApiSecurity(): OpenAPI? {
         val openApi = OpenAPI()
         if (ldapConfig.url.contains("preprod.local")) {
-            openApi.servers = mutableListOf(
-                Server().url("https://security-token-service.nais.preprod.local"),
-                Server().url("https://security-token-service.dev.adeo.no")
-            )
+            openApi.servers =
+                mutableListOf(
+                    Server().url("https://security-token-service.nais.preprod.local"),
+                    Server().url("https://security-token-service.dev.adeo.no")
+                )
         }
         openApi.components(
             Components()

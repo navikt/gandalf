@@ -1,14 +1,13 @@
 package no.nav.gandalf.config
 
-import java.io.IOException
 import jakarta.servlet.Filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
+import java.io.IOException
 
 class CharacterSetFilter : Filter {
-
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(
         request: ServletRequest,

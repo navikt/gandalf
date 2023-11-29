@@ -7,7 +7,6 @@ import java.util.Base64
 
 @Service
 class ExchangeTokenService {
-
     fun getResponseFrom(oidcToken: SignedJWT) =
         ExchangeTokenResponse(
             access_token = oidcToken.serialize(),
@@ -16,18 +15,24 @@ class ExchangeTokenService {
             issued_token_type = "urn:ietf:params:oauth:token-type:access_token"
         )
 
-    fun constructResponse(accessToken: String, tokenType: String, issuedTokenType: String, expiresIn: Long, UrlEncoding: Boolean) =
-        ExchangeTokenResponse(
-            access_token = when {
-                UrlEncoding -> {
-                    Base64.getUrlEncoder().encodeToString(accessToken.toByteArray())
-                }
-                else -> {
-                    Base64.getEncoder().encodeToString(accessToken.toByteArray())
-                }
-            },
-            token_type = tokenType,
-            expires_in = expiresIn,
-            issued_token_type = issuedTokenType
-        )
+    fun constructResponse(
+        accessToken: String,
+        tokenType: String,
+        issuedTokenType: String,
+        expiresIn: Long,
+        UrlEncoding: Boolean
+    ) = ExchangeTokenResponse(
+        access_token =
+        when {
+            UrlEncoding -> {
+                Base64.getUrlEncoder().encodeToString(accessToken.toByteArray())
+            }
+            else -> {
+                Base64.getEncoder().encodeToString(accessToken.toByteArray())
+            }
+        },
+        token_type = tokenType,
+        expires_in = expiresIn,
+        issued_token_type = issuedTokenType
+    )
 }

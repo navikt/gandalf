@@ -1,6 +1,14 @@
 package no.nav.gandalf.accesstoken.saml
 
 import com.nimbusds.oauth2.sdk.OAuth2Error
+import no.nav.gandalf.accesstoken.ClockSkew
+import no.nav.gandalf.accesstoken.OAuthException
+import no.nav.gandalf.keystore.KeyStoreReader
+import org.slf4j.LoggerFactory
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
 import java.io.IOException
 import java.io.StringReader
 import java.io.StringWriter
@@ -30,14 +38,6 @@ import javax.xml.parsers.ParserConfigurationException
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
-import no.nav.gandalf.accesstoken.ClockSkew
-import no.nav.gandalf.accesstoken.OAuthException
-import no.nav.gandalf.keystore.KeyStoreReader
-import org.slf4j.LoggerFactory
-import org.w3c.dom.Element
-import org.w3c.dom.Node
-import org.xml.sax.InputSource
-import org.xml.sax.SAXException
 
 class SamlObject : ClockSkew {
     var issuer: String? = null
@@ -90,36 +90,40 @@ class SamlObject : ClockSkew {
         }
         // read Issuer
         var nList = doc.getElementsByTagName("saml2:Issuer")
-        issuer = if (nList.length != 0) {
-            nList.item(0).textContent
-        } else {
-            null
-        }
+        issuer =
+            if (nList.length != 0) {
+                nList.item(0).textContent
+            } else {
+                null
+            }
         // read NameID (Subject)
         nList = doc.getElementsByTagName("saml2:NameID")
-        nameID = if (nList.length != 0) {
-            nList.item(0).textContent
-        } else {
-            null
-        }
+        nameID =
+            if (nList.length != 0) {
+                nList.item(0).textContent
+            } else {
+                null
+            }
         // read Conditions
         nList = doc.getElementsByTagName("saml2:Conditions")
         if (nList.length != 0) {
             // read Conditions: NotBefore
             map = nList.item(0).attributes
             node = map.getNamedItem("NotBefore")
-            dateNotBefore = if (node != null) {
-                ZonedDateTime.parse(node.nodeValue)
-            } else {
-                null
-            }
+            dateNotBefore =
+                if (node != null) {
+                    ZonedDateTime.parse(node.nodeValue)
+                } else {
+                    null
+                }
             // read Conditions: NotOnOrAfter
             node = map.getNamedItem("NotOnOrAfter")
-            notOnOrAfter = if (node != null) {
-                ZonedDateTime.parse(node.nodeValue)
-            } else {
-                null
-            }
+            notOnOrAfter =
+                if (node != null) {
+                    ZonedDateTime.parse(node.nodeValue)
+                } else {
+                    null
+                }
         }
         // read Attributes: identType, authenticationLevel, consumerId, auditTrackingId
         nList = doc.getElementsByTagName("saml2:Attribute")
@@ -144,11 +148,12 @@ class SamlObject : ClockSkew {
         }
         // read Signature
         nList = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature")
-        signatureNode = if (nList.length != 0) {
-            nList.item(0)
-        } else {
-            null
-        }
+        signatureNode =
+            if (nList.length != 0) {
+                nList.item(0)
+            } else {
+                null
+            }
     }
 
     @Throws(MarshalException::class, XMLSignatureException::class)
@@ -228,7 +233,9 @@ class SamlObject : ClockSkew {
     fun expiresIn(): Long {
         return if (notOnOrAfter != null) {
             ChronoUnit.SECONDS.between(now, notOnOrAfter)
-        } else -1
+        } else {
+            -1
+        }
     }
 
     private fun setId(id: String) {
@@ -247,11 +254,11 @@ class SamlObject : ClockSkew {
     }
 
     override fun getMaxClockSkew(): Long {
-        return CLOCK_SKEW
+        return clockSkew
     }
 
     override fun setMaxClockSkew(maxClockSkewSeconds: Long?) {
-        if (maxClockSkewSeconds != null) CLOCK_SKEW = maxClockSkewSeconds
+        if (maxClockSkewSeconds != null) clockSkew = maxClockSkewSeconds
     }
 
     @Throws(Exception::class)
@@ -272,11 +279,12 @@ class SamlObject : ClockSkew {
             tList.add(signFac.newTransform(Transform.ENVELOPED, null as TransformParameterSpec?))
             tList.add(signFac.newTransform(CanonicalizationMethod.EXCLUSIVE, null as TransformParameterSpec?))
             val ref = signFac.newReference("#$id", signFac.newDigestMethod(DigestMethod.SHA1, null), tList, null, null)
-            val si = signFac.newSignedInfo(
-                signFac.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE, null as C14NMethodParameterSpec?),
-                signFac.newSignatureMethod(SignatureMethod.RSA_SHA1, null),
-                listOf(ref)
-            )
+            val si =
+                signFac.newSignedInfo(
+                    signFac.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE, null as C14NMethodParameterSpec?),
+                    signFac.newSignatureMethod(SignatureMethod.RSA_SHA1, null),
+                    listOf(ref)
+                )
             val cert: X509Certificate? = keyStoreReader.signingCertificate
             if (cert == null) {
                 log.error("Failed to find signing certificate in keystore")
@@ -318,7 +326,7 @@ class SamlObject : ClockSkew {
     }
 
     companion object {
-        private var CLOCK_SKEW = 60L
+        private var clockSkew = 60L
         private const val SUPPORT_RSA_SHA1 = true
     }
 }

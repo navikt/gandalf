@@ -27,13 +27,12 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(produces = ["application/json"])
 @Tag(name = "Identity Provider Metadata", description = "Retrieve metadata")
 class IdentityProviderController {
-
     @Autowired
     private lateinit var accessTokenIssuer: AccessTokenIssuer
 
     @Operation(
         summary = "The JSON Web Key Set (JWKS)",
-        description = "The JSON Web Key Set (JWKS) is a set of keys which contains the public keys used to verify any JSON Web Token (JWT) issued by the authorization server and signed using the RS256 signing algorithm."
+        description = "The JSON Web Key Set (JWKS) is a set of keys which contains " + "the public keys used to verify any JSON Web Token (JWT) issued by the " + "authorization server and signed using the RS256 signing algorithm."
     )
     @ApiResponses(
         value = [
@@ -60,10 +59,7 @@ class IdentityProviderController {
     fun getKeys(): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyJwks.startTimer()
         try {
-            return ResponseEntity
-                .status(HttpStatus.OK)
-                .headers(tokenHeaders)
-                .body(accessTokenIssuer.getPublicJWKSet()!!.toJSONObject())
+            return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders).body(accessTokenIssuer.getPublicJWKSet()!!.toJSONObject())
         } finally {
             requestTimer.observeDuration()
         }
@@ -120,24 +116,21 @@ class IdentityProviderController {
     )
     @GetMapping("/.well-known/openid-configuration", "/.well-known/openid-configuration/")
     fun getConfiguration(): ResponseEntity<Any> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .headers(tokenHeaders)
-            .body(
-                ConfigurationResponse(
-                    issuer = accessTokenIssuer.issuer,
-                    token_endpoint = toTokenPath(accessTokenIssuer.issuer),
-                    exchange_token_endpoint = toExchangePath(accessTokenIssuer.issuer),
-                    jwks_uri = toJwksPath(accessTokenIssuer.issuer),
-                    grant_types_supported = ConfigurationResponse.GRANT_TYPES,
-                    token_endpoint_auth_methods_supported = ConfigurationResponse.TOKEN_ENDPOINT_AUTH,
-                    scopes_supported = ConfigurationResponse.SCOPES_SUPPORTED,
-                    response_types_supported = ConfigurationResponse.RESPONSE_TYPES_SUPPORTED,
-                    response_modes_supported = ConfigurationResponse.RESPONSE_MODE_SUPPORTED,
-                    id_token_signing_alg_values_supported = ConfigurationResponse.ID_TOKEN_SIGNING_ALG,
-                    subject_types_supported = ConfigurationResponse.SUBJECT_TYPES_SUPPORTED
-                )
+        return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders).body(
+            ConfigurationResponse(
+                issuer = accessTokenIssuer.issuer,
+                token_endpoint = toTokenPath(accessTokenIssuer.issuer),
+                exchange_token_endpoint = toExchangePath(accessTokenIssuer.issuer),
+                jwks_uri = toJwksPath(accessTokenIssuer.issuer),
+                grant_types_supported = ConfigurationResponse.GRANT_TYPES,
+                token_endpoint_auth_methods_supported = ConfigurationResponse.TOKEN_ENDPOINT_AUTH,
+                scopes_supported = ConfigurationResponse.SCOPES_SUPPORTED,
+                response_types_supported = ConfigurationResponse.RESPONSE_TYPES_SUPPORTED,
+                response_modes_supported = ConfigurationResponse.RESPONSE_MODE_SUPPORTED,
+                id_token_signing_alg_values_supported = ConfigurationResponse.ID_TOKEN_SIGNING_ALG,
+                subject_types_supported = ConfigurationResponse.SUBJECT_TYPES_SUPPORTED
             )
+        )
     }
 
     @Operation(summary = "Discovery endpoint can be used to retrieve metadata.", deprecated = true)

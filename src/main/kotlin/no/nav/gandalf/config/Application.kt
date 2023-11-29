@@ -11,7 +11,6 @@ import javax.xml.crypto.KeySelector
 
 @Configuration
 class Application {
-
     companion object {
         @JvmStatic
         lateinit var springDocUtils: SpringDocUtils

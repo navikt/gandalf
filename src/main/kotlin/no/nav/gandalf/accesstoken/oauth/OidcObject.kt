@@ -81,20 +81,27 @@ class OidcObject : ClockSkew {
     }
 
     @Throws(ParseException::class)
-    fun String.parse(): SignedJWT = try {
-        SignedJWT.parse(this)
-    } catch (p: ParseException) {
-        log.error("Could not parse token")
-        throw p
-    }
+    fun String.parse(): SignedJWT =
+        try {
+            SignedJWT.parse(this)
+        } catch (p: ParseException) {
+            log.error("Could not parse token")
+            throw p
+        }
 
     @Throws(JOSEException::class)
-    fun validate(issuer: IssuerConfig, rsaJwk: RSAKey) {
+    fun validate(
+        issuer: IssuerConfig,
+        rsaJwk: RSAKey
+    ) {
         validate(issuer.issuer, toDate(ZonedDateTime.now()), rsaJwk)
     }
 
     @Throws(JOSEException::class)
-    fun validate(issuer: IssuerConfig, now: Date) {
+    fun validate(
+        issuer: IssuerConfig,
+        now: Date
+    ) {
         when (val rsaJwk = issuer.getKeyByKeyId(signedJWT!!.header.keyID)) {
             null -> {
                 throw IllegalArgumentException(
@@ -109,7 +116,11 @@ class OidcObject : ClockSkew {
     }
 
     @Throws(JOSEException::class)
-    fun validate(issuer: String?, now: Date, rsaJwk: RSAKey) {
+    fun validate(
+        issuer: String?,
+        now: Date,
+        rsaJwk: RSAKey
+    ) {
         val maxClockSkew = getMaxClockSkew()
         val nbfClockSkew = now.toInstant().plusSeconds(maxClockSkew)
         val expClockSkew = now.toInstant().minusSeconds(maxClockSkew)
@@ -136,24 +147,31 @@ class OidcObject : ClockSkew {
         }
     }
 
-    fun getSignedToken(key: RSAKey, alg: JWSAlgorithm) = getSignedJWT(jWTClaimsSet, key, alg)
+    fun getSignedToken(
+        key: RSAKey,
+        alg: JWSAlgorithm
+    ) = getSignedJWT(jWTClaimsSet, key, alg)
 
-    fun getSignedTokenSpec2(key: RSAKey, alg: JWSAlgorithm) = getSignedJWT(jWTClaimsSetSpec2, key, alg)
+    fun getSignedTokenSpec2(
+        key: RSAKey,
+        alg: JWSAlgorithm
+    ) = getSignedJWT(jWTClaimsSetSpec2, key, alg)
 
     private val jWTClaimsSet: JWTClaimsSet
         get() {
-            val clBuilder: JWTClaimsSet.Builder = JWTClaimsSet.Builder()
-                .issuer(issuer)
-                .claim(VERSION_CLAIM, version)
-                .jwtID(id)
-                .subject(subject)
-                .audience(audience)
-                .claim(AUTHTIME_CLAIM, authTime)
-                .notBeforeTime(notBeforeTime)
-                .issueTime(issueTime)
-                .expirationTime(expirationTime)
-                .claim(AZP_CLAIM, azp)
-                .claim(RESOURCETYPE_CLAIM, resourceType)
+            val clBuilder: JWTClaimsSet.Builder =
+                JWTClaimsSet.Builder()
+                    .issuer(issuer)
+                    .claim(VERSION_CLAIM, version)
+                    .jwtID(id)
+                    .subject(subject)
+                    .audience(audience)
+                    .claim(AUTHTIME_CLAIM, authTime)
+                    .notBeforeTime(notBeforeTime)
+                    .issueTime(issueTime)
+                    .expirationTime(expirationTime)
+                    .claim(AZP_CLAIM, azp)
+                    .claim(RESOURCETYPE_CLAIM, resourceType)
 
             if (orgno != null) {
                 clBuilder.claim(CLIENT_ORGNO_CLAIM, orgno)
@@ -167,20 +185,21 @@ class OidcObject : ClockSkew {
     // kravene for saml til oidc, DISSE MÅ ENES
     private val jWTClaimsSetSpec2: JWTClaimsSet
         get() { // kravene for saml til oidc, DISSE MÅ ENES
-            val clBuilder: JWTClaimsSet.Builder = JWTClaimsSet.Builder()
-                .issuer(issuer)
-                .claim(VERSION_CLAIM, version)
-                .jwtID(id)
-                .subject(subject) // 				.audience(audience.get(0))	// spec2 spesifikk
-                .audience(audience)
-                .claim(AUTHTIME_CLAIM, issueTime)
-                .notBeforeTime(issueTime)
-                .issueTime(issueTime)
-                .expirationTime(expirationTime)
-                .claim(AZP_CLAIM, azp)
-                .claim(RESOURCETYPE_CLAIM, resourceType)
-                .claim(CONSUMERID_CLAIM, consumerId) // spec2 spesifikk
-                .claim(UTY_CLAIM, resourceType) // spec2 spesifikk
+            val clBuilder: JWTClaimsSet.Builder =
+                JWTClaimsSet.Builder()
+                    .issuer(issuer)
+                    .claim(VERSION_CLAIM, version)
+                    .jwtID(id)
+                    .subject(subject) // 				.audience(audience.get(0))	// spec2 spesifikk
+                    .audience(audience)
+                    .claim(AUTHTIME_CLAIM, issueTime)
+                    .notBeforeTime(issueTime)
+                    .issueTime(issueTime)
+                    .expirationTime(expirationTime)
+                    .claim(AZP_CLAIM, azp)
+                    .claim(RESOURCETYPE_CLAIM, resourceType)
+                    .claim(CONSUMERID_CLAIM, consumerId) // spec2 spesifikk
+                    .claim(UTY_CLAIM, resourceType) // spec2 spesifikk
             if (authLevel != null) {
                 clBuilder.claim(AUTHLEVEL_CLAIM, authLevel)
             }
@@ -190,12 +209,17 @@ class OidcObject : ClockSkew {
             return clBuilder.build()
         }
 
-    private fun getSignedJWT(claimsSet: JWTClaimsSet, key: RSAKey, alg: JWSAlgorithm): SignedJWT {
+    private fun getSignedJWT(
+        claimsSet: JWTClaimsSet,
+        key: RSAKey,
+        alg: JWSAlgorithm
+    ): SignedJWT {
         log.info("Sign the jwt with claimSet for issuer: ${claimsSet.issuer}")
         try {
-            val header: JWSHeader.Builder = JWSHeader.Builder(alg)
-                .keyID(key.keyID)
-                .type(JOSEObjectType.JWT)
+            val header: JWSHeader.Builder =
+                JWSHeader.Builder(alg)
+                    .keyID(key.keyID)
+                    .type(JOSEObjectType.JWT)
             val signedJWT = SignedJWT(header.build(), claimsSet)
             val signer: JWSSigner = RSASSASigner(key.toPrivateKey())
             signedJWT.sign(signer)
@@ -250,7 +274,10 @@ class OidcObject : ClockSkew {
             }
         }
 
-    fun setAudience(aud1: String, aud2: String) {
+    fun setAudience(
+        aud1: String,
+        aud2: String
+    ) {
         audience = ArrayList()
         (audience as ArrayList<String>).add(aud1)
         (audience as ArrayList<String>).add(aud2)
@@ -261,17 +288,17 @@ class OidcObject : ClockSkew {
     }
 
     companion object {
-        var VERSION_CLAIM: String = "ver"
-        var CONSUMERID_CLAIM: String = "cid"
-        var AUTHLEVEL_CLAIM: String = "acr"
-        var RESOURCETYPE_CLAIM: String = "identType"
-        var AUTHTIME_CLAIM: String = "auth_time"
-        var AZP_CLAIM: String = "azp"
-        var UTY_CLAIM: String = "uty"
-        var TRACKING_CLAIM: String = "auditTrackingId"
-        var CLIENT_ORGNO_CLAIM = "client_orgno"
-        var NAV_IDENT_CLAIM = "NAVident"
-        private var CLOCK_SKEW = 60L
+        const val VERSION_CLAIM: String = "ver"
+        const val CONSUMERID_CLAIM: String = "cid"
+        const val AUTHLEVEL_CLAIM: String = "acr"
+        const val RESOURCETYPE_CLAIM: String = "identType"
+        const val AUTHTIME_CLAIM: String = "auth_time"
+        const val AZP_CLAIM: String = "azp"
+        const val UTY_CLAIM: String = "uty"
+        const val TRACKING_CLAIM: String = "auditTrackingId"
+        const val CLIENT_ORGNO_CLAIM = "client_orgno"
+        const val NAV_IDENT_CLAIM = "NAVident"
+        private var clockSkew = 60L
 
         fun toDate(d: ZonedDateTime?): Date {
             return Date.from(d!!.toInstant())
@@ -279,10 +306,10 @@ class OidcObject : ClockSkew {
     }
 
     override fun getMaxClockSkew(): Long {
-        return CLOCK_SKEW
+        return clockSkew
     }
 
     override fun setMaxClockSkew(maxClockSkewSeconds: Long?) {
-        if (maxClockSkewSeconds != null) CLOCK_SKEW = maxClockSkewSeconds
+        if (maxClockSkewSeconds != null) clockSkew = maxClockSkewSeconds
     }
 }

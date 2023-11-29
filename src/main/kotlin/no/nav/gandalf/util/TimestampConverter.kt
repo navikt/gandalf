@@ -1,9 +1,9 @@
 package no.nav.gandalf.util
 
-import java.sql.Timestamp
-import java.time.LocalDateTime
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
+import java.sql.Timestamp
+import java.time.LocalDateTime
 
 @Converter(autoApply = true)
 class TimestampConverter : AttributeConverter<LocalDateTime?, Timestamp?> {
