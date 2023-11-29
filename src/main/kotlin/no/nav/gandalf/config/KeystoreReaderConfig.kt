@@ -17,7 +17,7 @@ data class KeystoreReaderConfig(
     @Value("\${nav.keystore.password}")
     val keystorePassword: String,
     @Value("\${spring.profiles.active}")
-    val profile: String,
+    val profile: String
 ) {
     fun loadKeyStoreFromBase64ToFile() =
         when (profile) {
@@ -46,7 +46,7 @@ data class KeystoreReaderConfig(
 
     fun writeByteArraysToFile(
         fileName: String,
-        content: ByteArray,
+        content: ByteArray
     ): Path =
         try {
             Files.createTempFile(fileName, ".jks").toAbsolutePath().apply {

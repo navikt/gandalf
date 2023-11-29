@@ -4,5 +4,5 @@ enum class IdentType(val value: String) {
     SYSTEMRESSURS("Systemressurs"),
     INTERNBRUKER("InternBruker"),
     EKSTERNBRUKER("EksternBruker"),
-    SAMHANDLER("Samhandler"),
+    SAMHANDLER("Samhandler")
 }

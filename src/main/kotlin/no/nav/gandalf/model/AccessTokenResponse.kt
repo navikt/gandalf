@@ -5,7 +5,7 @@ import com.nimbusds.jwt.SignedJWT
 data class AccessTokenResponse(
     var access_token: String = "",
     var token_type: String = "",
-    var expires_in: Long = 0,
+    var expires_in: Long = 0
 ) {
     constructor(oidcToken: SignedJWT) : this() {
         this.access_token = oidcToken.serialize()

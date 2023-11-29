@@ -5,7 +5,7 @@ import org.apache.commons.codec.binary.Base64
 internal fun getOidcToSamlRequest(
     brukerNavn: String,
     passord: String,
-    oidcToken: String,
+    oidcToken: String
 ) =
     "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">" +
         "<soapenv:Header><wsse:Security xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\"><wsse:UsernameToken wsu:Id=\"UsernameToken-D565636FC9452BE5F91481269604546492\">" +
@@ -30,11 +30,11 @@ internal fun getWrappedOidcToken(oidcToken: String) =
         "<wsse:BinarySecurityToken EncodingType=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary\" ValueType=\"urn:ietf:params:oauth:token-type:jwt\">" +
             Base64.encodeBase64URLSafeString(oidcToken.toByteArray()) +
             "</wsse:BinarySecurityToken>"
-    )
+        )
 
 internal fun getSamlRequest(
     brukerNavn: String,
-    passord: String,
+    passord: String
 ) = "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
     "<soap:Header>" +
     "<wsse:Security soap:mustUnderstand=\"1\" xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">" +
@@ -57,7 +57,7 @@ internal fun getSamlRequest(
 internal fun getValidateSamlRequest(
     brukerNavn: String,
     passord: String,
-    samlToken: String,
+    samlToken: String
 ) = "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
     "<soap:Header>" +
     "<wsse:Security soap:mustUnderstand=\"1\" xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\">" +

@@ -11,7 +11,7 @@ import javax.naming.AuthenticationException
 
 @Component
 class CustomAuthenticationProvider(
-    @Autowired val ldapConnectionSetup: LDAPConnectionSetup,
+    @Autowired val ldapConnectionSetup: LDAPConnectionSetup
 ) : AuthenticationProvider {
     @Throws(AuthenticationException::class)
     override fun authenticate(authentication: Authentication): Authentication? {
@@ -36,7 +36,7 @@ class CustomAuthenticationProvider(
 
     fun externalAuth(
         username: String,
-        password: String,
+        password: String
     ) = try {
         authenticate(ldapConnectionSetup, User(username, password))
         true

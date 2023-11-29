@@ -7,7 +7,7 @@ import org.slf4j.MDC
 
 internal fun authenticate(
     ldapConnectionSetup: LDAPConnectionSetup,
-    user: User,
+    user: User
 ): Boolean {
     val requestTimer: Histogram.Timer = ApplicationMetric.ldapDuration.startTimer()
     return try {
@@ -19,7 +19,7 @@ internal fun authenticate(
 
 internal fun CustomAuthenticationProvider.authenticate(
     providedUsername: String?,
-    providedPassword: String?,
+    providedPassword: String?
 ): Boolean {
     val username = providedUsername ?: throw RuntimeException("Missing username")
     val password = providedPassword ?: throw RuntimeException("Missing password")

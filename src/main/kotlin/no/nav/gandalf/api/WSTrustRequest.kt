@@ -35,23 +35,23 @@ class WSTrustRequest(
     var keyType: String? = null,
     var tokenType: String? = null,
     var onBehalfOf: String? = null,
-    var validateTarget: String? = null,
+    var validateTarget: String? = null
 ) {
     val isIssueSamlFromUNT: Boolean
         get() = (
             (
                 (reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) &&
                     (onBehalfOf.isNullOrEmpty())
+                )
             )
-        )
 
     val isExchangeOidcToSaml: Boolean
         get() {
             return (
                 (
                     (reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) && !onBehalfOf.isNullOrEmpty()
+                    )
                 )
-            )
         }
 
     val isIssue: Boolean
@@ -131,7 +131,7 @@ class WSTrustRequest(
     private fun getResponse(
         samlToken: String,
         issueInstant: ZonedDateTime,
-        notOnOrAfter: ZonedDateTime,
+        notOnOrAfter: ZonedDateTime
     ) = (
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
             "<soapenv:Envelope xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n" +
@@ -153,12 +153,12 @@ class WSTrustRequest(
             "</wst:RequestSecurityTokenResponseCollection>\r\n" +
             "</soapenv:Body>\r\n" +
             "</soapenv:Envelope>"
-    )
+        )
 
     private fun findChild(
         pNode: Node?,
         childName: String,
-        acceptNull: Boolean,
+        acceptNull: Boolean
     ): Node? {
         if (pNode != null) {
             val nList: NodeList? = pNode.childNodes

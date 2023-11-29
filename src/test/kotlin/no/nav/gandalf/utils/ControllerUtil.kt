@@ -37,7 +37,7 @@ open class ControllerUtil {
     fun addUserContext(
         authenticationManager: AuthenticationManager,
         username: String,
-        password: String,
+        password: String
     ) {
         val token: Authentication =
             authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))

@@ -9,7 +9,7 @@ class ErrorDescriptiveResponse(
     @Parameter(
         name = "error_description",
         description = "Describe error, if any error message",
-        example = "Unauthorised: Full authentication is required to access this resource",
+        example = "Unauthorised: Full authentication is required to access this resource"
     )
-    val error_description: String,
+    val error_description: String
 )

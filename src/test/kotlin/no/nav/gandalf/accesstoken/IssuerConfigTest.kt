@@ -12,7 +12,7 @@ class IssuerConfigTest {
             val issuerConfig =
                 IssuerConfig.from(
                     this.issuerUrl("issuer1").toString(),
-                    this.jwksUrl("issuer1").toString(),
+                    this.jwksUrl("issuer1").toString()
                 )
             val keyId = this.issueToken(issuerId = "issuer1").header.keyID
             issuerConfig.getKeyByKeyId(keyId) shouldNotBe null
@@ -25,7 +25,7 @@ class IssuerConfigTest {
             val issuerConfig =
                 IssuerConfig.from(
                     this.issuerUrl("issuer1").toString(),
-                    this.jwksUrl("issuer1").toString(),
+                    this.jwksUrl("issuer1").toString()
                 )
             shouldThrow<OAuthException> {
                 issuerConfig.getKeyByKeyId("shouldNotBeFound") shouldNotBe null

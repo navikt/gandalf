@@ -33,21 +33,21 @@ private val objectMapper: ObjectMapper = jacksonObjectMapper()
 internal fun endpointStub(
     status: Int = HttpStatus.SC_OK,
     path: String,
-    bodyFile: String,
+    bodyFile: String
 ) = stubFor(
     WireMock.get(WireMock.urlEqualTo(path))
         .willReturn(
             aResponse()
                 .withStatus(status)
                 .withHeader("Content-Type", "application/json; charset=UTF-8")
-                .withBodyFile(bodyFile),
-        ),
+                .withBodyFile(bodyFile)
+        )
 )
 
 internal fun wellKnownStub(
     path: String,
     jwksUrl: String,
-    bodyFile: String,
+    bodyFile: String
 ) {
     val content = Files.readString(Path.of("src/test/resources/__files/$bodyFile"))
     val jsonNode: JsonNode =
@@ -60,15 +60,15 @@ internal fun wellKnownStub(
 internal fun endpointStubWithBody(
     status: Int = HttpStatus.SC_OK,
     path: String,
-    body: Any,
+    body: Any
 ) = stubFor(
     WireMock.get(WireMock.urlEqualTo(path))
         .willReturn(
             aResponse()
                 .withStatus(status)
                 .withHeader("Content-Type", "application/json; charset=UTF-8")
-                .withBody(objectMapper.writeValueAsString(body)),
-        ),
+                .withBody(objectMapper.writeValueAsString(body))
+        )
 )
 
 // Original REST-STS did not have token.

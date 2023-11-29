@@ -73,7 +73,7 @@ class RsaKeysProviderTest {
                     val key: RSAKey = provider!!.currentRSAKey
                     println(key.toJSONString())
                 }
-            },
+            }
         )
     }
 

@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("rest/v1/sts", consumes = ["text/xml"], produces = ["text/xml"])
 class WSSAMLTokenController(
     @Autowired val provider: CustomAuthenticationProvider,
-    @Autowired val issuer: AccessTokenIssuer,
+    @Autowired val issuer: AccessTokenIssuer
 ) {
     @Operation(hidden = true)
     @PostMapping("/ws/samltoken", "/ws/samltoken/")
     fun getSAMLTokenWS(
-        @RequestBody xmlRequest: String?,
+        @RequestBody xmlRequest: String?
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyWSSAMLToken.startTimer()
         try {
@@ -68,7 +68,7 @@ class WSSAMLTokenController(
                             issuer.issueSamlToken(
                                 wsReq.username!!,
                                 wsReq.username,
-                                AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL,
+                                AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL
                             )
                         ApplicationMetric.wsSAMLTokenOk.inc()
                         ResponseEntity.status(HttpStatus.OK).body(wsReq.getResponse(samlToken))

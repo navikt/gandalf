@@ -3,7 +3,7 @@ package no.nav.gandalf.model
 import com.nimbusds.jwt.SignedJWT
 
 class AccessToken2Response(
-    oidcToken: SignedJWT,
+    oidcToken: SignedJWT
 ) {
     var accessToken: String? = null
     var expiresIn: Long? = null

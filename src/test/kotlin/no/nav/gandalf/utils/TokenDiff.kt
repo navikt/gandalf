@@ -12,7 +12,7 @@ import javax.xml.parsers.ParserConfigurationException
 @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
 internal fun diffTokens(
     token1: String,
-    token2: String,
+    token2: String
 ): List<String>? {
     // get document elements
     val dbFact = DocumentBuilderFactory.newInstance()
@@ -26,12 +26,12 @@ internal fun diffTokens(
     // check top node = assertion node
     if (doc1.childNodes.length != 1 || !doc1.firstChild.nodeName.contains("Assertion")) {
         diff.add(
-            "token1 har ikke assertion node på top, eller har flere noder (ant nodes: " + doc1.childNodes.length + " node name firstchild: " + doc1.firstChild.nodeName,
+            "token1 har ikke assertion node på top, eller har flere noder (ant nodes: " + doc1.childNodes.length + " node name firstchild: " + doc1.firstChild.nodeName
         )
     }
     if (doc2.childNodes.length != 1 || !doc2.firstChild.nodeName.contains("Assertion")) {
         diff.add(
-            "token1 har ikke assertion node på top, eller har flere noder (ant nodes: " + doc2.childNodes.length + " node name firstchild: " + doc2.firstChild.nodeName,
+            "token1 har ikke assertion node på top, eller har flere noder (ant nodes: " + doc2.childNodes.length + " node name firstchild: " + doc2.firstChild.nodeName
         )
     }
 
@@ -43,7 +43,7 @@ internal fun diffTokens(
 private fun diffNode(
     n1: Node,
     n2: Node,
-    diff: MutableList<String>,
+    diff: MutableList<String>
 ): List<String>? {
     if (getNodeName(n1) != getNodeName(n2)) {
         diff.add("Node name differs, n1=" + getNodeName(n1) + " and n2=" + getNodeName(n2))
@@ -59,7 +59,7 @@ private fun diffNode(
         (
             n1.textContent == null && n2.textContent != null ||
                 n1.textContent != null && n1.textContent != n2.textContent
-        )
+            )
     ) {
         diff.add("Node " + getNodeName(n1) + " token1 has textcontent " + n1.textContent + " token2 has " + n2.textContent)
     }
@@ -73,7 +73,7 @@ private fun diffNode(
 private fun diffAttributes(
     n1: Node,
     n2: Node,
-    diff: MutableList<String>,
+    diff: MutableList<String>
 ): List<String>? {
     val map1 = n1.attributes
     val map2 = n2.attributes
@@ -91,7 +91,7 @@ private fun diffAttributes(
                 map1.item(i).textContent != null && map1.item(i).textContent != map2.item(j).textContent
             ) {
                 diff.add(
-                    "Node " + getNodeName(n1) + " Attribute " + map1.item(i).nodeName + " has different content: token1 has " + map1.item(i).textContent + " token2 has " + map2.item(j).textContent,
+                    "Node " + getNodeName(n1) + " Attribute " + map1.item(i).nodeName + " has different content: token1 has " + map1.item(i).textContent + " token2 has " + map2.item(j).textContent
                 )
             }
             j++
@@ -110,7 +110,7 @@ private fun diffAttributes(
 private fun diffChildren(
     n1: Node,
     n2: Node,
-    diff: MutableList<String>,
+    diff: MutableList<String>
 ): List<String>? {
     val nList1 = n1.childNodes
     val nList2 = n2.childNodes
@@ -132,7 +132,7 @@ private fun diffChildren(
 
 private fun isMemberOf(
     n: Node,
-    nList: NodeList,
+    nList: NodeList
 ): Boolean {
     for (i in 0 until nList.length) {
         if (getNodeName(nList.item(i)) == getNodeName(n)) {

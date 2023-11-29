@@ -20,7 +20,7 @@ class TestKeySelector : KeySelector() {
         keyInfo: KeyInfo,
         purpose: Purpose,
         method: AlgorithmMethod,
-        context: XMLCryptoContext,
+        context: XMLCryptoContext
     ): KeySelectorResult {
         for (`object` in keyInfo.content) {
             val info = `object` as XMLStructure

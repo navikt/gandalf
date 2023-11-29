@@ -27,18 +27,18 @@ interface IssuerConfig {
             issuerConfig {
                 log.info { "retrieve metadata from wellknown: $wellKnownUrl" }
                 AuthorizationServerMetadata.parse(
-                    ProxyAwareResourceRetriever().retrieveResource(wellKnownUrl.toUrl()).content,
+                    ProxyAwareResourceRetriever().retrieveResource(wellKnownUrl.toUrl()).content
                 ).let {
                     WellKnown(
                         it.issuer.toString(),
-                        it.jwkSetURI.toString(),
+                        it.jwkSetURI.toString()
                     )
                 }
             }
 
         fun from(
             issuer: String,
-            jwksUrl: String,
+            jwksUrl: String
         ) = issuerConfig {
             WellKnown(issuer, jwksUrl)
         }
@@ -65,13 +65,13 @@ interface IssuerConfig {
         private fun JWKSource<SecurityContext>.getKeyByKeyId(keyId: String?): RSAKey =
             get(keyId?.toJWKSelector(), null)?.firstOrNull()?.toRSAKey() ?: throw OAuthException(
                 OAuth2Error.INVALID_REQUEST.setDescription(
-                    "Could not find matching keys in configuration for kid=$keyId",
-                ),
+                    "Could not find matching keys in configuration for kid=$keyId"
+                )
             )
 
         private fun String.toJWKSelector(): JWKSelector =
             JWKSelector(
-                JWKMatcher.Builder().keyType(KeyType.RSA).keyID(this).build(),
+                JWKMatcher.Builder().keyType(KeyType.RSA).keyID(this).build()
             )
 
         private fun String.toUrl(): URL = ResourceUtils.toURL(this)
@@ -79,6 +79,6 @@ interface IssuerConfig {
 
     private data class WellKnown(
         val issuer: String,
-        val jwksUrl: String,
+        val jwksUrl: String
     )
 }

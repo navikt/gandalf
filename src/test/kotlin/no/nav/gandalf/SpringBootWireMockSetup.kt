@@ -35,9 +35,9 @@ import org.springframework.test.context.junit4.SpringRunner
         "token.x.well.known.url=$WIREMOCK_URL$TOKENX_WELLKNOWN_PATH",
         "$PROP_JWKS_ENDPOINT_PREFIX.azuread=$WIREMOCK_URL$AZUREAD_JWKS_URL",
         "$PROP_JWKS_ENDPOINT_PREFIX.azureb2c=$WIREMOCK_URL$AZUREAD_JWKS_URL",
-        "$PROP_JWKS_ENDPOINT_PREFIX.openam=$WIREMOCK_URL$OPENAM_JWKS_URL",
+        "$PROP_JWKS_ENDPOINT_PREFIX.openam=$WIREMOCK_URL$OPENAM_JWKS_URL"
     ],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureWireMock(port = 0)
 abstract class SpringBootWireMockSetup {
@@ -50,7 +50,7 @@ abstract class SpringBootWireMockSetup {
         wellKnownStub(
             DIFI_MASKINPORTEN_CONFIG_URL,
             server.url(DIFI_MASKINPORTEN_JWKS_URL),
-            DIFI_MASKINPORTEN_CONFIG_FILENAME,
+            DIFI_MASKINPORTEN_CONFIG_FILENAME
         )
         wellKnownStub(TOKENX_WELLKNOWN_PATH, server.url(TOKENX_JWKS_PATH), "tokenx-configuration.json")
         endpointStub(HttpStatus.SC_OK, TOKENX_JWKS_PATH, "tokenx-jwks.json")

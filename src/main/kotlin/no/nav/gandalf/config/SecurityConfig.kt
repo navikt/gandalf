@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 class SecurityConfig(
-    val ldapConfig: LdapConfig,
+    val ldapConfig: LdapConfig
 ) {
     @Bean
     fun ldapAuthenticationManager(): AuthenticationManager {
@@ -58,7 +58,7 @@ class SecurityConfig(
                     "/prometheus",
                     // Swagger
                     "/api/**",
-                    "/swagger-ui/**",
+                    "/swagger-ui/**"
                 ).permitAll()
             }.authorizeHttpRequests {
                 it.anyRequest().authenticated()
@@ -88,22 +88,22 @@ class SecurityConfig(
             openApi.servers =
                 mutableListOf(
                     Server().url("https://security-token-service.nais.preprod.local"),
-                    Server().url("https://security-token-service.dev.adeo.no"),
+                    Server().url("https://security-token-service.dev.adeo.no")
                 )
         }
         openApi.components(
             Components()
                 .addSecuritySchemes(
                     "BasicAuth",
-                    SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic"),
-                ),
+                    SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")
+                )
         ).info(
             Info()
                 .title("Security-Token-Service API.")
                 .version("2.0")
                 .description(
-                    "STS RESTful service description.",
-                ),
+                    "STS RESTful service description."
+                )
         )
         return openApi
     }

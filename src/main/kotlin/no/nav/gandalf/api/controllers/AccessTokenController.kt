@@ -57,7 +57,7 @@ private val log = KotlinLogging.logger { }
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
 @Tag(name = "System OIDC Token", description = "System User to OIDC & SAML Token")
 class AccessTokenController(
-    @Autowired val authenticationProvider: CustomAuthenticationProvider,
+    @Autowired val authenticationProvider: CustomAuthenticationProvider
 ) {
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
@@ -65,7 +65,7 @@ class AccessTokenController(
     @Operation(
         summary = "System User -> OIDC Token",
         deprecated = true,
-        security = [SecurityRequirement(name = "BasicAuth")],
+        security = [SecurityRequirement(name = "BasicAuth")]
     )
     @ApiResponses(
         value = [
@@ -76,39 +76,41 @@ class AccessTokenController(
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = AccessTokenResponse::class),
+                            schema = Schema(implementation = AccessTokenResponse::class)
                         )
-                    ),
-                ],
+                        )
+                ]
             ),
             ApiResponse(
                 responseCode = "401",
                 description = INVALID_CLIENT,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
             ),
             ApiResponse(
                 responseCode = "400",
                 description = INVALID_REQUEST,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()],
-            ),
-        ],
+                content = [Content()]
+            )
+        ]
     )
     @GetMapping("/token", "/token/")
     fun getOIDCToken(
         @Parameter(
-            description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret",
+            description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret"
         )
         @RequestParam(
             "grant_type",
-            required = true,
-        ) grantType: String,
+            required = true
+        )
+        grantType: String,
         @Parameter(description = "Indicate that the application intends to use OIDC to verify the user's identity")
-        @RequestParam("scope", required = true) scope: String,
+        @RequestParam("scope", required = true)
+        scope: String
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = requestLatencyToken.startTimer()
         try {
@@ -153,36 +155,38 @@ class AccessTokenController(
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = AccessTokenResponse::class),
+                            schema = Schema(implementation = AccessTokenResponse::class)
                         )
-                    ),
-                ],
+                        )
+                ]
             ),
             ApiResponse(
                 responseCode = "401",
                 description = INVALID_CLIENT,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
             ),
             ApiResponse(
                 responseCode = "400",
                 description = INVALID_REQUEST,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()],
-            ),
-        ],
+                content = [Content()]
+            )
+        ]
     )
     @PostMapping("/token", "/token/")
     fun postOIDCToken(
         @Parameter(
-            description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret",
+            description = "(Defined in RFC 6749, section 4.4) allows an application to request an Access Token using its Client Id and Client Secret"
         )
-        @RequestParam("grant_type", required = true, defaultValue = "client_credentials") grantType: String,
+        @RequestParam("grant_type", required = true, defaultValue = "client_credentials")
+        grantType: String,
         @Parameter(description = "Indicate that the application intends to use OIDC to verify the user's identity")
-        @RequestParam("scope", required = true, defaultValue = "openid") scope: String,
+        @RequestParam("scope", required = true, defaultValue = "openid")
+        scope: String
     ): ResponseEntity<Any> {
         return getOIDCToken(grantType, scope)
     }
@@ -195,38 +199,38 @@ class AccessTokenController(
                 description = "Issued OIDC Token",
                 headers = [
                     Header(name = "username", description = "Username for Authentication"),
-                    Header(name = "password", description = "Password For Authentication"),
+                    Header(name = "password", description = "Password For Authentication")
                 ],
                 content = [
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = AccessToken2Response::class),
+                            schema = Schema(implementation = AccessToken2Response::class)
                         )
-                    ),
-                ],
+                        )
+                ]
             ),
             ApiResponse(
                 responseCode = "401",
                 description = INVALID_CLIENT,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
             ),
             ApiResponse(
                 responseCode = "400",
                 description = INVALID_REQUEST,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()],
-            ),
-        ],
+                content = [Content()]
+            )
+        ]
     )
     @GetMapping("/token2", "/token2/")
     fun getOIDCToken2(
         @RequestHeader("username") username: String?,
-        @RequestHeader("password") password: String?,
+        @RequestHeader("password") password: String?
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = requestLatencyToken2.startTimer()
         try {
@@ -262,27 +266,27 @@ class AccessTokenController(
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = ExchangeTokenResponse::class),
+                            schema = Schema(implementation = ExchangeTokenResponse::class)
                         )
-                    ),
-                ],
+                        )
+                ]
             ),
             ApiResponse(
                 responseCode = "401",
                 description = INVALID_CLIENT,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
             ),
             ApiResponse(
                 responseCode = "400",
                 description = INVALID_REQUEST,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()],
-            ),
-        ],
+                content = [Content()]
+            )
+        ]
     )
     @GetMapping("/samltoken", "/samltoken/")
     fun getSAMLToken(): ResponseEntity<Any> {
@@ -310,8 +314,8 @@ class AccessTokenController(
                             "Bearer",
                             "urn:ietf:params:oauth:token-type:saml2",
                             samlObj.expiresIn(),
-                            false,
-                        ),
+                            false
+                        )
                     )
             } catch (e: Throwable) {
                 samlTokenError.inc()

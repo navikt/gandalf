@@ -12,7 +12,7 @@ class CharacterSetFilter : Filter {
     override fun doFilter(
         request: ServletRequest,
         response: ServletResponse,
-        next: FilterChain,
+        next: FilterChain
     ) {
         request.characterEncoding = "UTF-8"
         next.doFilter(request, response)

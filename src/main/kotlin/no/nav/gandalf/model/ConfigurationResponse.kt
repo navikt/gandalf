@@ -13,7 +13,7 @@ data class ConfigurationResponse(
     val token_endpoint_auth_methods_supported: List<String>,
     val response_types_supported: List<String>,
     val response_modes_supported: List<String>,
-    val id_token_signing_alg_values_supported: List<String>,
+    val id_token_signing_alg_values_supported: List<String>
 ) {
     companion object Wellknown {
         const val BASE_PATH = "/rest/v1/sts"
