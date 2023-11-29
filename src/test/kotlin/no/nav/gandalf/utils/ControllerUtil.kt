@@ -27,7 +27,6 @@ internal const val SUBJECT_TOKEN = "subject_token"
 internal const val SUBJECT_TOKEN_TYPE = "subject_token_type"
 
 open class ControllerUtil {
-
     private val inMemoryLdap = InMemoryLdap()
 
     fun setupOverride() {
@@ -35,7 +34,11 @@ open class ControllerUtil {
         System.setProperty("spring.main.allow-bean-definition-overriding", "true")
     }
 
-    fun addUserContext(authenticationManager: AuthenticationManager, username: String, password: String) {
+    fun addUserContext(
+        authenticationManager: AuthenticationManager,
+        username: String,
+        password: String
+    ) {
         val token: Authentication =
             authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
         SecurityContextHolder.getContext().authentication = token

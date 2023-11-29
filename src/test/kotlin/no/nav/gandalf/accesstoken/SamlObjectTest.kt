@@ -1,7 +1,5 @@
 package no.nav.gandalf.accesstoken
 
-import java.time.ZonedDateTime
-import javax.xml.crypto.KeySelector
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.accesstoken.saml.SamlObject
 import no.nav.gandalf.keystore.KeyStoreReader
@@ -18,6 +16,8 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.ZonedDateTime
+import javax.xml.crypto.KeySelector
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -25,7 +25,6 @@ import org.springframework.test.context.junit4.SpringRunner
 @AutoConfigureWireMock(port = 0)
 @DirtiesContext
 class SamlObjectTest {
-
     @Autowired
     private lateinit var keySelector: KeySelector
 

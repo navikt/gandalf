@@ -23,22 +23,22 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 @ActiveProfiles("test")
 @DirtiesContext
 class IdentityProviderControllerTest : SpringBootWireMockSetup() {
-
     @Autowired
     private lateinit var mvc: MockMvc
 
     // Path: /jwks
     @Test
     fun `Get JWKS Should only return Public keys`() {
-        val response = mvc.perform(
-            MockMvcRequestBuilders.get(JWKS)
-                .with(SecurityMockMvcRequestPostProcessors.anonymous())
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$..keys").isNotEmpty)
-            .andExpect(jsonPath("$..keys").isArray)
-            .andReturn()
+        val response =
+            mvc.perform(
+                MockMvcRequestBuilders.get(JWKS)
+                    .with(SecurityMockMvcRequestPostProcessors.anonymous())
+            )
+                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$..keys").isNotEmpty)
+                .andExpect(jsonPath("$..keys").isArray)
+                .andReturn()
 
         val jwkSet: JWKSet = JWKSet.parse(response.response.contentAsString)
         jwkSet.keys.forEach {

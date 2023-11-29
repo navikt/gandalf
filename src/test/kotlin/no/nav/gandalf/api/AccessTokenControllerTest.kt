@@ -1,5 +1,6 @@
 package no.nav.gandalf.api
 
+import jakarta.annotation.PostConstruct
 import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.utils.ControllerUtil
 import no.nav.gandalf.utils.GRANT_TYPE
@@ -19,14 +20,12 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import jakarta.annotation.PostConstruct
 import wiremock.org.apache.hc.core5.http.message.BasicNameValuePair
 
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DirtiesContext
 class AccessTokenControllerTest : SpringBootWireMockSetup() {
-
     @Autowired
     private lateinit var mvc: MockMvc
 
@@ -96,7 +95,13 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
-            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPD,OU=ServiceAccounts,dc=test,dc=local' because no such entry exists in the server."))
+            .andExpect(
+                jsonPath(
+                    "$.error_description"
+                ).value(
+                    "Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPD,OU=ServiceAccounts,dc=test,dc=local' because no such entry exists in the server."
+                )
+            )
     }
 
     // POST Path: /token
@@ -201,6 +206,12 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
-            .andExpect(jsonPath("$.error_description").value("Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPDP,OU=ServiceAccounts,dc=test,dc=local' because the provided password was incorrect."))
+            .andExpect(
+                jsonPath(
+                    "$.error_description"
+                ).value(
+                    "Unauthorised: Authentication failed, Unable to bind as user 'cn=srvPDP,OU=ServiceAccounts,dc=test,dc=local' because the provided password was incorrect."
+                )
+            )
     }
 }

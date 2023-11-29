@@ -10,6 +10,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
+import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
+import no.nav.gandalf.api.INVALID_CLIENT
+import no.nav.gandalf.api.Util.tokenHeaders
+import no.nav.gandalf.api.Util.unauthorizedResponse
+import no.nav.gandalf.api.Util.userDetails
 import no.nav.gandalf.model.ErrorDescriptiveResponse
 import no.nav.gandalf.model.Validation
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,11 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.nio.charset.StandardCharsets
-import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
-import no.nav.gandalf.api.INVALID_CLIENT
-import no.nav.gandalf.api.Util.tokenHeaders
-import no.nav.gandalf.api.Util.unauthorizedResponse
-import no.nav.gandalf.api.Util.userDetails
 import java.util.Base64
 
 private val log = KotlinLogging.logger { }
@@ -36,7 +36,6 @@ private val log = KotlinLogging.logger { }
     description = "Validate tokens, SAML & OIDC (Datapower, IDP & IDP, AZURE, OPENAM)"
 )
 class ValidateController {
-
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
@@ -70,7 +69,8 @@ class ValidateController {
     @PostMapping("/samltoken/validate")
     fun validateSAMLToken(
         @Parameter(description = "Base64Encoded SAML Token to Validate", required = true)
-        @RequestParam("token", required = true) samlToken: String
+        @RequestParam("token", required = true)
+        samlToken: String
     ): ResponseEntity<Any> {
         userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
         log.info("Validate SAML token")
@@ -121,7 +121,8 @@ class ValidateController {
     @PostMapping("/token/validate")
     fun validateOIDCToken(
         @Parameter(description = "Base64Encoded OIDC Token to Validate", required = true)
-        @RequestParam("token", required = true) oidcToken: String?
+        @RequestParam("token", required = true)
+        oidcToken: String?
     ): ResponseEntity<Any> {
         requireNotNull(userDetails()) { return unauthorizedResponse(Throwable(), "Unauthorized") }
         log.info("Validate oidc token")

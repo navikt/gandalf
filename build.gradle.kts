@@ -30,7 +30,7 @@ plugins {
     java
     val kotlinVersion = "1.9.21"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jmailen.kotlinter") version "3.10.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.6.1"
     id("com.github.ben-manes.versions") version "0.50.0"
     id("org.springframework.boot") version "3.2.0"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
@@ -49,44 +49,44 @@ repositories {
 }
 
 dependencies {
-    implementation("ch.qos.logback:logback-classic:${logbackClassic}")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonDatatype}")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonDatatype}")
+    implementation("ch.qos.logback:logback-classic:$logbackClassic")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatype")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonDatatype")
     implementation("com.google.code.gson:gson")
-    implementation("com.nimbusds:oauth2-oidc-sdk:${nimbus}")
-    implementation("com.unboundid:unboundid-ldapsdk:${unboundid}")
-    implementation("io.github.microutils:kotlin-logging:${kotlinLoggin}")
+    implementation("com.nimbusds:oauth2-oidc-sdk:$nimbus")
+    implementation("com.unboundid:unboundid-ldapsdk:$unboundid")
+    implementation("io.github.microutils:kotlin-logging:$kotlinLoggin")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("javax.inject:javax.inject:1")
     implementation("jakarta.validation:jakarta.validation-api")
-    implementation("net.logstash.logback:logstash-logback-encoder:${logbackStash}")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logbackStash")
     implementation("org.apache.httpcomponents.client5:httpclient5")
     implementation("jakarta.persistence:jakarta.persistence-api")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.json:json:${json}")
+    implementation("org.json:json:$json")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.conscrypt:conscrypt-openjdk:2.5.2")
-    implementation("org.springdoc:springdoc-openapi-ui:${openapi}")
-    implementation("org.yaml:snakeyaml:${snakeYaml}")
+    implementation("org.springdoc:springdoc-openapi-ui:$openapi")
+    implementation("org.yaml:snakeyaml:$snakeYaml")
     runtimeOnly("com.oracle.database.jdbc:ojdbc8")
 
     // test
-    testImplementation("com.h2database:h2:${h2}")
-    testImplementation("no.nav.security:mock-oauth2-server:${mockOAuth2Server}")
+    testImplementation("com.h2database:h2:$h2")
+    testImplementation("no.nav.security:mock-oauth2-server:$mockOAuth2Server")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "com.vaadin.external.google", module = "android-json")
         exclude(module = "junit")
     }
-    testImplementation("org.springframework.security:spring-security-test:${springSecurity}")
-    testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:${wiremockCloud}")
+    testImplementation("org.springframework.security:spring-security-test:$springSecurity")
+    testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:$wiremockCloud")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
-    testImplementation("io.kotest:kotest-assertions-core:${kotest}")
-    testImplementation("io.mockk:mockk:${mockk}")
+    testImplementation("io.kotest:kotest-assertions-core:$kotest")
+    testImplementation("io.mockk:mockk:$mockk")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
@@ -94,8 +94,8 @@ tasks {
     create("printVersion") {
         println(project.version)
     }
-    withType<org.jmailen.gradle.kotlinter.tasks.LintTask> {
-        dependsOn("formatKotlin")
+    withType<org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask> {
+        dependsOn("ktlintFormat")
     }
     bootJar {
         mainClass.set("no.nav.gandalf.GandalfApplication")

@@ -13,7 +13,6 @@ import javax.naming.AuthenticationException
 class CustomAuthenticationProvider(
     @Autowired val ldapConnectionSetup: LDAPConnectionSetup
 ) : AuthenticationProvider {
-
     @Throws(AuthenticationException::class)
     override fun authenticate(authentication: Authentication): Authentication? {
         val name: String = authentication.name
@@ -21,7 +20,9 @@ class CustomAuthenticationProvider(
         return try {
             if (authenticate(ldapConnectionSetup, User(name, password))) {
                 UsernamePasswordAuthenticationToken(name, password, ArrayList())
-            } else null
+            } else {
+                null
+            }
         } catch (t: Throwable) {
             throw BadCredentialsException("Authentication failed, ${t.message}")
         }
@@ -33,7 +34,10 @@ class CustomAuthenticationProvider(
         return authentication == UsernamePasswordAuthenticationToken::class.java
     }
 
-    fun externalAuth(username: String, password: String) = try {
+    fun externalAuth(
+        username: String,
+        password: String
+    ) = try {
         authenticate(ldapConnectionSetup, User(username, password))
         true
     } catch (t: Throwable) {

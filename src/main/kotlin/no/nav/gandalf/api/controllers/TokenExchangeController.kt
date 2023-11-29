@@ -13,6 +13,13 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.saml.SamlObject
+import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
+import no.nav.gandalf.api.INVALID_CLIENT
+import no.nav.gandalf.api.INVALID_REQUEST
+import no.nav.gandalf.api.Util.badRequestResponse
+import no.nav.gandalf.api.Util.tokenHeaders
+import no.nav.gandalf.api.Util.unauthorizedResponse
+import no.nav.gandalf.api.Util.userDetails
 import no.nav.gandalf.metric.ApplicationMetric
 import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.ErrorDescriptiveResponse
@@ -28,13 +35,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.nio.charset.StandardCharsets
-import no.nav.gandalf.api.INTERNAL_SERVER_ERROR
-import no.nav.gandalf.api.INVALID_CLIENT
-import no.nav.gandalf.api.INVALID_REQUEST
-import no.nav.gandalf.api.Util.badRequestResponse
-import no.nav.gandalf.api.Util.tokenHeaders
-import no.nav.gandalf.api.Util.unauthorizedResponse
-import no.nav.gandalf.api.Util.userDetails
 import java.util.Base64
 
 private val log = KotlinLogging.logger { }
@@ -46,7 +46,6 @@ private val log = KotlinLogging.logger { }
     description = "Exchange SAML (Datapower STS) -> OIDC & Exchange OIDC (OpenAm, Azure, IDP) -> SAML"
 )
 class TokenExchangeController {
-
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
 
@@ -88,30 +87,38 @@ class TokenExchangeController {
             description = "'grant type' refers to the way an application gets an access token. OAuth 2.0 defines several grant types.",
             required = true
         )
-        @RequestParam("grant_type") grantType: String?,
+        @RequestParam("grant_type")
+        grantType: String?,
         @Parameter(
             description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), for the type of the requested security token.",
             required = false
         )
-        @RequestParam("requested_token_type", required = false) reqTokenType: String?,
+        @RequestParam("requested_token_type", required = false)
+        reqTokenType: String?,
         @Parameter(
             description = "Represents the identity of the party on behalf of whom the token is being requested.",
             required = true
         )
-        @RequestParam("subject_token") subjectToken: String?,
+        @RequestParam("subject_token")
+        subjectToken: String?,
         @Parameter(
-            description = "An identifier, as described in Token Type Identifiers (OAuth 2.0 Token Exchange Section 3), that indicates the type of the security token in the 'subject_token' parameter.",
+            description =
+            "An identifier, as described in Token Type Identifiers " +
+                "(OAuth 2.0 Token Exchange Section 3), that indicates the type of the security " +
+                "token in the 'subject_token' parameter.",
             required = true
         )
-        @RequestParam("subject_token_type") subTokenType: String?
+        @RequestParam("subject_token_type")
+        subTokenType: String?
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
         try {
             log.info("Exchange $subTokenType to $reqTokenType")
-            val user = requireNotNull(userDetails()) {
-                ApplicationMetric.exchangeTokenNotOk.inc()
-                return unauthorizedResponse(Throwable(), "Unauthorized")
-            }
+            val user =
+                requireNotNull(userDetails()) {
+                    ApplicationMetric.exchangeTokenNotOk.inc()
+                    return unauthorizedResponse(Throwable(), "Unauthorized")
+                }
             if (grantType.isNullOrEmpty() || grantType != "urn:ietf:params:oauth:grant-type:token-exchange") {
                 ApplicationMetric.exchangeTokenNotOk.inc()
                 return badRequestResponse("Unknown grant_type")
@@ -137,6 +144,7 @@ class TokenExchangeController {
                         badRequestResponse(e.message ?: "")
                     }
                 }
+
                 subTokenType.equals("urn:ietf:params:oauth:token-type:access_token") &&
                     (reqTokenType.isNullOrEmpty() || reqTokenType == "urn:ietf:params:oauth:token-type:saml2") -> {
                     log.info("Exchange OIDC to SAML token")
@@ -161,6 +169,7 @@ class TokenExchangeController {
                         return badRequestResponse(e.message ?: "")
                     }
                 }
+
                 else -> {
                     ApplicationMetric.exchangeTokenNotOk.inc()
                     return badRequestResponse("Unsupported token exchange for subject/requested token type")
@@ -209,7 +218,8 @@ class TokenExchangeController {
             description = "Base64Encoded DIFI Access Token.",
             required = true
         )
-        @RequestHeader("token", required = true) difiToken: String?
+        @RequestHeader("token", required = true)
+        difiToken: String?
     ): ResponseEntity<Any> {
         val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchangeDIFI.startTimer()
         try {

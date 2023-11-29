@@ -18,7 +18,6 @@ class ProxyAwareResourceRetriever internal constructor(
     sizeLimit: Int
 ) :
     DefaultResourceRetriever(connectTimeout, readTimeout, sizeLimit) {
-
     @JvmOverloads
     constructor(proxyUrl: URL? = null, usePlainTextForHttps: Boolean = false) : this(
         proxyUrl,
@@ -67,10 +66,11 @@ class ProxyAwareResourceRetriever internal constructor(
 
     init {
         if (proxyUrl != null) {
-            proxy = Proxy(
-                Proxy.Type.HTTP,
-                InetSocketAddress(proxyUrl.host, proxyUrl.port)
-            )
+            proxy =
+                Proxy(
+                    Proxy.Type.HTTP,
+                    InetSocketAddress(proxyUrl.host, proxyUrl.port)
+                )
         }
     }
 }

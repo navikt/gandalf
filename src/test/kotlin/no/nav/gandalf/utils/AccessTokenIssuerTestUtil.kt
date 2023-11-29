@@ -12,53 +12,64 @@ import org.apache.http.HttpStatus
 import java.nio.file.Files
 import java.nio.file.Path
 
-internal const val openAMResponseFileName = "openam-jwks.json"
-internal const val openAMJwksUrl = "/isso/oauth2/connect/jwk_uri"
+internal const val OPENAM_RESPONSE_FILENAME = "openam-jwks.json"
+internal const val OPENAM_JWKS_URL = "/isso/oauth2/connect/jwk_uri"
 
-internal const val difiOIDCJwksUrl = "/jwk.json"
-internal const val difiOIDCResponseFileName = "difi-oidc-jwks.json"
-internal const val difiOIDCConfigurationUrl = "/.well-known/openid-configuration"
-internal const val difiOIDCConfigurationResponseFileName = "difi-oidc-configuration.json"
+internal const val DIFI_JWKS_URL = "/jwk.json"
+internal const val DIFI_RESPONSE_FILENAME = "difi-oidc-jwks.json"
+internal const val DIFI_CONFIG_URL = "/.well-known/openid-configuration"
+internal const val DIFI_CONFIG_FILENAME = "difi-oidc-configuration.json"
 
-internal const val difiMASKINPORTENCConfigurationUrl = "/.well-known/oauth-authorization-server"
-internal const val difiMASKINPORTENCJwksUrl = "/jwk"
-internal const val difiMASKINPORTENJWKSResponseFileName = "difi-maskinporten-jwks.json"
-internal const val difiMASKINPORTENConfigurationResponseFileName = "difi-maskinporten-configuration.json"
+internal const val DIFI_MASKINPORTEN_CONFIG_URL = "/.well-known/oauth-authorization-server"
+internal const val DIFI_MASKINPORTEN_JWKS_URL = "/jwk"
+internal const val DIFI_MASKINPORTEN_JWKS_FILENAME = "difi-maskinporten-jwks.json"
+internal const val DIFI_MASKINPORTEN_CONFIG_FILENAME = "difi-maskinporten-configuration.json"
 
-internal const val azureADResponseFileName = "azuread-jwks.json"
-internal const val azureADJwksUrl = "/discovery/v2.0/keys"
+internal const val AZUREAD_JWKS_FILENAME = "azuread-jwks.json"
+internal const val AZUREAD_JWKS_URL = "/discovery/v2.0/keys"
 
 private val objectMapper: ObjectMapper = jacksonObjectMapper()
 
-internal fun endpointStub(status: Int = HttpStatus.SC_OK, path: String, bodyFile: String) =
-    stubFor(
-        WireMock.get(WireMock.urlEqualTo(path))
-            .willReturn(
-                aResponse()
-                    .withStatus(status)
-                    .withHeader("Content-Type", "application/json; charset=UTF-8")
-                    .withBodyFile(bodyFile)
-            )
-    )
+internal fun endpointStub(
+    status: Int = HttpStatus.SC_OK,
+    path: String,
+    bodyFile: String
+) = stubFor(
+    WireMock.get(WireMock.urlEqualTo(path))
+        .willReturn(
+            aResponse()
+                .withStatus(status)
+                .withHeader("Content-Type", "application/json; charset=UTF-8")
+                .withBodyFile(bodyFile)
+        )
+)
 
-internal fun wellKnownStub(path: String, jwksUrl: String, bodyFile: String) {
+internal fun wellKnownStub(
+    path: String,
+    jwksUrl: String,
+    bodyFile: String
+) {
     val content = Files.readString(Path.of("src/test/resources/__files/$bodyFile"))
-    val jsonNode: JsonNode = objectMapper.readValue<JsonNode>(content).apply {
-        (this as ObjectNode).put("jwks_uri", jwksUrl)
-    }
+    val jsonNode: JsonNode =
+        objectMapper.readValue<JsonNode>(content).apply {
+            (this as ObjectNode).put("jwks_uri", jwksUrl)
+        }
     endpointStubWithBody(path = path, body = jsonNode)
 }
 
-internal fun endpointStubWithBody(status: Int = HttpStatus.SC_OK, path: String, body: Any) =
-    stubFor(
-        WireMock.get(WireMock.urlEqualTo(path))
-            .willReturn(
-                aResponse()
-                    .withStatus(status)
-                    .withHeader("Content-Type", "application/json; charset=UTF-8")
-                    .withBody(objectMapper.writeValueAsString(body))
-            )
-    )
+internal fun endpointStubWithBody(
+    status: Int = HttpStatus.SC_OK,
+    path: String,
+    body: Any
+) = stubFor(
+    WireMock.get(WireMock.urlEqualTo(path))
+        .willReturn(
+            aResponse()
+                .withStatus(status)
+                .withHeader("Content-Type", "application/json; charset=UTF-8")
+                .withBody(objectMapper.writeValueAsString(body))
+        )
+)
 
 // Original REST-STS did not have token.
 internal fun getAzureAdOIDC() =

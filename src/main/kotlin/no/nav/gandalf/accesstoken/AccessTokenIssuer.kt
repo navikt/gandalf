@@ -41,7 +41,6 @@ class AccessTokenIssuer(
     @Autowired private val localIssuerConfig: LocalIssuer,
     private val gsonBuilder: GsonBuilder
 ) : IssuerConfig {
-
     final override val issuer = localIssuerConfig.issuer
     private val domain = getDomainFromIssuerURL(this.issuer)
     private lateinit var knownIssuers: MutableList<IssuerConfig>
@@ -49,30 +48,31 @@ class AccessTokenIssuer(
     @PostConstruct
     @Throws(ParseException::class)
     fun setKnownIssuers() {
-        knownIssuers = mutableListOf(
-            this,
-            IssuerConfig.from(
-                externalIssuersConfig.issuerOpenAm,
-                externalIssuersConfig.jwksEndpointOpenAm
-            ),
-            IssuerConfig.from(
-                externalIssuersConfig.issuerAzureB2C,
-                externalIssuersConfig.jwksEndpointAzureB2C
-            ),
-            IssuerConfig.from(
-                externalIssuersConfig.issuerAzureAd,
-                externalIssuersConfig.jwksEndpointAzuread
-            ),
-            IssuerConfig.from(
-                externalIssuersConfig.configurationDIFIOIDCUrl
-            ),
-            IssuerConfig.from(
-                externalIssuersConfig.configurationDIFIMaskinportenUrl
-            ),
-            IssuerConfig.from(
-                externalIssuersConfig.configurationTokenX
+        knownIssuers =
+            mutableListOf(
+                this,
+                IssuerConfig.from(
+                    externalIssuersConfig.issuerOpenAm,
+                    externalIssuersConfig.jwksEndpointOpenAm
+                ),
+                IssuerConfig.from(
+                    externalIssuersConfig.issuerAzureB2C,
+                    externalIssuersConfig.jwksEndpointAzureB2C
+                ),
+                IssuerConfig.from(
+                    externalIssuersConfig.issuerAzureAd,
+                    externalIssuersConfig.jwksEndpointAzuread
+                ),
+                IssuerConfig.from(
+                    externalIssuersConfig.configurationDIFIOIDCUrl
+                ),
+                IssuerConfig.from(
+                    externalIssuersConfig.configurationDIFIMaskinportenUrl
+                ),
+                IssuerConfig.from(
+                    externalIssuersConfig.configurationTokenX
+                )
             )
-        )
     }
 
     @Throws(Exception::class)
@@ -93,12 +93,16 @@ class AccessTokenIssuer(
     fun validateOidcToken(oidcToken: String?) = validateOidcToken(oidcToken, OidcObject.toDate(ZonedDateTime.now()))
 
     @Throws(java.text.ParseException::class, JOSEException::class)
-    fun validateOidcToken(oidcToken: String?, now: Date): OidcObject {
+    fun validateOidcToken(
+        oidcToken: String?,
+        now: Date
+    ): OidcObject {
         require(!oidcToken.isNullOrEmpty()) { "Validation failed: OidcToken is null or empty" }
         val oidcObj = OidcObject(oidcToken)
         oidcObj.setMaxClockSkew(localIssuerConfig.clockSkewOidc)
-        val knownIssuer = knownIssuers.map { it }.singleOrNull { it.issuer == oidcObj.issuer }
-            ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + oidcObj.issuer)
+        val knownIssuer =
+            knownIssuers.map { it }.singleOrNull { it.issuer == oidcObj.issuer }
+                ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + oidcObj.issuer)
         oidcObj.validate(knownIssuer, now)
         return oidcObj
     }
@@ -145,7 +149,10 @@ class AccessTokenIssuer(
         MarshalException::class,
         XMLSignatureException::class
     )
-    fun validateSamlToken(samlToken: String?, keySelector: KeySelector) {
+    fun validateSamlToken(
+        samlToken: String?,
+        keySelector: KeySelector
+    ) {
         // read Saml token
         val samlObj = SamlObject()
         samlObj.read(samlToken)
@@ -156,7 +163,10 @@ class AccessTokenIssuer(
 
     @JvmOverloads
     @Throws(Exception::class)
-    fun exchangeSamlToOidcToken(samlToken: String, now: ZonedDateTime = ZonedDateTime.now()): SignedJWT {
+    fun exchangeSamlToOidcToken(
+        samlToken: String,
+        now: ZonedDateTime = ZonedDateTime.now()
+    ): SignedJWT {
         log.info("Issuing OIDC token from SAML: exchangeSamlToOidcToken")
 
         // read Saml token
@@ -203,15 +213,19 @@ class AccessTokenIssuer(
         }.getSignedSaml(keyStoreReader)
     }
 
-    private fun defaultLevelIfInternBruker(authLevel: String, identType: String) =
-        if (authLevel == DEFAULT_SAML_AUTHLEVEL && identType == IdentType.INTERNBRUKER.value) {
-            DEFAULT_INTERN_SAML_AUTHLEVEL
-        } else {
-            authLevel
-        }
+    private fun defaultLevelIfInternBruker(
+        authLevel: String,
+        identType: String
+    ) = if (authLevel == DEFAULT_SAML_AUTHLEVEL && identType == IdentType.INTERNBRUKER.value) {
+        DEFAULT_INTERN_SAML_AUTHLEVEL
+    } else {
+        authLevel
+    }
 
-    fun samlObject(now: ZonedDateTime, configure: SamlObject.() -> Unit): SamlObject =
-        SamlObject(now).apply(configure)
+    fun samlObject(
+        now: ZonedDateTime,
+        configure: SamlObject.() -> Unit
+    ): SamlObject = SamlObject(now).apply(configure)
 
     fun filterIssoInternIssuer() = knownIssuers.singleOrNull { it.issuer.contains(ISSO_OIDC_ISSUER) }
 
@@ -225,12 +239,16 @@ class AccessTokenIssuer(
 
     @JvmOverloads
     @Throws(Exception::class)
-    fun exchangeDifiTokenToOidc(difiToken: String?, now: Date = OidcObject.toDate(ZonedDateTime.now())): SignedJWT {
+    fun exchangeDifiTokenToOidc(
+        difiToken: String?,
+        now: Date = OidcObject.toDate(ZonedDateTime.now())
+    ): SignedJWT {
         log.info("Issuing a Exchange token for DIFI-Accesstoken")
         require(!difiToken.isNullOrEmpty()) { "Validation failed: OidcToken is null or empty" }
         val difiOidcObj = OidcObject(difiToken)
-        val knownIssuer: IssuerConfig = knownIssuers.map { it }.singleOrNull { it.issuer == difiOidcObj.issuer }
-            ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + difiOidcObj.issuer)
+        val knownIssuer: IssuerConfig =
+            knownIssuers.map { it }.singleOrNull { it.issuer == difiOidcObj.issuer }
+                ?: throw IllegalArgumentException("Validation failed: the oidcToken is issued by unknown issuer: " + difiOidcObj.issuer)
         log.info("DIFI accessToken from issuer: " + knownIssuer.issuer)
         difiOidcObj.validate(knownIssuer, now)
 
@@ -293,19 +311,18 @@ class AccessTokenIssuer(
     }
 
     companion object {
-
         const val SAML_ISSUE_SKEW_SECONDS: Long = 3
 
         // seconds
-        var OIDC_DURATION_TIME = 60 * 60.toLong()
-        var OIDC_VERSION = "1.0"
-        var OIDC_SIGNINGALG: JWSAlgorithm = JWSAlgorithm.RS256
-        var SAML_ISSUER = "IS02"
-        var SAML_DURATION_TIME = 60 * 60.toLong()
-        var EXCHANGE_TOKEN_EXTENDED_TIME: Long = 30 // seconds
-        var DEFAULT_SAML_AUTHLEVEL = "0"
-        var DEFAULT_INTERN_SAML_AUTHLEVEL = "4"
-        var ISSO_OIDC_ISSUER = "isso"
+        const val OIDC_DURATION_TIME = 60 * 60.toLong()
+        const val OIDC_VERSION = "1.0"
+        val OIDC_SIGNINGALG: JWSAlgorithm = JWSAlgorithm.RS256
+        const val SAML_ISSUER = "IS02"
+        const val SAML_DURATION_TIME = 60 * 60.toLong()
+        const val EXCHANGE_TOKEN_EXTENDED_TIME: Long = 30 // seconds
+        const val DEFAULT_SAML_AUTHLEVEL = "0"
+        const val DEFAULT_INTERN_SAML_AUTHLEVEL = "4"
+        const val ISSO_OIDC_ISSUER = "isso"
 
         fun getDomainFromIssuerURL(issuer: String?): String {
             val domainPrefix = "nais."
@@ -314,7 +331,10 @@ class AccessTokenIssuer(
         }
 
         @Throws(java.lang.RuntimeException::class)
-        fun getIdentType(subject: String, acrLevel: String? = null): String {
+        fun getIdentType(
+            subject: String,
+            acrLevel: String? = null
+        ): String {
             return when {
                 subject.lowercase().startsWith("srv") -> {
                     IdentType.SYSTEMRESSURS.value
@@ -334,21 +354,22 @@ class AccessTokenIssuer(
 
         private fun String.isSamHandler() = this.length == 9 && this.isOnlyNumbers()
 
-        private fun String?.isLeveledForExternal(subject: String) = this?.let {
-            when {
-                !isFnr(subject) -> {
-                    false
-                }
+        private fun String?.isLeveledForExternal(subject: String) =
+            this?.let {
+                when {
+                    !isFnr(subject) -> {
+                        false
+                    }
 
-                isFnr(subject) && this in listOf("3", "4") -> {
-                    true
-                }
+                    isFnr(subject) && this in listOf("3", "4") -> {
+                        true
+                    }
 
-                else -> {
-                    throw RuntimeException("Identype: $subject does not have the acrLevel 3 or 4")
+                    else -> {
+                        throw RuntimeException("Identype: $subject does not have the acrLevel 3 or 4")
+                    }
                 }
-            }
-        } ?: false
+            } ?: false
 
         private fun isFnr(subject: String) = subject.length == 11 && subject.isOnlyNumbers()
 

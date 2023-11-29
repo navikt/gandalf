@@ -1,5 +1,7 @@
 package no.nav.gandalf
 
+import org.springframework.context.annotation.Primary
+import org.springframework.stereotype.Component
 import java.security.cert.X509Certificate
 import javax.xml.crypto.AlgorithmMethod
 import javax.xml.crypto.KeySelector
@@ -9,15 +11,17 @@ import javax.xml.crypto.XMLCryptoContext
 import javax.xml.crypto.XMLStructure
 import javax.xml.crypto.dsig.keyinfo.KeyInfo
 import javax.xml.crypto.dsig.keyinfo.X509Data
-import org.springframework.context.annotation.Primary
-import org.springframework.stereotype.Component
 
 @Component
 @Primary
 class TestKeySelector : KeySelector() {
-
     @Throws(KeySelectorException::class)
-    override fun select(keyInfo: KeyInfo, purpose: Purpose, method: AlgorithmMethod, context: XMLCryptoContext): KeySelectorResult {
+    override fun select(
+        keyInfo: KeyInfo,
+        purpose: Purpose,
+        method: AlgorithmMethod,
+        context: XMLCryptoContext
+    ): KeySelectorResult {
         for (`object` in keyInfo.content) {
             val info = `object` as XMLStructure
             if (info is X509Data) {

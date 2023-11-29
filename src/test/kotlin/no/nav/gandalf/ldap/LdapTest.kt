@@ -14,45 +14,48 @@ import org.springframework.test.context.junit4.SpringRunner
 @RunWith(SpringRunner::class)
 @SpringBootTest
 class LdapTest {
-
     @After
     fun clean() {
         CollectorRegistry.defaultRegistry.clear()
     }
 
-    private val ldapConfig = LdapConfig(
-        url = "localhost",
-        base = "dc=test,dc=local",
-        port = 11389,
-        remote = "false",
-        timeout = 1_000,
-        srvTestPassword = "password",
-        srvTestUsername = "srvPDP"
-    )
+    private val ldapConfig =
+        LdapConfig(
+            url = "localhost",
+            base = "dc=test,dc=local",
+            port = 11389,
+            remote = "false",
+            timeout = 1_000,
+            srvTestPassword = "password",
+            srvTestUsername = "srvPDP"
+        )
 
     @Test
     fun `Authenticated User Under OU=ServiceAccounts`() {
-        val ldap = LDAPAuthentication(
-            LDAPConnectionSetup(ldapConfig = ldapConfig)
-        )
+        val ldap =
+            LDAPAuthentication(
+                LDAPConnectionSetup(ldapConfig = ldapConfig)
+            )
         val authenticatedUser = User("srvPDP", "password")
         assert(ldap.result(user = authenticatedUser))
     }
 
     @Test
     fun `Authenticated User Under OU=ApplAccounts,OU=ServiceAccounts`() {
-        val ldap = LDAPAuthentication(
-            LDAPConnectionSetup(ldapConfig = ldapConfig)
-        )
+        val ldap =
+            LDAPAuthentication(
+                LDAPConnectionSetup(ldapConfig = ldapConfig)
+            )
         val authenticatedUser = User("srvaltutkanal", "password")
         assert(ldap.result(user = authenticatedUser))
     }
 
     @Test
     fun `UnAuthorized User`() {
-        val ldap = LDAPAuthentication(
-            LDAPConnectionSetup(ldapConfig = ldapConfig)
-        )
+        val ldap =
+            LDAPAuthentication(
+                LDAPConnectionSetup(ldapConfig = ldapConfig)
+            )
         val unauthorized = User("srvPDS", "password")
         assertThrows<LDAPException> { ldap.result(user = unauthorized) }
     }
