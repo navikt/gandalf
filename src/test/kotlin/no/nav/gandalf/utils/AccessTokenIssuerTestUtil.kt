@@ -12,21 +12,21 @@ import org.apache.http.HttpStatus
 import java.nio.file.Files
 import java.nio.file.Path
 
-internal val openAMResponseFileName = "openam-jwks.json"
-internal val openAMJwksUrl = "/isso/oauth2/connect/jwk_uri"
+internal const val OPENAM_RESPONSE_FILENAME = "openam-jwks.json"
+internal const val OPENAM_JWKS_URL = "/isso/oauth2/connect/jwk_uri"
 
-internal val difiOIDCJwksUrl = "/jwk.json"
-internal val difiOIDCResponseFileName = "difi-oidc-jwks.json"
-internal val difiOIDCConfigurationUrl = "/.well-known/openid-configuration"
-internal val difiOIDCConfigurationResponseFileName = "difi-oidc-configuration.json"
+internal const val DIFI_JWKS_URL = "/jwk.json"
+internal const val DIFI_RESPONSE_FILENAME = "difi-oidc-jwks.json"
+internal const val DIFI_CONFIG_URL = "/.well-known/openid-configuration"
+internal const val DIFI_CONFIG_FILENAME = "difi-oidc-configuration.json"
 
-internal val difiMASKINPORTENCConfigurationUrl = "/.well-known/oauth-authorization-server"
-internal val difiMASKINPORTENCJwksUrl = "/jwk"
-internal val difiMASKINPORTENJWKSResponseFileName = "difi-maskinporten-jwks.json"
-internal val difiMASKINPORTENConfigurationResponseFileName = "difi-maskinporten-configuration.json"
+internal const val DIFI_MASKINPORTEN_CONFIG_URL = "/.well-known/oauth-authorization-server"
+internal const val DIFI_MASKINPORTEN_JWKS_URL = "/jwk"
+internal const val DIFI_MASKINPORTEN_JWKS_FILENAME = "difi-maskinporten-jwks.json"
+internal const val DIFI_MASKINPORTEN_CONFIG_FILENAME = "difi-maskinporten-configuration.json"
 
-internal val azureADResponseFileName = "azuread-jwks.json"
-internal val azureADJwksUrl = "/discovery/v2.0/keys"
+internal const val AZUREAD_JWKS_FILENAME = "azuread-jwks.json"
+internal const val AZUREAD_JWKS_URL = "/discovery/v2.0/keys"
 
 private val objectMapper: ObjectMapper = jacksonObjectMapper()
 

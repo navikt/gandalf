@@ -24,7 +24,8 @@ import no.nav.gandalf.config.LocalIssuer
 import no.nav.gandalf.model.AccessTokenResponse
 import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.ExchangeTokenService
-import no.nav.gandalf.utils.azureADJwksUrl
+import no.nav.gandalf.utils.AZUREAD_JWKS_URL
+import no.nav.gandalf.utils.OPENAM_JWKS_URL
 import no.nav.gandalf.utils.diffTokens
 import no.nav.gandalf.utils.getAlteredSamlToken
 import no.nav.gandalf.utils.getAlteredSamlTokenWithEksternBrukerOgAuthLevel
@@ -40,7 +41,6 @@ import no.nav.gandalf.utils.getOpenAmOIDC
 import no.nav.gandalf.utils.getSamlToken
 import no.nav.gandalf.utils.getTokenDingsAzureADB2CToken
 import no.nav.gandalf.utils.getTokenDingsIdportenToken
-import no.nav.gandalf.utils.openAMJwksUrl
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -110,7 +110,7 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
             issuer.validateOidcToken(oidcToken, claimSet.issueTime)
             assertTrue(true)
         }
-        verify(getRequestedFor(urlEqualTo(openAMJwksUrl)))
+        verify(getRequestedFor(urlEqualTo(OPENAM_JWKS_URL)))
     }
 
     @Test
@@ -125,7 +125,7 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
         } catch (e: java.lang.Exception) {
             fail { e.printStackTrace().toString() }
         }
-        verify(getRequestedFor(urlEqualTo(azureADJwksUrl)))
+        verify(getRequestedFor(urlEqualTo(AZUREAD_JWKS_URL)))
     }
 
     @Test
