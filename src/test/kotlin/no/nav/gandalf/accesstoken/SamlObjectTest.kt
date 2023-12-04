@@ -50,7 +50,7 @@ class SamlObjectTest {
         val notOnOrAfter = ZonedDateTime.parse("2019-05-14T08:47:06.255Z")
         val now = notOnOrAfter.minusSeconds(2)
         assertDoesNotThrow {
-            // read and validate saml token with with now = notOnOrAfter - 2 seconds
+            // read and validate saml token with now = notOnOrAfter - 2 seconds
             val samlObj = SamlObject(now)
             samlObj.read(getSamlToken())
             samlObj.validate(keySelector)
@@ -62,7 +62,7 @@ class SamlObjectTest {
         val notOnOrAfter = ZonedDateTime.parse("2019-05-14T08:47:06.255Z")
         val now = notOnOrAfter.minusSeconds(2)
         Assert.assertThrows(OAuthException::class.java) {
-            // read and validate saml token with with now = notOnOrAfter - 2 seconds
+            // read and validate saml token with now = notOnOrAfter - 2 seconds
             val samlObj = SamlObject(now)
             samlObj.read(getAlteredSamlToken())
             assertTrue(samlObj.nameID != null && samlObj.nameID.equals("srvsecurity-token-tull"))
