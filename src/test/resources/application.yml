@@ -34,7 +34,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 # Application
-token.x.well.known.url: <FROM ENV. VARS>
+token.x.well.known.url: http://localhost:1113/default/.well-known/openid-configuration
 application:
   oidc:
     issuer: https://security-token-service.nais.preprod.local

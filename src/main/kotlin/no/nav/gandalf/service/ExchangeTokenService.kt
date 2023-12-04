@@ -20,13 +20,14 @@ class ExchangeTokenService {
         tokenType: String,
         issuedTokenType: String,
         expiresIn: Long,
-        UrlEncoding: Boolean
+        urlEncoding: Boolean
     ) = ExchangeTokenResponse(
         access_token =
         when {
-            UrlEncoding -> {
+            urlEncoding -> {
                 Base64.getUrlEncoder().encodeToString(accessToken.toByteArray())
             }
+
             else -> {
                 Base64.getEncoder().encodeToString(accessToken.toByteArray())
             }
