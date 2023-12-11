@@ -16,7 +16,7 @@ val nimbus = "11.7.1"
 val openapi = "1.7.0"
 val unboundid = "6.0.11"
 val wiremock = "3.0.1"
-val wiremockCloud = "4.0.4"
+val wiremockCloud = "4.1.0"
 val h2 = "2.2.224"
 val jacksonDatatype = "2.16.0"
 
