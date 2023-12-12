@@ -27,7 +27,7 @@ private val log = KotlinLogging.logger { }
 @Component
 class X509KeySelector(
     @Value("\${nav.truststore.path}") private val truststoreFile: String?,
-    @Value("\${nav.truststore.password}") private val truststorePassword: String?
+    @Value("\${nav.truststore.password}") private val truststorePassword: String?,
 ) : KeySelector() {
     private var trustManager: X509TrustManager? = null
 
@@ -38,11 +38,11 @@ class X509KeySelector(
 
     private final fun setOrThrow(
         propertyName: String,
-        value: String?
+        value: String?,
     ) {
         System.setProperty(
             propertyName,
-            value ?: throw NullPointerException("$propertyName, is not set!")
+            value ?: throw NullPointerException("$propertyName, is not set!"),
         )
     }
 
@@ -51,7 +51,7 @@ class X509KeySelector(
         keyInfo: KeyInfo,
         purpose: Purpose,
         method: AlgorithmMethod,
-        context: XMLCryptoContext
+        context: XMLCryptoContext,
     ): KeySelectorResult {
         for (`object` in keyInfo.content) {
             val info = `object` as XMLStructure
@@ -86,13 +86,13 @@ class X509KeySelector(
                 when {
                     truststoreFile.isNullOrEmpty() -> {
                         throw RuntimeException(
-                            "Failed to load truststore, system property '$TRUSTSTORE_FILENAME_PROPERTYNAME' is null or empty!"
+                            "Failed to load truststore, system property '$TRUSTSTORE_FILENAME_PROPERTYNAME' is null or empty!",
                         )
                     }
                     truststorePassword.isNullOrEmpty() -> {
                         log.error("System property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
                         throw RuntimeException(
-                            "Failed to load truststore, system property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!"
+                            "Failed to load truststore, system property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!",
                         )
                     }
                     else -> {
@@ -130,11 +130,11 @@ class X509KeySelector(
 
         fun algEquals(
             algURI: String,
-            algName: String
+            algName: String,
         ): Boolean {
             return algName.equals(
                 "RSA",
-                ignoreCase = true
+                ignoreCase = true,
             ) && algURI.equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", ignoreCase = true)
         }
     }

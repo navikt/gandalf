@@ -41,7 +41,7 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.post(WS_SAMLTOKEN)
                 .with(SecurityMockMvcRequestPostProcessors.anonymous())
                 .contentType(ContentType.TEXT_XML.mimeType)
-                .content(xmlReq)
+                .content(xmlReq),
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(MockMvcResultMatchers.content().contentType("text/xml;charset=UTF-8"))
@@ -54,7 +54,7 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.post(WS_SAMLTOKEN)
                 .with(SecurityMockMvcRequestPostProcessors.anonymous())
                 .contentType(ContentType.TEXT_XML.mimeType)
-                .content(xmlReq)
+                .content(xmlReq),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType("text/xml;charset=UTF-8"))
@@ -69,7 +69,7 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.post(WS_SAMLTOKEN)
                 .with(SecurityMockMvcRequestPostProcessors.anonymous())
                 .contentType(ContentType.TEXT_XML.mimeType)
-                .content(xmlReq)
+                .content(xmlReq),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType("text/xml;charset=UTF-8"))
@@ -84,7 +84,7 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.post(WS_SAMLTOKEN)
                 .with(SecurityMockMvcRequestPostProcessors.anonymous())
                 .contentType(ContentType.TEXT_XML.mimeType)
-                .content(xmlReq)
+                .content(xmlReq),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType("text/xml;charset=UTF-8"))
@@ -102,7 +102,7 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
             MockMvcRequestBuilders.post(WS_SAMLTOKEN)
                 .with(SecurityMockMvcRequestPostProcessors.anonymous())
                 .contentType(ContentType.TEXT_XML.mimeType)
-                .content(xmlReq)
+                .content(xmlReq),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType("text/xml;charset=UTF-8"))
@@ -114,7 +114,7 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
 internal fun setupValidateRequest(
     username: String,
     password: String,
-    issuer: AccessTokenIssuer
+    issuer: AccessTokenIssuer,
 ): String {
     val samlToken: String? = issuer.issueSamlToken(username, username, "0")
     return getValidateSamlRequest(username, password, samlToken!!)
@@ -123,7 +123,7 @@ internal fun setupValidateRequest(
 internal fun setupOIDCtoSAMLRequest(
     username: String,
     password: String,
-    issuer: AccessTokenIssuer
+    issuer: AccessTokenIssuer,
 ): String {
     val oidcToken: String = issuer.issueToken(username).serialize()
     return getOidcToSamlRequest(username, password, oidcToken)

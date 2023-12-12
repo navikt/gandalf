@@ -56,7 +56,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
         val result =
             mvc.perform(
                 MockMvcRequestBuilders.get(SAML_TOKEN)
-                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
             )
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -72,13 +72,13 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                         BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
                         BasicNameValuePair(
                             REQUESTED_TOKEN_TYPE,
-                            "urn:ietf:params:oauth:token-type:access_token"
+                            "urn:ietf:params:oauth:token-type:access_token",
                         ),
                         BasicNameValuePair(SUBJECT_TOKEN, mockedToken.access_token),
-                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
-                    )
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
+                    ),
                 )
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -93,7 +93,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
         val result =
             mvc.perform(
                 MockMvcRequestBuilders.get(SAML_TOKEN)
-                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
             )
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -107,7 +107,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                 .param(REQUESTED_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token")
                 .param(SUBJECT_TOKEN, mockedToken.access_token)
                 .param(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isUnsupportedMediaType)
     }
@@ -122,19 +122,19 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                         BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
                         BasicNameValuePair(
                             REQUESTED_TOKEN_TYPE,
-                            "urn:ietf:params:oauth:token-type:access_token"
+                            "urn:ietf:params:oauth:token-type:access_token",
                         ),
                         BasicNameValuePair(SUBJECT_TOKEN, DATAPOWER_SAML_BASE64_ENCODED),
-                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
-                    )
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
+                    ),
                 )
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
             .andExpect(
-                jsonPath("$.error_description").isString
+                jsonPath("$.error_description").isString,
             )
     }
 
@@ -147,13 +147,13 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                     listOf(
                         BasicNameValuePair(
                             REQUESTED_TOKEN_TYPE,
-                            "urn:ietf:params:oauth:token-type:access_token"
+                            "urn:ietf:params:oauth:token-type:access_token",
                         ),
                         BasicNameValuePair(SUBJECT_TOKEN, DATAPOWER_SAML_BASE64_ENCODED),
-                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
-                    )
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
+                    ),
                 )
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -171,12 +171,12 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                         BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
                         BasicNameValuePair(
                             REQUESTED_TOKEN_TYPE,
-                            "urn:ietf:params:oauth:token-type:access_token"
+                            "urn:ietf:params:oauth:token-type:access_token",
                         ),
-                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2")
-                    )
+                        BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:saml2"),
+                    ),
                 )
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -191,7 +191,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                 MockMvcRequestBuilders.get(TOKEN)
                     .param(GRANT_TYPE, "client_credentials")
                     .param(SCOPE, "openid")
-                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
             )
                 .andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -210,10 +210,10 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                     listOf(
                         BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
                         BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token"),
-                        BasicNameValuePair(SUBJECT_TOKEN, mockedToken.access_token)
-                    )
+                        BasicNameValuePair(SUBJECT_TOKEN, mockedToken.access_token),
+                    ),
                 )
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -232,10 +232,10 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                     listOf(
                         BasicNameValuePair(GRANT_TYPE, "urn:ietf:params:oauth:grant-type:token-exchange"),
                         BasicNameValuePair(SUBJECT_TOKEN_TYPE, "urn:ietf:params:oauth:token-type:access_token"),
-                        BasicNameValuePair(SUBJECT_TOKEN, getOpenAmAndDPSamlExchangePair()[0])
-                    )
+                        BasicNameValuePair(SUBJECT_TOKEN, getOpenAmAndDPSamlExchangePair()[0]),
+                    ),
                 )
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -248,7 +248,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE_DIFI)
                 .header(TOKEN_SUBJECT, getDifiOidcToken())
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -261,14 +261,14 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
         mvc.perform(
             MockMvcRequestBuilders.post(EXCHANGE_DIFI)
                 .header(TOKEN_SUBJECT, getDifiOidcToken())
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvDatapower", "password"))
+                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvDatapower", "password")),
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
             .andExpect(
                 jsonPath("$.error_description")
-                    .value("Failed to exchange difi token to oidc token: Validation failed: token has expired")
+                    .value("Failed to exchange difi token to oidc token: Validation failed: token has expired"),
             )
     }
 }
@@ -276,11 +276,11 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
 internal fun MockHttpServletRequestBuilder.formPostBody(formBody: List<BasicNameValuePair>) =
     this.content(
         EntityUtils.toString(
-            UrlEncodedFormEntity(formBody)
-        )
+            UrlEncodedFormEntity(formBody),
+        ),
     )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class MockTokenTest(
-    val access_token: String
+    val access_token: String,
 )

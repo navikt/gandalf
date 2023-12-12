@@ -7,7 +7,7 @@ import java.text.ParseException
 
 internal fun compare(
     jwtOriginal: JWTClaimsSet,
-    jwt: JWTClaimsSet
+    jwt: JWTClaimsSet,
 ) {
     val diffKeys: MutableSet<String> = HashSet(jwt.claims.keys)
     diffKeys.removeAll(jwtOriginal.claims.keys)

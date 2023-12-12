@@ -33,7 +33,7 @@ private val log = KotlinLogging.logger { }
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
 @Tag(
     name = "OIDC/SAML Token Validation",
-    description = "Validate tokens, SAML & OIDC (Datapower, IDP & IDP, AZURE, OPENAM)"
+    description = "Validate tokens, SAML & OIDC (Datapower, IDP & IDP, AZURE, OPENAM)",
 )
 class ValidateController {
     @Autowired
@@ -49,28 +49,28 @@ class ValidateController {
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = Validation::class)
+                            schema = Schema(implementation = Validation::class),
                         )
-                        )
-                ]
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "401",
                 description = INVALID_CLIENT,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()]
-            )
-        ]
+                content = [Content()],
+            ),
+        ],
     )
     @PostMapping("/samltoken/validate")
     fun validateSAMLToken(
         @Parameter(description = "Base64Encoded SAML Token to Validate", required = true)
         @RequestParam("token", required = true)
-        samlToken: String
+        samlToken: String,
     ): ResponseEntity<Any> {
         userDetails() ?: return unauthorizedResponse(Throwable(), "Unauthorized")
         log.info("Validate SAML token")
@@ -101,28 +101,28 @@ class ValidateController {
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = Validation::class)
+                            schema = Schema(implementation = Validation::class),
                         )
-                        )
-                ]
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "401",
                 description = INVALID_CLIENT,
-                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))]
+                content = [Content(schema = Schema(implementation = ErrorDescriptiveResponse::class))],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()]
-            )
-        ]
+                content = [Content()],
+            ),
+        ],
     )
     @PostMapping("/token/validate")
     fun validateOIDCToken(
         @Parameter(description = "Base64Encoded OIDC Token to Validate", required = true)
         @RequestParam("token", required = true)
-        oidcToken: String?
+        oidcToken: String?,
     ): ResponseEntity<Any> {
         requireNotNull(userDetails()) { return unauthorizedResponse(Throwable(), "Unauthorized") }
         log.info("Validate oidc token")

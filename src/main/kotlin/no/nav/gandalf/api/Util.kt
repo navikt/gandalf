@@ -36,7 +36,7 @@ object Util {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     internal fun unauthorizedResponse(
         e: Throwable,
-        errorMessage: String
+        errorMessage: String,
     ): ResponseEntity<Any> {
         log.error(e) { errorMessage }
         return ResponseEntity

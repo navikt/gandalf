@@ -5,20 +5,22 @@ val springSecurity = "6.2.0"
 val snakeYaml = "2.2"
 val mockk = "1.13.8"
 val kotest = "5.8.0"
-val apacheHttp = "4.5.12"
+val apacheHttp = "5.3"
 val gradleVersion = "8.4"
 val json = "20231013"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "7.4"
-val logbackClassic = "1.4.11"
+val logbackClassic = "1.4.14"
 val mockOAuth2Server = "2.0.1"
 val nimbus = "11.7.1"
 val openapi = "1.7.0"
 val unboundid = "6.0.11"
 val wiremock = "3.0.1"
-val wiremockCloud = "4.0.4"
+val wiremockCloud = "4.1.0"
 val h2 = "2.2.224"
 val jacksonDatatype = "2.16.0"
+val conscrypt = "2.5.2"
+val prometheus = "1.12.1"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -30,7 +32,7 @@ plugins {
     java
     val kotlinVersion = "1.9.21"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jlleitschuh.gradle.ktlint") version "12.0.2"
+    id("org.jlleitschuh.gradle.ktlint") version "12.0.3"
     id("com.github.ben-manes.versions") version "0.50.0"
     id("org.springframework.boot") version "3.2.0"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
@@ -50,17 +52,18 @@ repositories {
 
 dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackClassic")
+    implementation("ch.qos.logback:logback-core:$logbackClassic")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatype")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonDatatype")
     implementation("com.google.code.gson:gson")
     implementation("com.nimbusds:oauth2-oidc-sdk:$nimbus")
     implementation("com.unboundid:unboundid-ldapsdk:$unboundid")
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggin")
-    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("io.micrometer:micrometer-registry-prometheus:$prometheus")
     implementation("javax.inject:javax.inject:1")
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackStash")
-    implementation("org.apache.httpcomponents.client5:httpclient5")
+    implementation("org.apache.httpcomponents.client5:httpclient5:$apacheHttp")
     implementation("jakarta.persistence:jakarta.persistence-api")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
@@ -70,7 +73,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.conscrypt:conscrypt-openjdk:2.5.2")
+    implementation("org.conscrypt:conscrypt-openjdk:$conscrypt")
     implementation("org.springdoc:springdoc-openapi-ui:$openapi")
     implementation("org.yaml:snakeyaml:$snakeYaml")
     runtimeOnly("com.oracle.database.jdbc:ojdbc8")
@@ -93,9 +96,6 @@ dependencies {
 tasks {
     create("printVersion") {
         println(project.version)
-    }
-    withType<org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask> {
-        dependsOn("ktlintFormat")
     }
     bootJar {
         mainClass.set("no.nav.gandalf.GandalfApplication")
