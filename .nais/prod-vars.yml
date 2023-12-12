@@ -21,7 +21,7 @@ envs:
   - name: APPLICATION_JWKS_ENDPOINT_AZUREAD
     value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/discovery/v2.0/keys
   - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_OIDC
-    value: https://oidc.difi.no/idporten-oidc-provider/.well-known/openid-configuration
+    value: https://idporten.no/.well-known/openid-configuration
   - name: APPLICATION_EXTERNAL_CONFIGURATION_DIFI_MASKINPORTEN
     value: https://maskinporten.no/.well-known/oauth-authorization-server
   - name: SPRING_LDAP_URL
@@ -36,7 +36,7 @@ replicas:
 limits:
   memory: 1Gi
 requests:
-  cpu: 30m
+  cpu: 35m
   memory: 512Mi
 envFrom:
   secret: security-token-service
