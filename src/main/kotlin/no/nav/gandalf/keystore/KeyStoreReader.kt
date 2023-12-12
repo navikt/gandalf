@@ -23,7 +23,7 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class KeyStoreReader(
-    @Autowired val keystoreReaderConfig: KeystoreReaderConfig
+    @Autowired val keystoreReaderConfig: KeystoreReaderConfig,
 ) {
     private var keyStore: KeyStore? = null
     private var privateKey: PrivateKey? = null
@@ -63,7 +63,7 @@ class KeyStoreReader(
         readKeyStoreAndHandle {
             when {
                 keystoreFile.isNullOrEmpty() -> throw RuntimeException(
-                    "Failed to load keystore, system property '$keystoreFile' is null or empty!"
+                    "Failed to load keystore, system property '$keystoreFile' is null or empty!",
                 )
                 keystoreReaderConfig.keystorePassword.isNullOrEmpty() -> {
                     throw RuntimeException("Failed to load keystore, system property 'local-keystore.password' is null or empty!")
@@ -103,8 +103,8 @@ class KeyStoreReader(
         ChronoUnit.DAYS.between(
             LocalDate.now(),
             LocalDate.parse(
-                SimpleDateFormat("yyyy-MM-dd").format(cert?.notAfter)
-            )
+                SimpleDateFormat("yyyy-MM-dd").format(cert?.notAfter),
+            ),
         ).toDouble().apply {
             log.debug { "Signing certificate expires in: $this" }
             return when {

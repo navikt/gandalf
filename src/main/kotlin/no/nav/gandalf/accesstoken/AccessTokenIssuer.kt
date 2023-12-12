@@ -39,7 +39,7 @@ class AccessTokenIssuer(
     @Autowired private val keyStoreReader: KeyStoreReader,
     @Autowired private val externalIssuersConfig: ExternalIssuer,
     @Autowired private val localIssuerConfig: LocalIssuer,
-    private val gsonBuilder: GsonBuilder
+    private val gsonBuilder: GsonBuilder,
 ) : IssuerConfig {
     final override val issuer = localIssuerConfig.issuer
     private val domain = getDomainFromIssuerURL(this.issuer)
@@ -53,25 +53,25 @@ class AccessTokenIssuer(
                 this,
                 IssuerConfig.from(
                     externalIssuersConfig.issuerOpenAm,
-                    externalIssuersConfig.jwksEndpointOpenAm
+                    externalIssuersConfig.jwksEndpointOpenAm,
                 ),
                 IssuerConfig.from(
                     externalIssuersConfig.issuerAzureB2C,
-                    externalIssuersConfig.jwksEndpointAzureB2C
+                    externalIssuersConfig.jwksEndpointAzureB2C,
                 ),
                 IssuerConfig.from(
                     externalIssuersConfig.issuerAzureAd,
-                    externalIssuersConfig.jwksEndpointAzuread
+                    externalIssuersConfig.jwksEndpointAzuread,
                 ),
                 IssuerConfig.from(
-                    externalIssuersConfig.configurationDIFIOIDCUrl
+                    externalIssuersConfig.configurationDIFIOIDCUrl,
                 ),
                 IssuerConfig.from(
-                    externalIssuersConfig.configurationDIFIMaskinportenUrl
+                    externalIssuersConfig.configurationDIFIMaskinportenUrl,
                 ),
                 IssuerConfig.from(
-                    externalIssuersConfig.configurationTokenX
-                )
+                    externalIssuersConfig.configurationTokenX,
+                ),
             )
     }
 
@@ -95,7 +95,7 @@ class AccessTokenIssuer(
     @Throws(java.text.ParseException::class, JOSEException::class)
     fun validateOidcToken(
         oidcToken: String?,
-        now: Date
+        now: Date,
     ): OidcObject {
         require(!oidcToken.isNullOrEmpty()) { "Validation failed: OidcToken is null or empty" }
         val oidcObj = OidcObject(oidcToken)
@@ -113,7 +113,7 @@ class AccessTokenIssuer(
         username: String,
         consumerId: String?,
         authLevel: String?,
-        issueTime: ZonedDateTime = ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS)
+        issueTime: ZonedDateTime = ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS),
     ): String {
         val samlObj = SamlObject(issueTime)
         samlObj.issuer = SAML_ISSUER
@@ -130,7 +130,7 @@ class AccessTokenIssuer(
         SAXException::class,
         IOException::class,
         MarshalException::class,
-        XMLSignatureException::class
+        XMLSignatureException::class,
     )
     fun validateSamlToken(samlToken: String?): SamlObject {
         // read Saml token
@@ -147,11 +147,11 @@ class AccessTokenIssuer(
         SAXException::class,
         IOException::class,
         MarshalException::class,
-        XMLSignatureException::class
+        XMLSignatureException::class,
     )
     fun validateSamlToken(
         samlToken: String?,
-        keySelector: KeySelector
+        keySelector: KeySelector,
     ) {
         // read Saml token
         val samlObj = SamlObject()
@@ -165,7 +165,7 @@ class AccessTokenIssuer(
     @Throws(Exception::class)
     fun exchangeSamlToOidcToken(
         samlToken: String,
-        now: ZonedDateTime = ZonedDateTime.now()
+        now: ZonedDateTime = ZonedDateTime.now(),
     ): SignedJWT {
         log.info("Issuing OIDC token from SAML: exchangeSamlToOidcToken")
 
@@ -195,7 +195,7 @@ class AccessTokenIssuer(
     fun exchangeOidcToSamlToken(
         token: String,
         username: String?,
-        now: Date = OidcObject.toDate(ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS))
+        now: Date = OidcObject.toDate(ZonedDateTime.now().minusSeconds(SAML_ISSUE_SKEW_SECONDS)),
     ): String {
         log.info("Issuing SAML from JWT: exchangeOidcToSamlToken")
         val oidcObj = validateOidcToken(token, now)
@@ -215,7 +215,7 @@ class AccessTokenIssuer(
 
     private fun defaultLevelIfInternBruker(
         authLevel: String,
-        identType: String
+        identType: String,
     ) = if (authLevel == DEFAULT_SAML_AUTHLEVEL && identType == IdentType.INTERNBRUKER.value) {
         DEFAULT_INTERN_SAML_AUTHLEVEL
     } else {
@@ -224,7 +224,7 @@ class AccessTokenIssuer(
 
     fun samlObject(
         now: ZonedDateTime,
-        configure: SamlObject.() -> Unit
+        configure: SamlObject.() -> Unit,
     ): SamlObject = SamlObject(now).apply(configure)
 
     fun filterIssoInternIssuer() = knownIssuers.singleOrNull { it.issuer.contains(ISSO_OIDC_ISSUER) }
@@ -241,7 +241,7 @@ class AccessTokenIssuer(
     @Throws(Exception::class)
     fun exchangeDifiTokenToOidc(
         difiToken: String?,
-        now: Date = OidcObject.toDate(ZonedDateTime.now())
+        now: Date = OidcObject.toDate(ZonedDateTime.now()),
     ): SignedJWT {
         log.info("Issuing a Exchange token for DIFI-Accesstoken")
         require(!difiToken.isNullOrEmpty()) { "Validation failed: OidcToken is null or empty" }
@@ -268,7 +268,7 @@ class AccessTokenIssuer(
             difiOidcObj,
             copyClaims,
             keyStore.currentRSAKey,
-            OIDC_SIGNINGALG
+            OIDC_SIGNINGALG,
         )
     }
 
@@ -333,7 +333,7 @@ class AccessTokenIssuer(
         @Throws(java.lang.RuntimeException::class)
         fun getIdentType(
             subject: String,
-            acrLevel: String? = null
+            acrLevel: String? = null,
         ): String {
             return when {
                 subject.lowercase().startsWith("srv") -> {

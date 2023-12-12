@@ -12,5 +12,5 @@ data class LocalIssuer(
     @Value("\${application.clock.skew.saml}")
     val clockSkewSaml: Long,
     @Value("\${application.clock.skew.oidc}")
-    val clockSkewOidc: Long
+    val clockSkewOidc: Long,
 )

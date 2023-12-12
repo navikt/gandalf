@@ -32,7 +32,7 @@ class IdentityProviderController {
 
     @Operation(
         summary = "The JSON Web Key Set (JWKS)",
-        description = "The JSON Web Key Set (JWKS) is a set of keys which contains " + "the public keys used to verify any JSON Web Token (JWT) issued by the " + "authorization server and signed using the RS256 signing algorithm."
+        description = "The JSON Web Key Set (JWKS) is a set of keys which contains " + "the public keys used to verify any JSON Web Token (JWT) issued by the " + "authorization server and signed using the RS256 signing algorithm.",
     )
     @ApiResponses(
         value = [
@@ -43,17 +43,17 @@ class IdentityProviderController {
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = Keys::class)
+                            schema = Schema(implementation = Keys::class),
                         )
-                        )
-                ]
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()]
-            )
-        ]
+                content = [Content()],
+            ),
+        ],
     )
     @GetMapping("/jwks", "/jwks/")
     fun getKeys(): ResponseEntity<Any> {
@@ -75,17 +75,17 @@ class IdentityProviderController {
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = Keys::class)
+                            schema = Schema(implementation = Keys::class),
                         )
-                        )
-                ]
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()]
-            )
-        ]
+                content = [Content()],
+            ),
+        ],
     )
     @GetMapping("rest/v1/sts/jwks", "rest/v1/sts/jwks/")
     fun getDeprecatedKeys(): ResponseEntity<Any> {
@@ -102,17 +102,17 @@ class IdentityProviderController {
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = ConfigurationResponse::class)
+                            schema = Schema(implementation = ConfigurationResponse::class),
                         )
-                        )
-                ]
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()]
-            )
-        ]
+                content = [Content()],
+            ),
+        ],
     )
     @GetMapping("/.well-known/openid-configuration", "/.well-known/openid-configuration/")
     fun getConfiguration(): ResponseEntity<Any> {
@@ -128,8 +128,8 @@ class IdentityProviderController {
                 response_types_supported = ConfigurationResponse.RESPONSE_TYPES_SUPPORTED,
                 response_modes_supported = ConfigurationResponse.RESPONSE_MODE_SUPPORTED,
                 id_token_signing_alg_values_supported = ConfigurationResponse.ID_TOKEN_SIGNING_ALG,
-                subject_types_supported = ConfigurationResponse.SUBJECT_TYPES_SUPPORTED
-            )
+                subject_types_supported = ConfigurationResponse.SUBJECT_TYPES_SUPPORTED,
+            ),
         )
     }
 
@@ -143,17 +143,17 @@ class IdentityProviderController {
                     (
                         Content(
                             mediaType = "application/json",
-                            schema = Schema(implementation = ConfigurationResponse::class)
+                            schema = Schema(implementation = ConfigurationResponse::class),
                         )
-                        )
-                ]
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "500",
                 description = INTERNAL_SERVER_ERROR,
-                content = [Content()]
-            )
-        ]
+                content = [Content()],
+            ),
+        ],
     )
     @GetMapping("rest/v1/sts/.well-known/openid-configuration", "rest/v1/sts/.well-known/openid-configuration/")
     fun getDeprecatedConfiguration(): ResponseEntity<Any> {

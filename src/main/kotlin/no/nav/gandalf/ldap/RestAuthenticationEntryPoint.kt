@@ -20,7 +20,7 @@ class RestAuthenticationEntryPoint : AuthenticationEntryPoint {
     override fun commence(
         httpServletRequest: HttpServletRequest?,
         httpServletResponse: HttpServletResponse,
-        e: AuthenticationException?
+        e: AuthenticationException?,
     ) {
         val response = ErrorDescriptiveResponse(INVALID_CLIENT, "Unauthorised: ${e?.message ?: ""}")
         httpServletResponse.status = HttpStatus.UNAUTHORIZED.value()

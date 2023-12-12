@@ -10,7 +10,7 @@ internal fun getUnsignedSaml(samlObject: SamlObject): String {
         "<saml2:SubjectConfirmationData NotBefore=\"" + samlObject.dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" + samlObject.notOnOrAfter + "\"/></saml2:SubjectConfirmation></saml2:Subject>" +
         "<saml2:Conditions NotBefore=\"" + samlObject.dateNotBefore!!.format(format) + "\" NotOnOrAfter=\"" +
         samlObject.notOnOrAfter!!.format(
-            format
+            format,
         ) +
         "\"/><saml2:AttributeStatement>" +
         "<saml2:Attribute Name=\"identType\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\"><saml2:AttributeValue>" + samlObject.identType + "</saml2:AttributeValue></saml2:Attribute>" +

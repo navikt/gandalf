@@ -178,7 +178,7 @@ class SamlObject : ClockSkew {
         if (dateNotBefore != null && nbfClockSkew.isBefore(dateNotBefore!!.toInstant())) {
             message = "Invalid SAML token: condition nbf: $dateNotBefore, is before: $nbfClockSkew"
             throw OAuthException(
-                OAuth2Error.INVALID_REQUEST.setDescription(message)
+                OAuth2Error.INVALID_REQUEST.setDescription(message),
             ).also { log.warn(message) }
         }
         // validate NotOnOrAfter
@@ -187,7 +187,7 @@ class SamlObject : ClockSkew {
         ) {
             message = "Invalid SAML token: condition notOnOrAfter: $notOnOrAfter, is not on or after: $noaClockSkew"
             throw OAuthException(
-                OAuth2Error.INVALID_REQUEST.setDescription(message).also { log.warn(message) }
+                OAuth2Error.INVALID_REQUEST.setDescription(message).also { log.warn(message) },
             )
         }
 
@@ -197,7 +197,7 @@ class SamlObject : ClockSkew {
         if (signatureNode == null) {
             message = "Invalid SAML token: Signature is missing"
             throw OAuthException(
-                OAuth2Error.INVALID_REQUEST.setDescription(message)
+                OAuth2Error.INVALID_REQUEST.setDescription(message),
             ).also { log.warn(message) }
         }
         val valContext = DOMValidateContext(keySelector, signatureNode)
@@ -212,14 +212,14 @@ class SamlObject : ClockSkew {
             if (!signature.signatureValue.validate(valContext)) {
                 message = "Invalid SAML token: Signature validation failed"
                 throw OAuthException(
-                    OAuth2Error.INVALID_REQUEST.setDescription(message)
+                    OAuth2Error.INVALID_REQUEST.setDescription(message),
                 ).also { log.warn(message) }
             }
             for (ref in signature.signedInfo.references) {
                 if (!(ref as Reference).validate(valContext)) {
                     message = "Invalid SAML token: Signature validation failed on reference ${ref.uri}"
                     throw OAuthException(
-                        OAuth2Error.INVALID_REQUEST.setDescription(message)
+                        OAuth2Error.INVALID_REQUEST.setDescription(message),
                     ).also { log.warn(message) }
                 }
             }
@@ -283,7 +283,7 @@ class SamlObject : ClockSkew {
                 signFac.newSignedInfo(
                     signFac.newCanonicalizationMethod(CanonicalizationMethod.EXCLUSIVE, null as C14NMethodParameterSpec?),
                     signFac.newSignatureMethod(SignatureMethod.RSA_SHA1, null),
-                    listOf(ref)
+                    listOf(ref),
                 )
             val cert: X509Certificate? = keyStoreReader.signingCertificate
             if (cert == null) {
