@@ -47,7 +47,7 @@ class RsaKeys {
 
     fun rotateKeys(
         nextKey: RSAKey,
-        expires: LocalDateTime?
+        expires: LocalDateTime?,
     ) {
         previousKey = currentKey
         currentKey = this.nextKey

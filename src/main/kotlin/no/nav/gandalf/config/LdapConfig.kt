@@ -18,7 +18,7 @@ data class LdapConfig(
     @Value("\${srvtest.password: password}")
     var srvTestPassword: String,
     @Value("\${srvtest.username: srvPDP}")
-    var srvTestUsername: String
+    var srvTestUsername: String,
 ) {
     override fun toString() = "Host: $url, Port: $port, Timeout: $timeout, Base: $base"
 }

@@ -13,7 +13,7 @@ private const val ATTRIBUTE_NAME = "cn"
 
 @Component
 class LDAPAuthentication(
-    @Autowired val ldap: LDAPConnectionSetup
+    @Autowired val ldap: LDAPConnectionSetup,
 ) {
     var ldapException: LDAPException? = null
 
@@ -29,7 +29,7 @@ class LDAPAuthentication(
                             authenticated(
                                 dn,
                                 user.password,
-                                acc
+                                acc,
                             )
                     }.also {
                         when (it) {
@@ -56,7 +56,7 @@ class LDAPAuthentication(
     private fun authenticated(
         dn: String,
         pwd: String,
-        alreadyAuthenticated: Boolean
+        alreadyAuthenticated: Boolean,
     ) = when {
         alreadyAuthenticated -> true
         else ->

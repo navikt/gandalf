@@ -92,7 +92,7 @@ class OidcObject : ClockSkew {
     @Throws(JOSEException::class)
     fun validate(
         issuer: IssuerConfig,
-        rsaJwk: RSAKey
+        rsaJwk: RSAKey,
     ) {
         validate(issuer.issuer, toDate(ZonedDateTime.now()), rsaJwk)
     }
@@ -100,13 +100,13 @@ class OidcObject : ClockSkew {
     @Throws(JOSEException::class)
     fun validate(
         issuer: IssuerConfig,
-        now: Date
+        now: Date,
     ) {
         when (val rsaJwk = issuer.getKeyByKeyId(signedJWT!!.header.keyID)) {
             null -> {
                 throw IllegalArgumentException(
                     "Validation failed: failed to find key " +
-                        signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer
+                        signedJWT!!.header.keyID + " in keys provided by issuer " + issuer.issuer,
                 )
             }
             else -> {
@@ -119,7 +119,7 @@ class OidcObject : ClockSkew {
     fun validate(
         issuer: String?,
         now: Date,
-        rsaJwk: RSAKey
+        rsaJwk: RSAKey,
     ) {
         val maxClockSkew = getMaxClockSkew()
         val nbfClockSkew = now.toInstant().plusSeconds(maxClockSkew)
@@ -149,12 +149,12 @@ class OidcObject : ClockSkew {
 
     fun getSignedToken(
         key: RSAKey,
-        alg: JWSAlgorithm
+        alg: JWSAlgorithm,
     ) = getSignedJWT(jWTClaimsSet, key, alg)
 
     fun getSignedTokenSpec2(
         key: RSAKey,
-        alg: JWSAlgorithm
+        alg: JWSAlgorithm,
     ) = getSignedJWT(jWTClaimsSetSpec2, key, alg)
 
     private val jWTClaimsSet: JWTClaimsSet
@@ -212,7 +212,7 @@ class OidcObject : ClockSkew {
     private fun getSignedJWT(
         claimsSet: JWTClaimsSet,
         key: RSAKey,
-        alg: JWSAlgorithm
+        alg: JWSAlgorithm,
     ): SignedJWT {
         log.info("Sign the jwt with claimSet for issuer: ${claimsSet.issuer}")
         try {
@@ -240,7 +240,7 @@ class OidcObject : ClockSkew {
         copyOidc: OidcObject,
         copyClaimsList: List<String?>,
         key: RSAKey,
-        alg: JWSAlgorithm
+        alg: JWSAlgorithm,
     ): SignedJWT {
         // copy claims in copyClaimsList from copyOidc to this and add extra claims from copyOidc to this
         val copyClaims: Map<String?, Any> = copyOidc.signedJWT!!.jwtClaimsSet.claims
@@ -276,7 +276,7 @@ class OidcObject : ClockSkew {
 
     fun setAudience(
         aud1: String,
-        aud2: String
+        aud2: String,
     ) {
         audience = ArrayList()
         (audience as ArrayList<String>).add(aud1)

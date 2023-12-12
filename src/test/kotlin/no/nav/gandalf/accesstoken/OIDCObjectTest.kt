@@ -44,7 +44,7 @@ class OIDCObjectTest {
             val oidcObj =
                 OidcObject(
                     AccessTokenIssuer.toZonedDateTime(jwtOriginal.issueTime),
-                    AccessTokenIssuer.OIDC_DURATION_TIME
+                    AccessTokenIssuer.OIDC_DURATION_TIME,
                 )
             oidcObj.id = jwtOriginal.jwtid
             oidcObj.subject = username
@@ -71,7 +71,7 @@ class OIDCObjectTest {
             var oidcObj =
                 OidcObject(
                     AccessTokenIssuer.toZonedDateTime(jwtOriginal.issueTime),
-                    AccessTokenIssuer.toZonedDateTime(jwtOriginal.expirationTime)
+                    AccessTokenIssuer.toZonedDateTime(jwtOriginal.expirationTime),
                 )
             oidcObj.id = jwtOriginal.jwtid
             oidcObj.subject = username
