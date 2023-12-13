@@ -13,7 +13,7 @@ val logbackStash = "7.4"
 val logbackClassic = "1.4.14"
 val mockOAuth2Server = "2.0.1"
 val nimbus = "11.7.1"
-val openapi = "1.7.0"
+val openapi = "2.3.0"
 val unboundid = "6.0.11"
 val wiremock = "3.0.1"
 val wiremockCloud = "4.1.0"
@@ -74,7 +74,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.conscrypt:conscrypt-openjdk:$conscrypt")
-    implementation("org.springdoc:springdoc-openapi-ui:$openapi")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$openapi")
     implementation("org.yaml:snakeyaml:$snakeYaml")
     runtimeOnly("com.oracle.database.jdbc:ojdbc8")
 
