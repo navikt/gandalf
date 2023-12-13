@@ -1,7 +1,7 @@
 package no.nav.gandalf.config
 
 import io.prometheus.client.CollectorRegistry
-import org.springdoc.core.SpringDocUtils
+import org.springdoc.core.utils.SpringDocUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
