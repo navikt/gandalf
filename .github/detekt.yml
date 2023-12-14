@@ -11,11 +11,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Detekt Codesmell
-        uses: natiginfo/action-detekt-all@1.15.0
+        uses: natiginfo/action-detekt-all@1.23.3
         with:
           args: >
             -r txt:reports/detekt.txt
-            --jvm-target 15
+            --jvm-target 21
             --build-upon-default-config
             --config detekt/detekt-config.yml
       - name: Print Report
