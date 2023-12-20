@@ -31,7 +31,7 @@ envs:
   - name: SPRING_LDAP_BASE
     value: DC=adeo,DC=no
 replicas:
-  min: 4
+  min: 2
   max: 8
 limits:
   memory: 1Gi
