@@ -12,6 +12,7 @@ jobs:
         with:
           java-version: 21
           cache: 'gradle'
+          distribution: temurin
       - name: Run tests
         run: ./gradlew clean test
       - name: Unit tests results
