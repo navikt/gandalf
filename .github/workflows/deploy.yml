@@ -67,6 +67,8 @@ jobs:
     needs: build
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-20.04
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v2
@@ -82,6 +84,8 @@ jobs:
     needs: [ build, deploy-dev-t4 ]
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-20.04
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v2
@@ -97,6 +101,8 @@ jobs:
     needs: [ build, deploy-dev, deploy-dev-t4 ]
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-20.04
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v2
