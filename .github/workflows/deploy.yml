@@ -16,7 +16,6 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: 21
-          distribution: 'zulu'
           cache: 'gradle'
       - name: Run tests
         run: ./gradlew clean test
@@ -43,7 +42,6 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: 21
-          distribution: 'zulu'
           cache: 'gradle'
       - name: Build JAR
         run: ./gradlew bootJar -x test
