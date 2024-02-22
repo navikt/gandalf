@@ -1,7 +1,7 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val springSecurity = "6.2.1"
+val springSecurity = "6.2.2"
 val snakeYaml = "2.2"
 val mockk = "1.13.9"
 val kotest = "5.8.0"
