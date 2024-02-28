@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val springSecurity = "6.2.2"
 val snakeYaml = "2.2"
-val mockk = "1.13.9"
+val mockk = "1.13.10"
 val kotest = "5.8.0"
 val apacheHttp = "5.3.1"
 val gradleVersion = "8.4"
