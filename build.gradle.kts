@@ -18,7 +18,7 @@ val unboundid = "7.0.0"
 val wiremock = "3.0.1"
 val wiremockCloud = "4.1.2"
 val h2 = "2.2.224"
-val jacksonDatatype = "2.17.0"
+val jacksonDatatype = "2.17.1"
 val conscrypt = "2.5.2"
 val prometheus = "1.12.5"
 
@@ -32,7 +32,7 @@ plugins {
     java
     val kotlinVersion = "1.9.23"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
     id("com.github.ben-manes.versions") version "0.51.0"
     id("org.springframework.boot") version "3.2.5"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
