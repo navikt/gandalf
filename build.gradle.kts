@@ -11,7 +11,7 @@ val json = "20240303"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "7.4"
 val logbackClassic = "1.5.6"
-val mockOAuth2Server = "2.1.7"
+val mockOAuth2Server = "2.1.8"
 val nimbus = "11.12"
 val openapi = "2.6.0"
 val unboundid = "7.0.1"
@@ -30,7 +30,7 @@ java {
 plugins {
     application
     java
-    val kotlinVersion = "1.9.23"
+    val kotlinVersion = "2.0.0"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
     id("com.github.ben-manes.versions") version "0.51.0"
