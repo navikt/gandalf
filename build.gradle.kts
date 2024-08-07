@@ -1,7 +1,7 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val springSecurity = "6.3.0"
+val springSecurity = "6.3.1"
 val snakeYaml = "2.2"
 val mockk = "1.13.11"
 val kotest = "5.9.1"
@@ -11,10 +11,10 @@ val json = "20240303"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "7.4"
 val logbackClassic = "1.5.6"
-val mockOAuth2Server = "2.1.5"
+val mockOAuth2Server = "2.1.7"
 val nimbus = "11.12"
 val openapi = "2.5.0"
-val unboundid = "7.0.0"
+val unboundid = "7.0.1"
 val wiremock = "3.0.1"
 val wiremockCloud = "4.1.3"
 val h2 = "2.2.224"
@@ -34,7 +34,7 @@ plugins {
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
     id("com.github.ben-manes.versions") version "0.51.0"
-    id("org.springframework.boot") version "3.2.5"
+    id("org.springframework.boot") version "3.3.1"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.1.5"
