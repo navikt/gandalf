@@ -70,3 +70,4 @@ jobs:
           RESOURCE: .nais/nais.yml
           VARS: .nais/t4-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
+          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}

@@ -95,6 +95,7 @@ jobs:
           VARS: .nais/default-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
           TIMEOUT: 15m
+          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
 
   deploy-prod:
     name: Deploy to NAIS prod
@@ -112,4 +113,4 @@ jobs:
           VARS: .nais/prod-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
           TIMEOUT: 15m
-
+          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
