@@ -33,6 +33,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-20.04
     outputs:
+      telemetry: ${{ steps.docker-build-push.outputs.telemetry }}
       "image": ${{ steps.docker-build-push.outputs.image }}
     permissions:
       packages: "write"
@@ -78,6 +79,7 @@ jobs:
           VARS: .nais/t4-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
           TIMEOUT: 15m
+          TELEMETRY: ${{ needs.build.outputs.telemetry }}
 
   deploy-dev:
     name: Deploy to NAIS dev
@@ -95,7 +97,7 @@ jobs:
           VARS: .nais/default-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
           TIMEOUT: 15m
-          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
+          TELEMETRY: ${{ needs.build.outputs.telemetry }}
 
   deploy-prod:
     name: Deploy to NAIS prod
@@ -113,4 +115,4 @@ jobs:
           VARS: .nais/prod-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
           TIMEOUT: 15m
-          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
+          TELEMETRY: ${{ needs.build.outputs.telemetry }}
