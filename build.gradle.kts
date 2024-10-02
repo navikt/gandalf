@@ -21,7 +21,7 @@ val wiremockCloud = "4.1.4"
 val h2 = "2.3.232"
 val jacksonDatatype = "2.17.2"
 val conscrypt = "2.5.2"
-val prometheus = "1.12.5"
+val prometheus = "1.13.5"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
