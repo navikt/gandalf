@@ -46,7 +46,7 @@ jobs:
           TRIVY_CACHE_DIR: ".trivy"
 
       - name: Cache Trivy DB
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .trivy
           key: trivy-java-db
@@ -86,6 +86,7 @@ jobs:
         env:
           TRIVY_OFFLINE_SCAN: "true"
           TRIVY_SKIP_DB_UPDATE: "true"
+          TRIVY_SKIP_JAVA_DB_UPDATE: "true"
           TRIVY_CACHE_DIR: ".trivy"
 
       - name: Upload salsa
