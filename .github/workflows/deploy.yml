@@ -7,6 +7,10 @@ on:
     branches:
       - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Run tests
@@ -46,6 +50,9 @@ jobs:
         with:
           path: .trivy
           key: trivy-java-db
+
+      - name: Fix .trivy permissions
+        run: sudo chown -R $(stat . -c %u:%g) .trivy
 
   build:
     name: Build and push Docker container
