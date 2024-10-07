@@ -39,7 +39,7 @@ jobs:
 
   build:
     name: Build and push Docker container
-    needs: test
+    needs: [test, trivy-setup]
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-20.04
     outputs:
@@ -60,7 +60,6 @@ jobs:
         run: ./gradlew bootJar -x test
 
       - name: Push docker image to GAR and sign image
-        needs: trivy-setup
         uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
