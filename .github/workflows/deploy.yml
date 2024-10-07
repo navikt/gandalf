@@ -29,10 +29,13 @@ jobs:
 
   trivy-setup:
     name: Setup Trivy
-    uses: 'aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8' # ratchet:aquasecurity/trivy-action@0.24.0
-    env:
-      TRIVY_DOWNLOAD_JAVA_DB_ONLY: "true"
-      TRIVY_JAVA_DB_REPOSITORY: "europe-north1-docker.pkg.dev/nais-io/remote-ghcr/aquasecurity/trivy-java-db:1"
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Setup Trivy
+        uses: 'aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8' # ratchet:aquasecurity/trivy-action@0.24.0
+        env:
+          TRIVY_DOWNLOAD_JAVA_DB_ONLY: "true"
+          TRIVY_JAVA_DB_REPOSITORY: "europe-north1-docker.pkg.dev/nais-io/remote-ghcr/aquasecurity/trivy-java-db:1"
 
   build:
     name: Build and push Docker container
