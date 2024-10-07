@@ -60,6 +60,7 @@ jobs:
         run: ./gradlew bootJar -x test
 
       - name: Push docker image to GAR and sign image
+        needs: trivy-setup
         uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
@@ -69,7 +70,6 @@ jobs:
         env:
           TRIVY_OFFLINE_SCAN: "true"
           TRIVY_SKIP_DB_UPDATE: "true"
-          TRIVY_JAVA_DB_REPOSITORY: "europe-north1-docker.pkg.dev/nais-io/remote-ghcr/aquasecurity/trivy-java-db:1"
 
       - name: Upload salsa
         uses: actions/upload-artifact@v4
