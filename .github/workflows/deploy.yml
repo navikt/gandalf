@@ -31,29 +31,6 @@ jobs:
           name: unit-tests-results
           path: build/reports/tests
 
-  trivy-setup:
-    name: Setup Trivy
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Add Trivy folder
-        run: mkdir -p .trivy
-
-      - name: Setup Trivy
-        uses: 'aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8' # ratchet:aquasecurity/trivy-action@0.24.0
-        env:
-          TRIVY_DOWNLOAD_JAVA_DB_ONLY: "true"
-          TRIVY_JAVA_DB_REPOSITORY: "europe-north1-docker.pkg.dev/nais-io/remote-ghcr/aquasecurity/trivy-java-db:1"
-          TRIVY_CACHE_DIR: ".trivy"
-
-      - name: Cache Trivy DB
-        uses: actions/cache@v4
-        with:
-          path: .trivy
-          key: trivy-java-db
-
-      - name: Fix .trivy permissions
-        run: sudo chown -R $(stat . -c %u:%g) .trivy
-
   build:
     name: Build and push Docker container
     needs: [test, trivy-setup]
@@ -84,10 +61,8 @@ jobs:
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # Provided as Organization Secret
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # Provided as Organization Variable
         env:
-          TRIVY_OFFLINE_SCAN: "true"
-          TRIVY_SKIP_DB_UPDATE: "true"
-          TRIVY_SKIP_JAVA_DB_UPDATE: "true"
-          TRIVY_CACHE_DIR: ".trivy"
+          TRIVY_DOWNLOAD_JAVA_DB_ONLY: "true"
+          TRIVY_JAVA_DB_REPOSITORY: "europe-north1-docker.pkg.dev/nais-io/remote-ghcr/aquasecurity/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1,public.ecr.aws/aquasecurity/trivy-java-db:1"
 
       - name: Upload salsa
         uses: actions/upload-artifact@v4
