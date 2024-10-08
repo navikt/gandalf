@@ -29,6 +29,7 @@ jobs:
 
   build:
     name: Build and push Docker container
+    # comment back in
  #   needs: test
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-20.04
