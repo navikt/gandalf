@@ -55,19 +55,21 @@ jobs:
           team: aura
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # Provided as Organization Secret
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # Provided as Organization Variable
-
-  deploy-dev-dev:
-    name: Deploy to NAIS dev dev
-    needs: build
-    runs-on: ubuntu-20.04
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: nais/deploy/actions/deploy@v2
         env:
-          CLUSTER: dev-fss
-          RESOURCE: .nais/nais.yml
-          VARS: .nais/t4-vars.yml
-          VAR: image=${{ needs.build.outputs.image }}
-          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
+          TRIVY_JAVA_DB_REPOSITORY: "europe-north1-docker.pkg.dev/nais-io/remote-ghcr/aquasecurity/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1,public.ecr.aws/aquasecurity/trivy-java-db:1"
+
+  #deploy-dev-dev:
+  #  name: Deploy to NAIS dev dev
+  #  needs: build
+  #  runs-on: ubuntu-20.04
+  #  permissions:
+  #    id-token: write
+  #  steps:
+  #    - uses: actions/checkout@v4
+  #    - uses: nais/deploy/actions/deploy@v2
+  #      env:
+  #        CLUSTER: dev-fss
+  #        RESOURCE: .nais/nais.yml
+  #        VARS: .nais/t4-vars.yml
+  #        VAR: image=${{ needs.build.outputs.image }}
+  #        TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
