@@ -8,29 +8,28 @@ on:
       - master
 
 jobs:
- # test:
- #   name: Run tests
- #   runs-on: ubuntu-20.04
- #   steps:
- #     - uses: actions/checkout@v4
- #     - uses: actions/setup-java@v4
- #       with:
- #         java-version: 21
- #         cache: 'gradle'
- #         distribution: temurin
- #     - name: Run tests
- #       run: ./gradlew clean test
- #     - name: Unit tests results
- #       if: always()
- #       uses: actions/upload-artifact@v4
- #       with:
- #         name: unit-tests-results
- #         path: build/reports/tests
+  test:
+    name: Run tests
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          cache: 'gradle'
+          distribution: temurin
+      - name: Run tests
+        run: ./gradlew clean test
+      - name: Unit tests results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-tests-results
+          path: build/reports/tests
 
   build:
     name: Build and push Docker container
-    # comment back in
- #   needs: test
+    needs: test
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-20.04
     outputs:
@@ -51,7 +50,7 @@ jobs:
         run: ./gradlew bootJar -x test
 
       - name: Push docker image to GAR and sign image
-        uses: nais/docker-build-push@main
+        uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
           team: aura
@@ -64,56 +63,56 @@ jobs:
           name: salsa
           path: ${{ steps.docker-build-push.outputs.salsa }}
 
-#  deploy-dev-t4:
-#    name: Deploy to NAIS dev (old t4)
-#    needs: build
-#    if: "github.ref == 'refs/heads/master'"
-#    runs-on: ubuntu-20.04
-#    permissions:
-#      id-token: write
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: nais/deploy/actions/deploy@v2
-#        env:
-#          CLUSTER: dev-fss
-#          RESOURCE: .nais/nais.yml
-#          VARS: .nais/t4-vars.yml
-#          VAR: image=${{ needs.build.outputs.image }}
-#          TIMEOUT: 15m
-#          TELEMETRY: ${{ needs.build.outputs.telemetry }}
-#
-#  deploy-dev:
-#    name: Deploy to NAIS dev
-#    needs: [ build, deploy-dev-t4 ]
-#    if: "github.ref == 'refs/heads/master'"
-#    runs-on: ubuntu-20.04
-#    permissions:
-#      id-token: write
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: nais/deploy/actions/deploy@v2
-#        env:
-#          CLUSTER: dev-fss
-#          RESOURCE: .nais/nais.yml
-#          VARS: .nais/default-vars.yml
-#          VAR: image=${{ needs.build.outputs.image }}
-#          TIMEOUT: 15m
-#          TELEMETRY: ${{ needs.build.outputs.telemetry }}
-#
-#  deploy-prod:
-#    name: Deploy to NAIS prod
-#    needs: [ build, deploy-dev, deploy-dev-t4 ]
-#    if: "github.ref == 'refs/heads/master'"
-#    runs-on: ubuntu-20.04
-#    permissions:
-#      id-token: write
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: nais/deploy/actions/deploy@v2
-#        env:
-#          CLUSTER: prod-fss
-#          RESOURCE: .nais/nais.yml
-#          VARS: .nais/prod-vars.yml
-#          VAR: image=${{ needs.build.outputs.image }}
-#          TIMEOUT: 15m
-#          TELEMETRY: ${{ needs.build.outputs.telemetry }}
+  deploy-dev-t4:
+    name: Deploy to NAIS dev (old t4)
+    needs: build
+    if: "github.ref == 'refs/heads/master'"
+    runs-on: ubuntu-20.04
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-fss
+          RESOURCE: .nais/nais.yml
+          VARS: .nais/t4-vars.yml
+          VAR: image=${{ needs.build.outputs.image }}
+          TIMEOUT: 15m
+          TELEMETRY: ${{ needs.build.outputs.telemetry }}
+
+  deploy-dev:
+    name: Deploy to NAIS dev
+    needs: [ build, deploy-dev-t4 ]
+    if: "github.ref == 'refs/heads/master'"
+    runs-on: ubuntu-20.04
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-fss
+          RESOURCE: .nais/nais.yml
+          VARS: .nais/default-vars.yml
+          VAR: image=${{ needs.build.outputs.image }}
+          TIMEOUT: 15m
+          TELEMETRY: ${{ needs.build.outputs.telemetry }}
+
+  deploy-prod:
+    name: Deploy to NAIS prod
+    needs: [ build, deploy-dev, deploy-dev-t4 ]
+    if: "github.ref == 'refs/heads/master'"
+    runs-on: ubuntu-20.04
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-fss
+          RESOURCE: .nais/nais.yml
+          VARS: .nais/prod-vars.yml
+          VAR: image=${{ needs.build.outputs.image }}
+          TIMEOUT: 15m
+          TELEMETRY: ${{ needs.build.outputs.telemetry }}
