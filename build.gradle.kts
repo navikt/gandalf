@@ -6,7 +6,6 @@ val springSecurity = "6.3.3"
 val snakeYaml = "2.3"
 val mockk = "1.13.13"
 val kotest = "5.9.1"
-val apacheHttp = "5.3.1"
 val gradleVersion = "8.4"
 val json = "20240303"
 val kotlinLoggin = "3.0.5"
@@ -64,7 +63,6 @@ dependencies {
     implementation("javax.inject:javax.inject:1")
     implementation("jakarta.validation:jakarta.validation-api")
     implementation("net.logstash.logback:logstash-logback-encoder:$logbackStash")
-    implementation("org.apache.httpcomponents.client5:httpclient5:$apacheHttp")
     implementation("jakarta.persistence:jakarta.persistence-api")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
