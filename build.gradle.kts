@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val springSecurity = "6.4.2"
 val snakeYaml = "2.3"
-val mockk = "1.13.13"
+val mockk = "1.13.14"
 val kotest = "5.9.1"
 val gradleVersion = "8.4"
 val json = "20240303"
