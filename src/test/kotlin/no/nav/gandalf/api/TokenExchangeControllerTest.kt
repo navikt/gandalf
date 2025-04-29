@@ -2,6 +2,7 @@ package no.nav.gandalf.api
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.OptBoolean
 import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.annotation.PostConstruct
 import no.nav.gandalf.SpringBootWireMockSetup
@@ -283,6 +284,6 @@ internal fun MockHttpServletRequestBuilder.formPostBody(formBody: List<BasicName
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class MockTokenTest(
-    @JsonProperty("access_token")
+    @JsonProperty("access_token", isRequired = OptBoolean.TRUE)
     val access_token: String,
 )

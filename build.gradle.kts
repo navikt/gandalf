@@ -18,7 +18,7 @@ val unboundid = "7.0.2"
 val wiremock = "3.0.1"
 val wiremockCloud = "4.2.1"
 val h2 = "2.3.232"
-val jacksonDatatype = "2.18.3"
+val jacksonDatatype = "2.19.0"
 val conscrypt = "2.5.2"
 val prometheus = "1.12.5"
 
@@ -53,8 +53,11 @@ repositories {
 dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackClassic")
     implementation("ch.qos.logback:logback-core:$logbackClassic")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatype")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonDatatype")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatype")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonDatatype")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonDatatype")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonDatatype")
     implementation("com.google.code.gson:gson")
     implementation("com.nimbusds:oauth2-oidc-sdk:$nimbus")
     implementation("com.unboundid:unboundid-ldapsdk:$unboundid")
