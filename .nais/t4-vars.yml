@@ -33,8 +33,10 @@ envs:
 replicas:
   min: 1
   max: 4
+limits:
+  memory: 748Mi
 requests:
-  cpu: 39m
+  cpu: 23m
   memory: 480Mi
 envFrom:
   secret: security-token-service-t4
