@@ -28,7 +28,7 @@ java {
 plugins {
     application
     java
-    val kotlinVersion = "2.1.20"
+    val kotlinVersion = "2.1.21"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
     id("com.github.ben-manes.versions") version "0.52.0"
