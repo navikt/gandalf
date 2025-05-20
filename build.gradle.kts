@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val springSecurity = "6.4.5"
+val springSecurity = "6.5.0"
 val snakeYaml = "2.4"
 val mockk = "1.14.2"
 val kotest = "5.9.1"
