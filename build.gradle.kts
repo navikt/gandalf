@@ -11,7 +11,7 @@ val kotlinLoggin = "3.0.5"
 val logbackStash = "8.1"
 val logbackClassic = "1.5.18"
 val mockOAuth2Server = "2.1.11"
-val nimbus = "11.24"
+val nimbus = "11.25"
 val openapi = "2.8.8"
 val unboundid = "7.0.2"
 val wiremockCloud = "4.2.1"
@@ -30,7 +30,7 @@ plugins {
     java
     val kotlinVersion = "2.1.21"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
     id("com.github.ben-manes.versions") version "0.52.0"
     id("org.springframework.boot") version "3.5.0"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
