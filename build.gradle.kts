@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val springSecurity = "6.5.0"
+val springSecurity = "6.5.1"
 val snakeYaml = "2.4"
 val mockk = "1.14.2"
 val kotest = "5.9.1"
@@ -13,10 +13,10 @@ val logbackClassic = "1.5.18"
 val mockOAuth2Server = "2.2.1"
 val nimbus = "11.26"
 val openapi = "2.8.9"
-val unboundid = "7.0.2"
+val unboundid = "7.0.3"
 val wiremockCloud = "4.3.0"
 val h2 = "2.3.232"
-val jacksonDatatype = "2.19.0"
+val jacksonDatatype = "2.19.1"
 val conscrypt = "2.5.2"
 val prometheus = "1.12.5"
 
