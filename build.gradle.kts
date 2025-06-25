@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val springSecurity = "6.5.1"
 val snakeYaml = "2.4"
-val mockk = "1.14.2"
+val mockk = "1.14.4"
 val kotest = "5.9.1"
 val json = "20250517"
 val kotlinLoggin = "3.0.5"
@@ -28,7 +28,7 @@ java {
 plugins {
     application
     java
-    val kotlinVersion = "2.1.21"
+    val kotlinVersion = "2.2.0"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
     id("com.github.ben-manes.versions") version "0.52.0"
