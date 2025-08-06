@@ -16,7 +16,7 @@ val openapi = "2.8.9"
 val unboundid = "7.0.3"
 val wiremockCloud = "4.3.0"
 val h2 = "2.3.232"
-val jacksonDatatype = "2.19.1"
+val jacksonDatatype = "2.19.2"
 val conscrypt = "2.5.2"
 val prometheus = "1.12.5"
 
