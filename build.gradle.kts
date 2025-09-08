@@ -30,7 +30,7 @@ plugins {
     java
     val kotlinVersion = "2.2.10"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("com.github.ben-manes.versions") version "0.52.0"
     id("org.springframework.boot") version "3.5.4"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
