@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val springSecurity = "6.5.2"
+val springSecurity = "6.5.3"
 val snakeYaml = "2.4"
 val mockk = "1.14.5"
 val kotest = "5.9.1"
@@ -28,9 +28,9 @@ java {
 plugins {
     application
     java
-    val kotlinVersion = "2.2.0"
+    val kotlinVersion = "2.2.10"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("com.github.ben-manes.versions") version "0.52.0"
     id("org.springframework.boot") version "3.5.4"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
