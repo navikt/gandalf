@@ -15,7 +15,7 @@ val nimbus = "11.28"
 val openapi = "2.8.9"
 val unboundid = "7.0.3"
 val wiremockCloud = "4.3.0"
-val h2 = "2.3.232"
+val h2 = "2.4.240"
 val jacksonDatatype = "2.19.2"
 val conscrypt = "2.5.2"
 val prometheus = "1.12.5"
@@ -31,7 +31,7 @@ plugins {
     val kotlinVersion = "2.2.20"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
-    id("com.github.ben-manes.versions") version "0.52.0"
+    id("com.github.ben-manes.versions") version "0.53.0"
     id("org.springframework.boot") version "3.5.6"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
