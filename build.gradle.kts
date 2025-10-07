@@ -19,6 +19,7 @@ val h2 = "2.4.240"
 val jacksonDatatype = "2.19.2"
 val conscrypt = "2.5.2"
 val prometheus = "1.12.5"
+val commonsLang = "3.18.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -75,6 +76,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.conscrypt:conscrypt-openjdk:$conscrypt")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$openapi")
+    implementation("org.apache.commons:commons-lang3:$commonsLang")
     implementation("org.yaml:snakeyaml:$snakeYaml")
     runtimeOnly("com.oracle.database.jdbc:ojdbc8")
 
@@ -94,7 +96,7 @@ dependencies {
 }
 
 tasks {
-    create("printVersion") {
+    register("printVersion") {
         println(project.version)
     }
     bootJar {
@@ -107,6 +109,8 @@ tasks {
     withType<KotlinCompile> {
         compilerOptions {
             freeCompilerArgs.add("-Xjsr305=strict")
+            // See https://youtrack.jetbrains.com/issue/KT-73255
+            freeCompilerArgs.add("-Xannotation-default-target=param-property")
             jvmTarget.set(JvmTarget.JVM_21)
         }
     }
