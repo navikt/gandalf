@@ -2,10 +2,10 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val springSecurity = "6.5.5"
+val springSecurity = "6.5.6"
 val snakeYaml = "2.5"
 val mockk = "1.14.6"
-val kotest = "6.0.3"
+val kotest = "6.0.4"
 val json = "20250517"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "8.1"
