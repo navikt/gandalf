@@ -19,7 +19,7 @@ val h2 = "2.4.240"
 val jacksonDatatype = "2.19.2"
 val conscrypt = "2.5.2"
 val prometheus = "1.12.5"
-val commonsLang = "3.19.0"
+val commonsLang = "3.20.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
