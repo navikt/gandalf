@@ -24,7 +24,7 @@ jobs:
         run: ./gradlew clean test
       - name: Unit tests results
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: unit-tests-results
           path: build/reports/tests
@@ -60,7 +60,7 @@ jobs:
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # Provided as Organization Variable
 
       - name: Upload salsa
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: salsa
           path: ${{ steps.docker-build-push.outputs.salsa }}
