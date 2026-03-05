@@ -40,7 +40,9 @@ class WSTrustRequest(
     val isIssueSamlFromUNT: Boolean
         get() = (
             (
-                (reqType == REQUEST_TYPE_ISSUE) && (tokenType == TOKEN_TYPE_SAML) && (keyType == KEY_TYPE_BEARER) &&
+                (reqType == REQUEST_TYPE_ISSUE) &&
+                    (tokenType == TOKEN_TYPE_SAML) &&
+                    (keyType == KEY_TYPE_BEARER) &&
                     (onBehalfOf.isNullOrEmpty())
             )
         )

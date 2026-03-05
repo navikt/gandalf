@@ -89,7 +89,8 @@ class RsaKeysRepository {
             val keyPair = gen.generateKeyPair()
 
             // Convert to JWK format
-            return RSAKey.Builder(keyPair.public as RSAPublicKey)
+            return RSAKey
+                .Builder(keyPair.public as RSAPublicKey)
                 .privateKey(keyPair.private as RSAPrivateKey)
                 .keyID(UUID.randomUUID().toString())
                 .keyUse(KeyUse.SIGNATURE)

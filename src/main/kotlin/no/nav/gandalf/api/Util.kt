@@ -52,13 +52,12 @@ object Util {
             .body(ErrorDescriptiveResponse(INVALID_REQUEST, errorMessage))
     }
 
-    internal fun userDetails(): String? {
-        return when (SecurityContextHolder.getContext().authentication) {
+    internal fun userDetails(): String? =
+        when (SecurityContextHolder.getContext().authentication) {
             null -> null
             else -> {
                 val auth = SecurityContextHolder.getContext().authentication as UsernamePasswordAuthenticationToken
                 auth.principal as String
             }
         }.also { client -> MDC.put("client_id", client) }
-    }
 }

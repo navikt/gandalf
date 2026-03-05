@@ -55,30 +55,21 @@ class RsaKeys {
         expiry = expires
     }
 
-    fun getCurrentKey(): RSAKey {
-        return getRSAKey(currentKey)
-    }
+    fun getCurrentKey(): RSAKey = getRSAKey(currentKey)
 
-    fun getPreviousKey(): RSAKey {
-        return getRSAKey(previousKey)
-    }
+    fun getPreviousKey(): RSAKey = getRSAKey(previousKey)
 
     // Brukes bare til test
-    fun getNextKey(): RSAKey {
-        return getRSAKey(nextKey)
-    }
+    fun getNextKey(): RSAKey = getRSAKey(nextKey)
 
-    private fun getRSAKey(keyString: String?): RSAKey {
-        return try {
+    private fun getRSAKey(keyString: String?): RSAKey =
+        try {
             RSAKey.parse(keyString)
         } catch (e: ParseException) {
             throw IllegalArgumentException("Failed to parse key in db")
         }
-    }
 
-    fun expired(now: LocalDateTime): Boolean {
-        return now.isAfter(expiry)
-    }
+    fun expired(now: LocalDateTime): Boolean = now.isAfter(expiry)
 
     // private fun getNewFormat(rsaKey: String?): String? {
     //     if (rsaKey!!.contains("SIGNATURE")) { // old format

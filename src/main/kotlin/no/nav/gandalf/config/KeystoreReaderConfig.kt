@@ -11,7 +11,7 @@ private val log = KotlinLogging.logger { }
 private const val TARGET = "keystore.file"
 
 @Configuration
-data class KeystoreReaderConfig(
+class KeystoreReaderConfig(
     @Value("\${nav.keystore.file}")
     val keystoreFile: String?,
     @Value("\${nav.keystore.password}")
