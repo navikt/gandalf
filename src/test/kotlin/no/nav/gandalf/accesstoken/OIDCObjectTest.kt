@@ -242,7 +242,5 @@ class OIDCObjectTest {
         assertEquals(expectedMessage, actualMessage!!)
     }
 
-    private fun getCurrentRSAKey(): RSAKey {
-        return rsaKeyStoreProvider.currentRSAKey
-    }
+    private fun getCurrentRSAKey(): RSAKey = rsaKeyStoreProvider.currentRSAKey
 }

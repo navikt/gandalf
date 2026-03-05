@@ -24,21 +24,22 @@ class LDAPAuthentication(
             }
             else -> {
                 try {
-                    resolveDNs(user.username).fold(false) { acc, dn ->
-                        acc ||
-                            authenticated(
-                                dn,
-                                user.password,
-                                acc,
-                            )
-                    }.also {
-                        when (it) {
-                            true -> log.info { "Successful bind of ${user.username} to ${ldap.ldapConfig}" }
-                            false -> throw LDAPException(ldapException).also {
-                                log.error { "Could not bind ${user.username} to ${ldap.ldapConfig}. Error message: ${ldapException?.message ?: "no message"}" }
+                    resolveDNs(user.username)
+                        .fold(false) { acc, dn ->
+                            acc ||
+                                authenticated(
+                                    dn,
+                                    user.password,
+                                    acc,
+                                )
+                        }.also {
+                            when (it) {
+                                true -> log.info { "Successful bind of ${user.username} to ${ldap.ldapConfig}" }
+                                false -> throw LDAPException(ldapException).also {
+                                    log.error { "Could not bind ${user.username} to ${ldap.ldapConfig}. Error message: ${ldapException?.message ?: "no message"}" }
+                                }
                             }
                         }
-                    }
                 } catch (t: Throwable) {
                     throw t
                 }

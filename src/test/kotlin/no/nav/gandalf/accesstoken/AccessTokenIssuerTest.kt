@@ -342,7 +342,8 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
             val realDiff: MutableList<String> = ArrayList()
             diff!!.forEach { line ->
                 // filter known differences (Signature node er filtrert ut allerede)
-                if (line.contains("Assertion Attribute ID has different") && line.contains("token2 has SAML-") ||
+                if (line.contains("Assertion Attribute ID has different") &&
+                    line.contains("token2 has SAML-") ||
                     line.contains("saml2:Assertion has child saml2:AuthnStatement") ||
                     line.contains("Attribute NameFormat has different") ||
                     line.contains("Node saml2:Attribute:authenticationLevel token1 has textcontent 4 token2 has 0") ||
@@ -547,7 +548,8 @@ internal fun hasDifferences(line: String) =
 internal fun attributeIdDifferences(line: String) =
     line.contains(
         "Assertion Attribute ID has different",
-    ) && line.contains("token2 has SAML-")
+    ) &&
+        line.contains("token2 has SAML-")
 
 internal fun notBeforeSubjectConfirmationDataHasDifferences(line: String) =
     line.contains(

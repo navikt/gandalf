@@ -3,7 +3,7 @@ name: DEV - Build, push, and deploy
 on:
   push:
     paths-ignore:
-      - "README.md"
+      - "../../READMEE.md"
     branches:
       - "release/**"
 

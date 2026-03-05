@@ -153,7 +153,8 @@ class TokenExchangeController {
                         val samlObj = SamlObject()
                         samlObj.read(samlToken)
                         ApplicationMetric.exchangeOIDCTokenOk.labels(user).inc()
-                        ResponseEntity.status(HttpStatus.OK)
+                        ResponseEntity
+                            .status(HttpStatus.OK)
                             .headers(tokenHeaders)
                             .body(
                                 ExchangeTokenService().constructResponse(
@@ -239,7 +240,8 @@ class TokenExchangeController {
             return try {
                 val oidcToken = issuer.exchangeDifiTokenToOidc(difiToken)
                 ApplicationMetric.exchangeDIFIOk.inc()
-                ResponseEntity.status(HttpStatus.OK)
+                ResponseEntity
+                    .status(HttpStatus.OK)
                     .headers(tokenHeaders)
                     .body(AccessTokenResponse(oidcToken))
             } catch (e: Throwable) {
