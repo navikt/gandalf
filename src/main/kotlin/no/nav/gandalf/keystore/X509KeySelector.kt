@@ -82,8 +82,11 @@ class X509KeySelector(
             log.info("OidcTokenIssuer - Setup trustManager with: getX509TrustManager")
             var trustStore: KeyStore? = null
             // Use 'use' to ensure the stream is closed properly
-            if (truststoreFile.isNullOrEmpty() || truststorePassword.isNullOrEmpty()) {
-                throw RuntimeException("Truststore file or password is not set!")
+            if (truststoreFile.isNullOrEmpty()) {
+                throw IllegalStateException("$TRUSTSTORE_FILENAME_PROPERTYNAME is not set or is empty")
+            }
+            if (truststorePassword.isNullOrEmpty()) {
+                throw IllegalStateException("$TRUSTSTORE_PASSWORD_PROPERTYNAME is not set or is empty")
             }
             FileInputStream(truststoreFile).use { tsis ->
                 val activeTrustStore = KeyStore.getInstance("JKS")
