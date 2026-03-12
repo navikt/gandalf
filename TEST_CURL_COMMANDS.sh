@@ -74,8 +74,10 @@ echo -e "\n\n"
 # 6. VALIDERE OIDC TOKEN
 # ============================================
 echo "=== 6. Validerer OIDC token ==="
-curl -X GET "${BASE_URL}/rest/v1/sts/token/validate" \
-  -H "Authorization: Bearer ${OIDC_TOKEN}"
+curl -X POST "${BASE_URL}/rest/v1/sts/token/validate" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -u "${USERNAME}:${PASSWORD}" \
+  -d "token=${OIDC_TOKEN}"
 
 echo -e "\n\n"
 
