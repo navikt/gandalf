@@ -105,7 +105,7 @@ echo "OIDC Response: ${OIDC_RESPONSE}"
 
 # Ekstraher access_token (krever jq)
 if command -v jq &> /dev/null; then
-    ACCESS_TOKEN=$(echo ${OIDC_RESPONSE} | jq -r '.access_token')
+    ACCESS_TOKEN=$(echo "${OIDC_RESPONSE}" | jq -r '.access_token')
     echo "Access Token: ${ACCESS_TOKEN}"
 
     # Konverter til SAML
