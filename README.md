@@ -438,7 +438,7 @@ Returnerer konfigurasjon som:
 ### Validering:
 | Endepunkt | Metode | Beskrivelse |
 |-----------|--------|-------------|
-| `/rest/v1/sts/token/validate` | GET | Validerer OIDC token |
+| `/rest/v1/sts/token/validate` | POST | Validerer OIDC token sendt som `token` request-parameter med Basic Auth |
 
 ### Health & Metrics:
 | Endepunkt | Metode | Beskrivelse |
