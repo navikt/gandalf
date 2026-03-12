@@ -392,24 +392,24 @@ Returnerer konfigurasjon som:
 ## 💻 Teknisk Stack
 
 ### Backend:
-- **Språk:** Kotlin 2.2.21
-- **Framework:** Spring Boot 3.5.7
-  - Spring Security 7.0.0
+- **Språk:** Kotlin
+- **Framework:** Spring Boot
+  - Spring Security
   - Spring Web
   - Spring Data JPA
 - **Token Libraries:**
-  - Nimbus JOSE+JWT 11.30.1 (JWT handling)
-  - Unboundid LDAP SDK 7.0.4 (LDAP)
+  - Nimbus JOSE+JWT (JWT handling)
+  - Unboundid LDAP SDK (LDAP)
 - **Database:** Oracle JDBC (prod), H2 (test)
 - **Logging:** Logback + Logstash encoder
 - **Metrics:** Prometheus Micrometer
-- **API Docs:** SpringDoc OpenAPI 2.8.14
+- **API Docs:** SpringDoc OpenAPI
 
 ### Build & Deploy:
 - **Build Tool:** Gradle (Kotlin DSL)
 - **Container:** Docker
 - **Platform:** Kubernetes (NAIS)
-- **Java Version:** 21
+- **Java:** LTS-versjon som konfigurert i Gradle
 
 ---
 
