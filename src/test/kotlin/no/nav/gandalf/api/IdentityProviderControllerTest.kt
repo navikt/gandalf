@@ -30,11 +30,12 @@ class IdentityProviderControllerTest : SpringBootWireMockSetup() {
     @Test
     fun `Get JWKS Should only return Public keys`() {
         val response =
-            mvc.perform(
-                MockMvcRequestBuilders.get(JWKS)
-                    .with(SecurityMockMvcRequestPostProcessors.anonymous()),
-            )
-                .andExpect(MockMvcResultMatchers.status().isOk)
+            mvc
+                .perform(
+                    MockMvcRequestBuilders
+                        .get(JWKS)
+                        .with(SecurityMockMvcRequestPostProcessors.anonymous()),
+                ).andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$..keys").isNotEmpty)
                 .andExpect(jsonPath("$..keys").isArray)
@@ -50,11 +51,12 @@ class IdentityProviderControllerTest : SpringBootWireMockSetup() {
     @Test
     fun `Get WELL_KNOWN`() {
         val stsEndpoint = "https://security-token-service.nais.preprod.local"
-        mvc.perform(
-            MockMvcRequestBuilders.get(WELL_KNOWN)
-                .with(SecurityMockMvcRequestPostProcessors.anonymous()),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(WELL_KNOWN)
+                    .with(SecurityMockMvcRequestPostProcessors.anonymous()),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.issuer").value(stsEndpoint))
             .andExpect(jsonPath("$.token_endpoint").value("$stsEndpoint$TOKEN"))
@@ -67,11 +69,12 @@ class IdentityProviderControllerTest : SpringBootWireMockSetup() {
     @Test
     fun `Get WELL_KNOWN Deprecated`() {
         val stsEndpoint = "https://security-token-service.nais.preprod.local"
-        mvc.perform(
-            MockMvcRequestBuilders.get("/rest/v1/sts/.well-known/openid-configuration")
-                .with(SecurityMockMvcRequestPostProcessors.anonymous()),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get("/rest/v1/sts/.well-known/openid-configuration")
+                    .with(SecurityMockMvcRequestPostProcessors.anonymous()),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.issuer").value(stsEndpoint))
             .andExpect(jsonPath("$.token_endpoint").value("$stsEndpoint$TOKEN"))

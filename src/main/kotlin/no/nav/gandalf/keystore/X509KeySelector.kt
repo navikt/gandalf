@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.FileInputStream
 import java.io.IOException
-import java.io.InputStream
 import java.security.KeyStore
 import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
@@ -60,10 +59,11 @@ class X509KeySelector(
                     if (cert is X509Certificate) {
                         if (algEquals(method.algorithm, cert.publicKey.algorithm)) {
                             try {
-                                if (trustManager == null) {
-                                    trustManager = x509TrustManager
-                                }
-                                trustManager!!.checkServerTrusted(arrayOf(cert), "RSA")
+                                val activeTrustManager =
+                                    trustManager ?: x509TrustManager.also {
+                                        trustManager = it
+                                    }
+                                activeTrustManager.checkServerTrusted(arrayOf(cert), "RSA")
                             } catch (e: CertificateException) {
                                 log.info("The certificate is not trusted by a Root CA" + e.message)
                                 throw RuntimeException("This certificate is not trusted by a Root CA", e)
@@ -81,32 +81,36 @@ class X509KeySelector(
         get() {
             log.info("OidcTokenIssuer - Setup trustManager with: getX509TrustManager")
             var trustStore: KeyStore? = null
-            var tsis: InputStream?
-            readKeyStoreAndHandle {
-                when {
-                    truststoreFile.isNullOrEmpty() -> {
-                        throw RuntimeException(
-                            "Failed to load truststore, system property '$TRUSTSTORE_FILENAME_PROPERTYNAME' is null or empty!",
-                        )
-                    }
-                    truststorePassword.isNullOrEmpty() -> {
-                        log.error("System property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
-                        throw RuntimeException(
-                            "Failed to load truststore, system property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!",
-                        )
-                    }
-                    else -> {
-                        trustStore = KeyStore.getInstance("JKS")
-                        tsis = FileInputStream(truststoreFile)
-                        trustStore!!.load(tsis, truststorePassword.toCharArray())
-                        if (trustStore!!.size() == 0) {
-                            log.error("Error: truststore is empty. Loaded from file '$truststoreFile'")
-                            throw RuntimeException("Error: truststore is empty")
-                        }
+            // Use 'use' to ensure the stream is closed properly
+            if (truststoreFile.isNullOrEmpty()) {
+                throw IllegalStateException("$TRUSTSTORE_FILENAME_PROPERTYNAME is not set or is empty")
+            }
+            if (truststorePassword.isNullOrEmpty()) {
+                throw IllegalStateException("$TRUSTSTORE_PASSWORD_PROPERTYNAME is not set or is empty")
+            }
+            try {
+                FileInputStream(truststoreFile).use { tsis ->
+                    val activeTrustStore = KeyStore.getInstance("JKS")
+                    trustStore = activeTrustStore
+                    activeTrustStore.load(tsis, truststorePassword.toCharArray())
+                    if (activeTrustStore.size() == 0) {
+                        log.error("Error: truststore is empty. Loaded from file '$truststoreFile'")
+                        throw RuntimeException("Error: truststore is empty")
                     }
                 }
+            } catch (e: KeyStoreException) {
+                log.error(e) { "Failed to load truststore from file '$truststoreFile' (KeyStoreException)" }
+                throw RuntimeException("Failed to load truststore from file '$truststoreFile'", e)
+            } catch (e: CertificateException) {
+                log.error(e) { "Failed to load truststore from file '$truststoreFile' (CertificateException)" }
+                throw RuntimeException("Failed to load truststore from file '$truststoreFile'", e)
+            } catch (e: NoSuchAlgorithmException) {
+                log.error(e) { "Failed to load truststore from file '$truststoreFile' (NoSuchAlgorithmException)" }
+                throw RuntimeException("Failed to load truststore from file '$truststoreFile'", e)
+            } catch (e: IOException) {
+                log.error(e) { "Failed to load truststore from file '$truststoreFile' (IOException)" }
+                throw RuntimeException("Failed to load truststore from file '$truststoreFile'", e)
             }
-
             val tmfactory =
                 trustManageFacHandle {
                     TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()).apply {
@@ -115,9 +119,11 @@ class X509KeySelector(
                         }
                     }
                 }
-            for (trustManager in tmfactory.trustManagers) when (trustManager) {
-                is X509TrustManager -> {
-                    return trustManager
+            for (trustManager in tmfactory.trustManagers) {
+                when (trustManager) {
+                    is X509TrustManager -> {
+                        return trustManager
+                    }
                 }
             }
             log.error("Failed to get X509TrustManager")
@@ -131,12 +137,12 @@ class X509KeySelector(
         fun algEquals(
             algURI: String,
             algName: String,
-        ): Boolean {
-            return algName.equals(
+        ): Boolean =
+            algName.equals(
                 "RSA",
                 ignoreCase = true,
-            ) && algURI.equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", ignoreCase = true)
-        }
+            ) &&
+                algURI.equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", ignoreCase = true)
     }
 
     fun trustManageFacHandle(block: () -> TrustManagerFactory): TrustManagerFactory {

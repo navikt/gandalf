@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val springSecurity = "7.0.3"
-val snakeYaml = "2.5"
+val snakeYaml = "2.6"
 val mockk = "1.14.7"
 val kotest = "6.0.7"
 val json = "20251224"
@@ -11,12 +11,12 @@ val kotlinLoggin = "3.0.5"
 val logbackStash = "9.0"
 val logbackClassic = "1.5.32"
 val mockOAuth2Server = "3.0.1"
-val nimbus = "11.30.1"
+val nimbus = "11.33"
 val openapi = "2.8.14"
 val unboundid = "7.0.4"
 val wiremockCloud = "4.3.0"
 val h2 = "2.4.240"
-val jacksonDatatype = "2.19.2"
+val jacksonDatatype = "2.21.1"
 val conscrypt = "2.5.2"
 val prometheus = "1.12.5"
 val commonsLang = "3.20.0"
@@ -46,17 +46,16 @@ application {
 repositories {
     mavenCentral()
     maven(url = "https://packages.confluent.io/maven")
-    maven(url = "https://kotlin.bintray.com/kotlinx")
 }
 
 dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackClassic")
     implementation("ch.qos.logback:logback-core:$logbackClassic")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonDatatype")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatype")
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonDatatype")
-    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonDatatype")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonDatatype")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    // implementation("com.fasterxml.jackson.core:jackson-databind")
+    // implementation("com.fasterxml.jackson.core:jackson-core")
+    // implementation("com.fasterxml.jackson.core:jackson-annotations")
     implementation("com.google.code.gson:gson")
     implementation("com.nimbusds:oauth2-oidc-sdk:$nimbus")
     implementation("com.unboundid:unboundid-ldapsdk:$unboundid")

@@ -35,37 +35,41 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
     @Test
     fun `Validate Valid SAML Token`() {
         val result =
-            mvc.perform(
-                MockMvcRequestBuilders.get(SAML_TOKEN)
-                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-            )
-                .andExpect(MockMvcResultMatchers.status().isOk)
+            mvc
+                .perform(
+                    MockMvcRequestBuilders
+                        .get(SAML_TOKEN)
+                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+                ).andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.access_token").isString)
                 .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
                 .andExpect(jsonPath("$.issued_token_type").value("urn:ietf:params:oauth:token-type:saml2"))
-                .andExpect(jsonPath("$.expires_in").isNumber).andReturn()
+                .andExpect(jsonPath("$.expires_in").isNumber)
+                .andReturn()
 
         val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
 
-        mvc.perform(
-            MockMvcRequestBuilders.post(SAML_TOKEN_VALIDATE)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
-                .param(TOKEN_SUBJECT, mockedToken.access_token),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(SAML_TOKEN_VALIDATE)
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                    .param(TOKEN_SUBJECT, mockedToken.access_token),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status").value(true))
     }
 
     @Test
     fun `Validate Expired SAML Token`() {
-        mvc.perform(
-            MockMvcRequestBuilders.post(SAML_TOKEN_VALIDATE)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
-                .param(TOKEN_SUBJECT, DATAPOWER_SAML_BASE64_ENCODED),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(SAML_TOKEN_VALIDATE)
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                    .param(TOKEN_SUBJECT, DATAPOWER_SAML_BASE64_ENCODED),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status").value(false))
             .andExpect(
@@ -76,40 +80,44 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
     @Test
     fun `Validate a valid OIDC Token`() {
         val result =
-            mvc.perform(
-                MockMvcRequestBuilders.get(TOKEN)
-                    .param(GRANT_TYPE, "client_credentials")
-                    .param(SCOPE, "openid")
-                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-            )
-                .andExpect(MockMvcResultMatchers.status().isOk)
+            mvc
+                .perform(
+                    MockMvcRequestBuilders
+                        .get(TOKEN)
+                        .param(GRANT_TYPE, "client_credentials")
+                        .param(SCOPE, "openid")
+                        .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+                ).andExpect(MockMvcResultMatchers.status().isOk)
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
                 .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
                 .andExpect(jsonPath("$.access_token").isString)
                 .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
-                .andExpect(jsonPath("$.expires_in").value(3600)).andReturn()
+                .andExpect(jsonPath("$.expires_in").value(3600))
+                .andReturn()
 
         val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
 
-        mvc.perform(
-            MockMvcRequestBuilders.post(OIDC_TOKEN_VALIDATE)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
-                .param(TOKEN_SUBJECT, mockedToken.access_token),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(OIDC_TOKEN_VALIDATE)
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                    .param(TOKEN_SUBJECT, mockedToken.access_token),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status").value(true))
     }
 
     @Test
     fun `Validate Expired OIDC Token`() {
-        mvc.perform(
-            MockMvcRequestBuilders.post(OIDC_TOKEN_VALIDATE)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
-                .param(TOKEN_SUBJECT, getOpenAmOIDC()),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(OIDC_TOKEN_VALIDATE)
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password"))
+                    .param(TOKEN_SUBJECT, getOpenAmOIDC()),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status").value(false))
             .andExpect(jsonPath("$.message").value("Validation failed: token has expired"))

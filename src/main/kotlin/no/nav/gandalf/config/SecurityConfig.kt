@@ -22,11 +22,10 @@ class SecurityConfig(
     val ldapConfig: LdapConfig,
 ) {
     @Bean
-    fun ldapAuthenticationManager(): AuthenticationManager {
-        return AuthenticationManager { authentication ->
+    fun ldapAuthenticationManager(): AuthenticationManager =
+        AuthenticationManager { authentication ->
             activeDirectoryLdapAuthenticationProvider().authenticate(authentication)
         }
-    }
 
     @Bean
     @Throws(Exception::class)
@@ -38,28 +37,29 @@ class SecurityConfig(
             .csrf { csrf -> csrf.disable() }
             .formLogin { formLogin -> formLogin.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers(
-                    "/rest/v1/sts/token2",
-                    "/rest/v1/sts/token2/",
-                    "/rest/v1/sts/ws/samltoken",
-                    "/rest/v1/sts/ws/samltoken/",
-                    // Disse to over bruker ldap for auth. men athentesering gjøres seinere.
-                    "/.well-known/openid-configuration",
-                    "/.well-known/openid-configuration/",
-                    "/rest/v1/sts/.well-known/openid-configuration",
-                    "/rest/v1/sts/.well-known/openid-configuration/",
-                    "/jwks",
-                    "/jwks/",
-                    "/rest/v1/sts/jwks",
-                    "/rest/v1/sts/jwks/",
-                    "/isAlive",
-                    "/isReady",
-                    "/ping",
-                    "/prometheus",
-                    // Swagger
-                    "/api/**",
-                    "/swagger-ui/**",
-                ).permitAll()
+                it
+                    .requestMatchers(
+                        "/rest/v1/sts/token2",
+                        "/rest/v1/sts/token2/",
+                        "/rest/v1/sts/ws/samltoken",
+                        "/rest/v1/sts/ws/samltoken/",
+                        // Disse to over bruker ldap for auth. men athentesering gjøres seinere.
+                        "/.well-known/openid-configuration",
+                        "/.well-known/openid-configuration/",
+                        "/rest/v1/sts/.well-known/openid-configuration",
+                        "/rest/v1/sts/.well-known/openid-configuration/",
+                        "/jwks",
+                        "/jwks/",
+                        "/rest/v1/sts/jwks",
+                        "/rest/v1/sts/jwks/",
+                        "/isAlive",
+                        "/isReady",
+                        "/ping",
+                        "/prometheus",
+                        // Swagger
+                        "/api/**",
+                        "/swagger-ui/**",
+                    ).permitAll()
             }.authorizeHttpRequests {
                 it.anyRequest().authenticated()
             }.httpBasic {
@@ -71,15 +71,11 @@ class SecurityConfig(
     }
 
     @Bean
-    fun authenticationEntryPoint(): RestAuthenticationEntryPoint? {
-        return RestAuthenticationEntryPoint()
-    }
+    fun authenticationEntryPoint(): RestAuthenticationEntryPoint? = RestAuthenticationEntryPoint()
 
     // @Primary
     // @Bean
-    fun activeDirectoryLdapAuthenticationProvider(): AuthenticationProvider {
-        return CustomAuthenticationProvider(LDAPConnectionSetup(ldapConfig))
-    }
+    fun activeDirectoryLdapAuthenticationProvider(): AuthenticationProvider = CustomAuthenticationProvider(LDAPConnectionSetup(ldapConfig))
 
     @Bean
     fun openApiSecurity(): OpenAPI? {
@@ -91,20 +87,21 @@ class SecurityConfig(
                     Server().url("https://security-token-service.dev.adeo.no"),
                 )
         }
-        openApi.components(
-            Components()
-                .addSecuritySchemes(
-                    "BasicAuth",
-                    SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic"),
-                ),
-        ).info(
-            Info()
-                .title("Security-Token-Service API.")
-                .version("2.0")
-                .description(
-                    "STS RESTful service description.",
-                ),
-        )
+        openApi
+            .components(
+                Components()
+                    .addSecuritySchemes(
+                        "BasicAuth",
+                        SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic"),
+                    ),
+            ).info(
+                Info()
+                    .title("Security-Token-Service API.")
+                    .version("2.0")
+                    .description(
+                        "STS RESTful service description.",
+                    ),
+            )
         return openApi
     }
 }

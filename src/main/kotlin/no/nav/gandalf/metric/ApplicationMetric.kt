@@ -14,32 +14,37 @@ class ApplicationMetric {
     companion object {
         private val default = CollectorRegistry.defaultRegistry
         internal val tokenOK =
-            Counter.build()
+            Counter
+                .build()
                 .help("Issued OIDC tokens OK.")
                 .namespace(METRIC_PREFIX)
                 .name("oidctokenOk")
                 .register(default)
         internal val issuedTokenCounterUnique =
-            Counter.build()
+            Counter
+                .build()
                 .namespace(METRIC_PREFIX)
                 .name("tokens_issued")
                 .help("Number of tokens we have issued")
                 .labelNames("srvbruker")
                 .register(default)
         internal val tokenNotOk =
-            Counter.build()
+            Counter
+                .build()
                 .help("Issued OIDC tokens failed pga bad request or unauthorized.")
                 .namespace(METRIC_PREFIX)
                 .name("oidctokenNotOk")
                 .register(default)
         internal val tokenError =
-            Counter.build()
+            Counter
+                .build()
                 .help("Issued OIDC tokens failed pga internal server error.")
                 .namespace(METRIC_PREFIX)
                 .name("oidctokenError")
                 .register(default)
         internal val requestLatencyToken =
-            Histogram.build()
+            Histogram
+                .build()
                 .help("Request latency in seconds /token.")
                 .namespace(LATENCY_METRIC_PREFIX)
                 .name("seconds_token")
@@ -47,26 +52,30 @@ class ApplicationMetric {
 
         // path: **/token2
         internal val token2Ok =
-            Counter.build()
+            Counter
+                .build()
                 .help("Issued OIDC tokens (grensesnitt for stormaskin) OK.")
                 .namespace(METRIC_PREFIX)
                 .labelNames("srvbruker")
                 .name("oidctoken2Ok")
                 .register(default)
         internal val token2NotOk =
-            Counter.build()
+            Counter
+                .build()
                 .help("Issued OIDC tokens (grensesnitt for stormaskin) failed pga bad request or unauthorized.")
                 .namespace(METRIC_PREFIX)
                 .name("oidctoken2NotOk")
                 .register(default)
         internal val token2Error =
-            Counter.build()
+            Counter
+                .build()
                 .help("Issued OIDC tokens (grensesnitt for stormaskin) failed pga internal server error.")
                 .namespace(METRIC_PREFIX)
                 .name("oidctoken2Error")
                 .register(default)
         internal val requestLatencyToken2 =
-            Histogram.build()
+            Histogram
+                .build()
                 .help("Request latency in seconds /token2.")
                 .namespace(LATENCY_METRIC_PREFIX)
                 .name("seconds_token_2")
@@ -74,26 +83,30 @@ class ApplicationMetric {
 
         // path: **/samltoken
         internal val samlTokenOk =
-            Counter.build()
+            Counter
+                .build()
                 .help("Issued saml token OK.")
                 .labelNames("srvbruker")
                 .namespace(METRIC_PREFIX)
                 .name("samlTokenOk")
                 .register(default)
         internal val samlTokenNotOk =
-            Counter.build()
+            Counter
+                .build()
                 .help("Issue saml token failed pga unauthorized eller bad request error.")
                 .namespace(METRIC_PREFIX)
                 .name("samlTokenNotOk")
                 .register(default)
         internal val samlTokenError =
-            Counter.build()
+            Counter
+                .build()
                 .help("Issued Saml tokens failed pga internal server error.")
                 .namespace(METRIC_PREFIX)
                 .name("samlTokenError")
                 .register(default)
         internal val requestLatencySAMLToken =
-            Histogram.build()
+            Histogram
+                .build()
                 .help("Request latency in seconds /samltoken.")
                 .namespace(LATENCY_METRIC_PREFIX)
                 .name("seconds_samltoken")
@@ -101,7 +114,8 @@ class ApplicationMetric {
 
         // path: **/jwks
         internal val requestLatencyJwks =
-            Histogram.build()
+            Histogram
+                .build()
                 .help("Request latency in seconds /jwks.")
                 .namespace(LATENCY_METRIC_PREFIX)
                 .name("seconds_jwks")
@@ -109,19 +123,22 @@ class ApplicationMetric {
 
         // path: **/token/exchangedifi
         internal val exchangeDIFIOk =
-            Counter.build()
+            Counter
+                .build()
                 .help("Exchange difi token OK.")
                 .namespace(METRIC_PREFIX)
                 .name("exchangeDifiTokenOk")
                 .register(default)
         internal val exchangeDIFINotOk =
-            Counter.build()
+            Counter
+                .build()
                 .help("Exchange difi token failed pga unauthorized eller internal server error.")
                 .namespace(METRIC_PREFIX)
                 .name("exchangeDifiTokenNotOk")
                 .register(default)
         internal val requestLatencyTokenExchangeDIFI =
-            Histogram.build()
+            Histogram
+                .build()
                 .help("Request latency in seconds /token/exchangedifi.")
                 .namespace(LATENCY_METRIC_PREFIX)
                 .name("token_exchangedifi")
@@ -129,25 +146,31 @@ class ApplicationMetric {
 
         // path: **/token/exchange
         internal val exchangeSAMLTokenOk =
-            Counter.build()
+            Counter
+                .build()
                 .namespace(METRIC_PREFIX)
                 .labelNames("srvbruker")
                 .name("exchangeSamlTokenOk")
-                .help("Exchange Saml to Oidc token OK.").register(default)
+                .help("Exchange Saml to Oidc token OK.")
+                .register(default)
         internal val exchangeOIDCTokenOk =
-            Counter.build()
+            Counter
+                .build()
                 .namespace(METRIC_PREFIX)
                 .labelNames("srvbruker")
                 .name("exchangeOidcTokenOk")
-                .help("Exchange Oidc token to Saml OK.").register(default)
+                .help("Exchange Oidc token to Saml OK.")
+                .register(default)
         internal val exchangeTokenNotOk =
-            Counter.build()
+            Counter
+                .build()
                 .namespace(METRIC_PREFIX)
                 .name("exchangeTokenNotOk")
                 .help("Exchange token failed pga bad_request, unauthorized, invalid input token eller internal server error.")
                 .register(default)
         internal val requestLatencyTokenExchange =
-            Histogram.build()
+            Histogram
+                .build()
                 .help("Request latency in seconds /token/exchange.")
                 .namespace(LATENCY_METRIC_PREFIX)
                 .name("seconds_token_exchange")
@@ -155,27 +178,36 @@ class ApplicationMetric {
 
         // path: **/ws/samltoken
         internal val wsSAMLTokenOk =
-            Counter.build()
+            Counter
+                .build()
                 .namespace(METRIC_PREFIX)
                 .name("wsSamlTokenOk")
-                .help("WS issue saml token OK.").register(default)
+                .help("WS issue saml token OK.")
+                .register(default)
         internal val wsSAMLTokenNotOk =
-            Counter.build()
+            Counter
+                .build()
                 .namespace(METRIC_PREFIX)
                 .name("wsSamlTokenNotOk")
-                .help("WS issue saml token failed pga unauthorized eller internal server error.").register(default)
+                .help("WS issue saml token failed pga unauthorized eller internal server error.")
+                .register(default)
         internal val wsExchangeOIDCTokenNotOk =
-            Counter.build()
+            Counter
+                .build()
                 .namespace(METRIC_PREFIX)
                 .name("wsExchangeOidcTokenNotOk")
-                .help("WS exchange oidc token failed pga unauthorized eller internal server error.").register(default)
+                .help("WS exchange oidc token failed pga unauthorized eller internal server error.")
+                .register(default)
         internal val wsExchangeOIDCTokenOk =
-            Counter.build()
+            Counter
+                .build()
                 .namespace(METRIC_PREFIX)
                 .name("wsExchangeOidcTokenOk")
-                .help("WS exchange oidc token OK.").register(default)
+                .help("WS exchange oidc token OK.")
+                .register(default)
         internal val requestLatencyWSSAMLToken =
-            Histogram.build()
+            Histogram
+                .build()
                 .help("Request latency in seconds /ws/samltoken.")
                 .namespace(LATENCY_METRIC_PREFIX)
                 .name("seconds_ws_samltoken")
@@ -183,7 +215,8 @@ class ApplicationMetric {
 
         // Cert
         internal val certCount: Counter =
-            Counter.build()
+            Counter
+                .build()
                 .help("Count days until expiry.")
                 .namespace("keystore")
                 .labelNames("key_alias")
@@ -192,7 +225,8 @@ class ApplicationMetric {
 
         // Ldap
         internal val ldapDuration: Histogram =
-            Histogram.build()
+            Histogram
+                .build()
                 .help("AD - time for checking.")
                 .namespace(LATENCY_METRIC_PREFIX)
                 .name("ldap")

@@ -30,9 +30,7 @@ class CustomAuthenticationProvider(
 
     fun Authentication.getPw() = this.credentials.toString()
 
-    override fun supports(authentication: Class<*>): Boolean {
-        return authentication == UsernamePasswordAuthenticationToken::class.java
-    }
+    override fun supports(authentication: Class<*>): Boolean = authentication == UsernamePasswordAuthenticationToken::class.java
 
     fun externalAuth(
         username: String,

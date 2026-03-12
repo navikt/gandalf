@@ -229,13 +229,12 @@ class AccessTokenIssuer(
 
     fun filterIssoInternIssuer() = knownIssuers.singleOrNull { it.issuer.contains(ISSO_OIDC_ISSUER) }
 
-    fun getAuthenticationLevel(oidcObj: OidcObject): String {
-        return when (oidcObj.authLevel) {
+    fun getAuthenticationLevel(oidcObj: OidcObject): String =
+        when (oidcObj.authLevel) {
             "Level3", "idporten-loa-substantial" -> "3"
             "Level4", "idporten-loa-high" -> "4"
             else -> DEFAULT_SAML_AUTHLEVEL
         }
-    }
 
     @JvmOverloads
     @Throws(Exception::class)
@@ -275,11 +274,13 @@ class AccessTokenIssuer(
     fun getSubjectFromDifiToken(consumer: Any?): String {
         val gson = gsonBuilder.create()
         val consumerObj = gson.fromJson(gson.toJson(consumer), Consumer::class.java)
-        return consumerObj.ID?.let { consumerObj.ID!!.split(":")[1] } ?: ""
+        return consumerObj.id
+            ?.let { id -> id.split(":").getOrNull(1) ?: "" }
+            ?: ""
     }
 
-    override fun getKeyByKeyId(keyId: String?): RSAKey? {
-        return when {
+    override fun getKeyByKeyId(keyId: String?): RSAKey? =
+        when {
             keyStore.publicJWKSet.keys.isEmpty() -> {
                 throw IllegalArgumentException("Failed to get keys from by issuer: $issuer")
             }
@@ -292,23 +293,19 @@ class AccessTokenIssuer(
                 }
             }
         }
-    }
 
-    fun getAuthenticationLevel(samlObj: SamlObject): String? {
-        return when {
+    fun getAuthenticationLevel(samlObj: SamlObject): String? =
+        when {
             samlObj.identType.equals(IdentType.EKSTERNBRUKER.name, ignoreCase = true) -> {
                 "Level" + samlObj.authenticationLevel
             }
 
             else -> null
         }
-    }
 
     fun getKeySelector() = keySelector
 
-    fun getPublicJWKSet(): JWKSet? {
-        return keyStore.publicJWKSet
-    }
+    fun getPublicJWKSet(): JWKSet? = keyStore.publicJWKSet
 
     companion object {
         const val SAML_ISSUE_SKEW_SECONDS: Long = 3
@@ -334,8 +331,8 @@ class AccessTokenIssuer(
         fun getIdentType(
             subject: String,
             acrLevel: String? = null,
-        ): String {
-            return when {
+        ): String =
+            when {
                 subject.lowercase().startsWith("srv") -> {
                     IdentType.SYSTEMRESSURS.value
                 }
@@ -350,7 +347,6 @@ class AccessTokenIssuer(
 
                 else -> IdentType.INTERNBRUKER.value
             }
-        }
 
         private fun String.isSamHandler() = this.length == 9 && this.isOnlyNumbers()
 
@@ -375,8 +371,6 @@ class AccessTokenIssuer(
 
         private fun String.isOnlyNumbers() = this.matches("[0-9]+".toRegex())
 
-        fun toZonedDateTime(d: Date): ZonedDateTime {
-            return ZonedDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault())
-        }
+        fun toZonedDateTime(d: Date): ZonedDateTime = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault())
     }
 }
