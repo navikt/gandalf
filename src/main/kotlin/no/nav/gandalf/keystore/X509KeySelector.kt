@@ -88,14 +88,28 @@ class X509KeySelector(
             if (truststorePassword.isNullOrEmpty()) {
                 throw IllegalStateException("$TRUSTSTORE_PASSWORD_PROPERTYNAME is not set or is empty")
             }
-            FileInputStream(truststoreFile).use { tsis ->
-                val activeTrustStore = KeyStore.getInstance("JKS")
-                trustStore = activeTrustStore
-                activeTrustStore.load(tsis, truststorePassword.toCharArray())
-                if (activeTrustStore.size() == 0) {
-                    log.error("Error: truststore is empty. Loaded from file '$truststoreFile'")
-                    throw RuntimeException("Error: truststore is empty")
+            try {
+                FileInputStream(truststoreFile).use { tsis ->
+                    val activeTrustStore = KeyStore.getInstance("JKS")
+                    trustStore = activeTrustStore
+                    activeTrustStore.load(tsis, truststorePassword.toCharArray())
+                    if (activeTrustStore.size() == 0) {
+                        log.error("Error: truststore is empty. Loaded from file '$truststoreFile'")
+                        throw RuntimeException("Error: truststore is empty")
+                    }
                 }
+            } catch (e: KeyStoreException) {
+                log.error(e) { "Failed to load truststore from file '$truststoreFile' (KeyStoreException)" }
+                throw RuntimeException("Failed to load truststore from file '$truststoreFile'", e)
+            } catch (e: CertificateException) {
+                log.error(e) { "Failed to load truststore from file '$truststoreFile' (CertificateException)" }
+                throw RuntimeException("Failed to load truststore from file '$truststoreFile'", e)
+            } catch (e: NoSuchAlgorithmException) {
+                log.error(e) { "Failed to load truststore from file '$truststoreFile' (NoSuchAlgorithmException)" }
+                throw RuntimeException("Failed to load truststore from file '$truststoreFile'", e)
+            } catch (e: IOException) {
+                log.error(e) { "Failed to load truststore from file '$truststoreFile' (IOException)" }
+                throw RuntimeException("Failed to load truststore from file '$truststoreFile'", e)
             }
             val tmfactory =
                 trustManageFacHandle {
