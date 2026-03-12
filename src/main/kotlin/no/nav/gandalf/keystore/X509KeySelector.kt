@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.FileInputStream
 import java.io.IOException
-import java.io.InputStream
 import java.security.KeyStore
 import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
@@ -82,33 +81,19 @@ class X509KeySelector(
         get() {
             log.info("OidcTokenIssuer - Setup trustManager with: getX509TrustManager")
             var trustStore: KeyStore? = null
-            var tsis: InputStream?
-            readKeyStoreAndHandle {
-                when {
-                    truststoreFile.isNullOrEmpty() -> {
-                        throw RuntimeException(
-                            "Failed to load truststore, system property '$TRUSTSTORE_FILENAME_PROPERTYNAME' is null or empty!",
-                        )
-                    }
-                    truststorePassword.isNullOrEmpty() -> {
-                        log.error("System property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!")
-                        throw RuntimeException(
-                            "Failed to load truststore, system property '$TRUSTSTORE_PASSWORD_PROPERTYNAME' is null or empty!",
-                        )
-                    }
-                    else -> {
-                        val activeTrustStore = KeyStore.getInstance("JKS")
-                        trustStore = activeTrustStore
-                        tsis = FileInputStream(truststoreFile)
-                        activeTrustStore.load(tsis, truststorePassword.toCharArray())
-                        if (activeTrustStore.size() == 0) {
-                            log.error("Error: truststore is empty. Loaded from file '$truststoreFile'")
-                            throw RuntimeException("Error: truststore is empty")
-                        }
-                    }
+            // Use 'use' to ensure the stream is closed properly
+            if (truststoreFile.isNullOrEmpty() || truststorePassword.isNullOrEmpty()) {
+                throw RuntimeException("Truststore file or password is not set!")
+            }
+            FileInputStream(truststoreFile).use { tsis ->
+                val activeTrustStore = KeyStore.getInstance("JKS")
+                trustStore = activeTrustStore
+                activeTrustStore.load(tsis, truststorePassword.toCharArray())
+                if (activeTrustStore.size() == 0) {
+                    log.error("Error: truststore is empty. Loaded from file '$truststoreFile'")
+                    throw RuntimeException("Error: truststore is empty")
                 }
             }
-
             val tmfactory =
                 trustManageFacHandle {
                     TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()).apply {
