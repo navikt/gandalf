@@ -274,7 +274,9 @@ class AccessTokenIssuer(
     fun getSubjectFromDifiToken(consumer: Any?): String {
         val gson = gsonBuilder.create()
         val consumerObj = gson.fromJson(gson.toJson(consumer), Consumer::class.java)
-        return consumerObj.id?.let { consumerObj.id!!.split(":")[1] } ?: ""
+        return consumerObj.id
+            ?.let { id -> id.split(":").getOrNull(1) ?: "" }
+            ?: ""
     }
 
     override fun getKeyByKeyId(keyId: String?): RSAKey? =
