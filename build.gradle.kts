@@ -3,15 +3,15 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val springSecurity = "7.0.3"
-val snakeYaml = "2.5"
-val mockk = "1.14.7"
+val snakeYaml = "2.6"
+val mockk = "1.14.9"
 val kotest = "6.0.7"
 val json = "20251224"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "9.0"
 val logbackClassic = "1.5.32"
 val mockOAuth2Server = "3.0.1"
-val nimbus = "11.30.1"
+val nimbus = "11.31.1"
 val openapi = "2.8.14"
 val unboundid = "7.0.4"
 val wiremockCloud = "4.3.0"
@@ -29,9 +29,9 @@ java {
 plugins {
     application
     java
-    val kotlinVersion = "2.3.0"
+    val kotlinVersion = "2.3.10"
     kotlin("plugin.allopen") version kotlinVersion
-    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
+    id("org.jlleitschuh.gradle.ktlint") version "14.1.0"
     id("com.github.ben-manes.versions") version "0.53.0"
     id("org.springframework.boot") version "3.5.7"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
