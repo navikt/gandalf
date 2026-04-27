@@ -1,6 +1,6 @@
 package no.nav.gandalf.utils
 
-import wiremock.org.apache.commons.codec.binary.Base64
+import java.util.Base64
 
 internal fun getOidcToSamlRequest(
     brukerNavn: String,
@@ -27,7 +27,7 @@ internal fun getOidcToSamlRequest(
 internal fun getWrappedOidcToken(oidcToken: String) =
     (
         "<wsse:BinarySecurityToken EncodingType=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary\" ValueType=\"urn:ietf:params:oauth:token-type:jwt\">" +
-            Base64.encodeBase64URLSafeString(oidcToken.toByteArray()) +
+            Base64.getUrlEncoder().withoutPadding().encodeToString(oidcToken.toByteArray()) +
             "</wsse:BinarySecurityToken>"
     )
 

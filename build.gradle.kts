@@ -14,9 +14,8 @@ val mockOAuth2Server = "3.0.1"
 val nimbus = "11.31.1"
 val openapi = "2.8.14"
 val unboundid = "7.0.4"
-val wiremockCloud = "4.3.0"
+val wiremockCloud = "3.13.2"
 val h2 = "2.4.240"
-val jacksonDatatype = "2.19.2"
 val conscrypt = "2.5.2"
 val prometheus = "1.12.5"
 val commonsLang = "3.20.0"
@@ -33,7 +32,7 @@ plugins {
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "14.1.0"
     id("com.github.ben-manes.versions") version "0.53.0"
-    id("org.springframework.boot") version "3.5.7"
+    id("org.springframework.boot") version "4.0.6"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.1.7"
@@ -52,11 +51,8 @@ repositories {
 dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackClassic")
     implementation("ch.qos.logback:logback-core:$logbackClassic")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonDatatype")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatype")
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonDatatype")
-    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonDatatype")
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonDatatype")
+    implementation("tools.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("com.google.code.gson:gson")
     implementation("com.nimbusds:oauth2-oidc-sdk:$nimbus")
     implementation("com.unboundid:unboundid-ldapsdk:$unboundid")
@@ -88,11 +84,21 @@ dependencies {
         exclude(module = "junit")
     }
     testImplementation("org.springframework.security:spring-security-test:$springSecurity")
-    testImplementation("org.springframework.cloud:spring-cloud-contract-wiremock:$wiremockCloud")
+    testImplementation("org.wiremock:wiremock-jetty12:$wiremockCloud")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.4.4")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("io.kotest:kotest-assertions-core:$kotest")
     testImplementation("io.mockk:mockk:$mockk")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group.startsWith("org.eclipse.jetty")) {
+            useVersion("12.1.8")
+            because("Align all Jetty modules to Spring Boot 4 managed version")
+        }
+    }
 }
 
 tasks {
@@ -115,6 +121,7 @@ tasks {
         }
     }
     withType<Test> {
+        useJUnitPlatform()
         testLogging {
             events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         }

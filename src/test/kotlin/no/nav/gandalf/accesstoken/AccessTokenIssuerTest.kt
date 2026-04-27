@@ -45,12 +45,11 @@ import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import java.time.Instant
@@ -59,7 +58,6 @@ import java.time.ZonedDateTime
 private const val ACCESS_TOKEN_TYPE = "bearer"
 
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
 @DirtiesContext
 class AccessTokenIssuerTest : SpringBootWireMockSetup() {
     @Autowired
@@ -102,6 +100,7 @@ class AccessTokenIssuerTest : SpringBootWireMockSetup() {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     fun `Validate OpenAm OIDC`() {
         val oidcToken: String = getOpenAmOIDC()
         assertDoesNotThrow {

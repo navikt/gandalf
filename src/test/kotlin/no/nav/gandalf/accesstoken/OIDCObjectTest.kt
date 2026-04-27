@@ -2,6 +2,7 @@ package no.nav.gandalf.accesstoken
 
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
+import no.nav.gandalf.WireMockInitializer
 import no.nav.gandalf.accesstoken.oauth.OidcObject
 import no.nav.gandalf.service.RsaKeysProvider
 import no.nav.gandalf.utils.compare
@@ -10,21 +11,18 @@ import no.nav.gandalf.utils.getOriginalJwkSet
 import no.nav.gandalf.utils.getOriginalToken
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.ContextConfiguration
 import java.time.ZonedDateTime
 
-@RunWith(SpringRunner::class)
 @SpringBootTest
 @ActiveProfiles("test")
-@AutoConfigureWireMock(port = 0)
+@ContextConfiguration(initializers = [WireMockInitializer::class])
 @DirtiesContext
 class OIDCObjectTest {
     @Autowired

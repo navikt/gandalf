@@ -3,6 +3,7 @@ package no.nav.gandalf.api
 import com.nimbusds.jwt.SignedJWT
 import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.TestKeySelector
+import no.nav.gandalf.WireMockInitializer
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.accesstoken.saml.SamlObject
 import no.nav.gandalf.utils.getOidcToSamlRequest
@@ -10,21 +11,18 @@ import no.nav.gandalf.utils.getSamlRequest
 import no.nav.gandalf.utils.getValidateSamlRequest
 import org.junit.After
 import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.ContextConfiguration
 
-@RunWith(SpringRunner::class)
 @SpringBootTest
 @EnableConfigurationProperties
-@AutoConfigureWireMock(port = 0)
+@ContextConfiguration(initializers = [WireMockInitializer::class])
 @DirtiesContext
 @ActiveProfiles("test")
 class WSTrustRequestTest {

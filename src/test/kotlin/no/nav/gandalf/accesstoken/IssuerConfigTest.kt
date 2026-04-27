@@ -3,7 +3,7 @@ package no.nav.gandalf.accesstoken
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldNotBe
 import no.nav.security.mock.oauth2.withMockOAuth2Server
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class IssuerConfigTest {
     @Test
