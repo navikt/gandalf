@@ -2,8 +2,7 @@ package no.nav.gandalf.api
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.OptBoolean
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.annotation.PostConstruct
 import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.utils.ControllerUtil
@@ -21,30 +20,24 @@ import no.nav.gandalf.utils.TOKEN_SUBJECT
 import no.nav.gandalf.utils.TOKEN_TYPE
 import no.nav.gandalf.utils.getDifiOidcToken
 import no.nav.gandalf.utils.getOpenAmAndDPSamlExchangePair
-import no.nav.security.mock.oauth2.http.objectMapper
-import org.junit.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity
+import org.apache.hc.core5.http.io.entity.EntityUtils
+import org.apache.hc.core5.http.message.BasicNameValuePair
+import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import wiremock.org.apache.hc.client5.http.entity.UrlEncodedFormEntity
-import wiremock.org.apache.hc.core5.http.io.entity.EntityUtils
-import wiremock.org.apache.hc.core5.http.message.BasicNameValuePair
 
-@AutoConfigureMockMvc
+private val objectMapper = ObjectMapper()
+
 @ActiveProfiles("test")
 @DirtiesContext
 class TokenExchangeControllerTest : SpringBootWireMockSetup() {
-    @Autowired
-    private lateinit var mvc: MockMvc
-
     @PostConstruct
     fun setup() {
         val controllerUtil = ControllerUtil()
@@ -66,7 +59,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                 .andExpect(jsonPath("$.access_token").isString)
                 .andReturn()
 
-        val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
+        val mockedToken = objectMapper.readValue(result.response.contentAsString, MockTokenTest::class.java)
 
         mvc
             .perform(
@@ -105,7 +98,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                 .andExpect(jsonPath("$.access_token").isString)
                 .andReturn()
 
-        val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
+        val mockedToken = objectMapper.readValue(result.response.contentAsString, MockTokenTest::class.java)
 
         mvc
             .perform(
@@ -210,7 +203,7 @@ class TokenExchangeControllerTest : SpringBootWireMockSetup() {
                 .andExpect(jsonPath("$.expires_in").value(3600))
                 .andReturn()
 
-        val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
+        val mockedToken = objectMapper.readValue(result.response.contentAsString, MockTokenTest::class.java)
 
         mvc
             .perform(
@@ -293,6 +286,6 @@ internal fun MockHttpServletRequestBuilder.formPostBody(formBody: List<BasicName
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class MockTokenTest(
-    @JsonProperty("access_token", isRequired = OptBoolean.TRUE)
+    @JsonProperty("access_token")
     val access_token: String,
 )

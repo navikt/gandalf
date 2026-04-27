@@ -24,7 +24,7 @@ class SecurityConfig(
     @Bean
     fun ldapAuthenticationManager(): AuthenticationManager =
         AuthenticationManager { authentication ->
-            activeDirectoryLdapAuthenticationProvider().authenticate(authentication)
+            activeDirectoryLdapAuthenticationProvider().authenticate(authentication)!!
         }
 
     @Bean

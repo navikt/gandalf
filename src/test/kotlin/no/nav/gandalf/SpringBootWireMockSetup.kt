@@ -19,15 +19,19 @@ import no.nav.gandalf.utils.OPENAM_JWKS_URL
 import no.nav.gandalf.utils.OPENAM_RESPONSE_FILENAME
 import no.nav.gandalf.utils.endpointStub
 import no.nav.gandalf.utils.wellKnownStub
-import org.apache.http.HttpStatus
-import org.junit.Before
-import org.junit.runner.RunWith
+import org.apache.hc.core5.http.HttpStatus
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.context.WebApplicationContext
 
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @SpringBootTest(
     properties = [
         "$PROP_EXTERNAL_PREFIX.difi.oidc=$WIREMOCK_URL$DIFI_CONFIG_URL",
@@ -37,15 +41,27 @@ import org.springframework.test.context.junit4.SpringRunner
         "$PROP_JWKS_ENDPOINT_PREFIX.azureb2c=$WIREMOCK_URL$AZUREAD_JWKS_URL",
         "$PROP_JWKS_ENDPOINT_PREFIX.openam=$WIREMOCK_URL$OPENAM_JWKS_URL",
     ],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    webEnvironment = SpringBootTest.WebEnvironment.MOCK,
 )
-@AutoConfigureWireMock(port = 0)
+@ContextConfiguration(initializers = [WireMockInitializer::class])
 abstract class SpringBootWireMockSetup {
     @Autowired
     private lateinit var server: WireMockServer
 
-    @Before
+    @Autowired
+    protected lateinit var wac: WebApplicationContext
+
+    protected lateinit var mvc: MockMvc
+
+    @BeforeEach
     fun setupKnownIssuers() {
+        mvc =
+            MockMvcBuilders
+                .webAppContextSetup(wac)
+                .apply<org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder>(SecurityMockMvcConfigurers.springSecurity())
+                .build()
+        server.resetAll()
+        server.resetAll()
         wellKnownStub(DIFI_CONFIG_URL, server.url(DIFI_JWKS_URL), DIFI_CONFIG_FILENAME)
         wellKnownStub(
             DIFI_MASKINPORTEN_CONFIG_URL,

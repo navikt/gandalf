@@ -3,12 +3,10 @@ package no.nav.gandalf.utils
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
-import org.apache.http.HttpStatus
+import org.apache.hc.core5.http.HttpStatus
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -28,7 +26,7 @@ internal const val DIFI_MASKINPORTEN_CONFIG_FILENAME = "difi-maskinporten-config
 internal const val AZUREAD_JWKS_FILENAME = "azuread-jwks.json"
 internal const val AZUREAD_JWKS_URL = "/discovery/v2.0/keys"
 
-private val objectMapper: ObjectMapper = jacksonObjectMapper()
+private val objectMapper: ObjectMapper = ObjectMapper()
 
 internal fun endpointStub(
     status: Int = HttpStatus.SC_OK,
@@ -52,7 +50,7 @@ internal fun wellKnownStub(
 ) {
     val content = Files.readString(Path.of("src/test/resources/__files/$bodyFile"))
     val jsonNode: JsonNode =
-        objectMapper.readValue<JsonNode>(content).apply {
+        objectMapper.readValue(content, JsonNode::class.java).apply {
             (this as ObjectNode).put("jwks_uri", jwksUrl)
         }
     endpointStubWithBody(path = path, body = jsonNode)

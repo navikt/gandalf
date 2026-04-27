@@ -100,12 +100,14 @@ class KeyStoreReader(
     }
 
     fun numberOfDaysUtilCertificateExpire(): Double {
-        val days = ChronoUnit.DAYS.between(
-            LocalDate.now(),
-            LocalDate.parse(
-                SimpleDateFormat("yyyy-MM-dd").format(cert?.notAfter),
-            ),
-        ).toDouble()
+        val days =
+            ChronoUnit.DAYS
+                .between(
+                    LocalDate.now(),
+                    LocalDate.parse(
+                        SimpleDateFormat("yyyy-MM-dd").format(cert?.notAfter),
+                    ),
+                ).toDouble()
         log.debug { "Signing certificate expires in: $days" }
         return if (days > 0) days else 1.0
     }
