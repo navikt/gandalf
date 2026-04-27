@@ -187,9 +187,7 @@ class AccessTokenController(
         @Parameter(description = "Indicate that the application intends to use OIDC to verify the user's identity")
         @RequestParam("scope", required = true, defaultValue = "openid")
         scope: String,
-    ): ResponseEntity<Any> {
-        return getOIDCToken(grantType, scope)
-    }
+    ): ResponseEntity<Any> = getOIDCToken(grantType, scope)
 
     @Operation(summary = "Stormaskin: System User -> OIDC Token")
     @ApiResponses(

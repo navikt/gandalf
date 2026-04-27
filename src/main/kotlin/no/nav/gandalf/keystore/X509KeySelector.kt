@@ -99,7 +99,7 @@ class X509KeySelector(
                         trustStore = KeyStore.getInstance("JKS")
                         tsis = FileInputStream(truststoreFile)
                         trustStore!!.load(tsis, truststorePassword.toCharArray())
-                        if (trustStore!!.size() == 0) {
+                        if (trustStore.size() == 0) {
                             log.error("Error: truststore is empty. Loaded from file '$truststoreFile'")
                             throw RuntimeException("Error: truststore is empty")
                         }
@@ -115,9 +115,11 @@ class X509KeySelector(
                         }
                     }
                 }
-            for (trustManager in tmfactory.trustManagers) when (trustManager) {
-                is X509TrustManager -> {
-                    return trustManager
+            for (trustManager in tmfactory.trustManagers) {
+                when (trustManager) {
+                    is X509TrustManager -> {
+                        return trustManager
+                    }
                 }
             }
             log.error("Failed to get X509TrustManager")
@@ -131,12 +133,12 @@ class X509KeySelector(
         fun algEquals(
             algURI: String,
             algName: String,
-        ): Boolean {
-            return algName.equals(
+        ): Boolean =
+            algName.equals(
                 "RSA",
                 ignoreCase = true,
-            ) && algURI.equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", ignoreCase = true)
-        }
+            ) &&
+                algURI.equals("http://www.w3.org/2000/09/xmldsig#rsa-sha1", ignoreCase = true)
     }
 
     fun trustManageFacHandle(block: () -> TrustManagerFactory): TrustManagerFactory {

@@ -24,13 +24,9 @@ class Application {
     private lateinit var keySelector: KeySelector
 
     @Bean
-    fun keySelector(): KeySelector? {
-        return keySelector
-    }
+    fun keySelector(): KeySelector? = keySelector
 
     @Bean
     @Profile("remote")
-    fun prometheusCollector(): CollectorRegistry? {
-        return CollectorRegistry.defaultRegistry
-    }
+    fun prometheusCollector(): CollectorRegistry? = CollectorRegistry.defaultRegistry
 }

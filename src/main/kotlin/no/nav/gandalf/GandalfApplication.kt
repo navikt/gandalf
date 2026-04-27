@@ -10,7 +10,8 @@ class GandalfApplication {
         fun main(args: Array<String>) {
             System.setProperty("oracle.jdbc.fanEnabled", "false")
             SpringApplicationBuilder(GandalfApplication::class.java)
-                .profiles("remote").run(*args)
+                .profiles("remote")
+                .run(*args)
         }
     }
 }

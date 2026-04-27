@@ -92,3 +92,6 @@ ij_kotlin_wrap_first_method_in_call_chain = false
 # Note that rules in any ruleset other than the standard ruleset will need to be prefixed
 # by the ruleset identifier.
 
+# Disable ktlint property-naming rule for Kotlin files
+[*.{kt,kts}]
+ktlint_standard_property-naming = disabled

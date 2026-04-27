@@ -1,3 +1,5 @@
 package no.nav.gandalf.model
 
-data class ErrorResponse(var error: String)
+data class ErrorResponse(
+    var error: String,
+)

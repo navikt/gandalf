@@ -160,7 +160,8 @@ class OidcObject : ClockSkew {
     private val jWTClaimsSet: JWTClaimsSet
         get() {
             val clBuilder: JWTClaimsSet.Builder =
-                JWTClaimsSet.Builder()
+                JWTClaimsSet
+                    .Builder()
                     .issuer(issuer)
                     .claim(VERSION_CLAIM, version)
                     .jwtID(id)
@@ -186,7 +187,8 @@ class OidcObject : ClockSkew {
     private val jWTClaimsSetSpec2: JWTClaimsSet
         get() { // kravene for saml til oidc, DISSE MÅ ENES
             val clBuilder: JWTClaimsSet.Builder =
-                JWTClaimsSet.Builder()
+                JWTClaimsSet
+                    .Builder()
                     .issuer(issuer)
                     .claim(VERSION_CLAIM, version)
                     .jwtID(id)
@@ -217,7 +219,8 @@ class OidcObject : ClockSkew {
         log.info("Sign the jwt with claimSet for issuer: ${claimsSet.issuer}")
         try {
             val header: JWSHeader.Builder =
-                JWSHeader.Builder(alg)
+                JWSHeader
+                    .Builder(alg)
                     .keyID(key.keyID)
                     .type(JOSEObjectType.JWT)
             val signedJWT = SignedJWT(header.build(), claimsSet)
@@ -231,9 +234,7 @@ class OidcObject : ClockSkew {
     }
 
     @Throws(ParseException::class)
-    fun getClaim(claimName: String?): Any? {
-        return (if (signedJWT != null) signedJWT!!.jwtClaimsSet.claims[claimName] else null)
-    }
+    fun getClaim(claimName: String?): Any? = (if (signedJWT != null) signedJWT!!.jwtClaimsSet.claims[claimName] else null)
 
     @Throws(ParseException::class)
     fun getSignedTokenCopyAndAddClaimsFrom(
@@ -300,14 +301,10 @@ class OidcObject : ClockSkew {
         const val NAV_IDENT_CLAIM = "NAVident"
         private var clockSkew = 60L
 
-        fun toDate(d: ZonedDateTime?): Date {
-            return Date.from(d!!.toInstant())
-        }
+        fun toDate(d: ZonedDateTime?): Date = Date.from(d!!.toInstant())
     }
 
-    override fun getMaxClockSkew(): Long {
-        return clockSkew
-    }
+    override fun getMaxClockSkew(): Long = clockSkew
 
     override fun setMaxClockSkew(maxClockSkewSeconds: Long?) {
         if (maxClockSkewSeconds != null) clockSkew = maxClockSkewSeconds

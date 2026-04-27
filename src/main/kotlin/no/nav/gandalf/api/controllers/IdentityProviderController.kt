@@ -88,9 +88,7 @@ class IdentityProviderController {
         ],
     )
     @GetMapping("rest/v1/sts/jwks", "rest/v1/sts/jwks/")
-    fun getDeprecatedKeys(): ResponseEntity<Any> {
-        return getKeys()
-    }
+    fun getDeprecatedKeys(): ResponseEntity<Any> = getKeys()
 
     @Operation(summary = "Discovery endpoint can be used to retrieve metadata.")
     @ApiResponses(
@@ -115,8 +113,8 @@ class IdentityProviderController {
         ],
     )
     @GetMapping("/.well-known/openid-configuration", "/.well-known/openid-configuration/")
-    fun getConfiguration(): ResponseEntity<Any> {
-        return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders).body(
+    fun getConfiguration(): ResponseEntity<Any> =
+        ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders).body(
             ConfigurationResponse(
                 issuer = accessTokenIssuer.issuer,
                 token_endpoint = toTokenPath(accessTokenIssuer.issuer),
@@ -131,7 +129,6 @@ class IdentityProviderController {
                 subject_types_supported = ConfigurationResponse.SUBJECT_TYPES_SUPPORTED,
             ),
         )
-    }
 
     @Operation(summary = "Discovery endpoint can be used to retrieve metadata.", deprecated = true)
     @ApiResponses(
@@ -156,7 +153,5 @@ class IdentityProviderController {
         ],
     )
     @GetMapping("rest/v1/sts/.well-known/openid-configuration", "rest/v1/sts/.well-known/openid-configuration/")
-    fun getDeprecatedConfiguration(): ResponseEntity<Any> {
-        return getConfiguration()
-    }
+    fun getDeprecatedConfiguration(): ResponseEntity<Any> = getConfiguration()
 }

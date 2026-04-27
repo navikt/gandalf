@@ -26,14 +26,15 @@ interface IssuerConfig {
         fun from(wellKnownUrl: String) =
             issuerConfig {
                 log.info { "retrieve metadata from wellknown: $wellKnownUrl" }
-                AuthorizationServerMetadata.parse(
-                    ProxyAwareResourceRetriever().retrieveResource(wellKnownUrl.toUrl()).content,
-                ).let {
-                    WellKnown(
-                        it.issuer.toString(),
-                        it.jwkSetURI.toString(),
-                    )
-                }
+                AuthorizationServerMetadata
+                    .parse(
+                        ProxyAwareResourceRetriever().retrieveResource(wellKnownUrl.toUrl()).content,
+                    ).let {
+                        WellKnown(
+                            it.issuer.toString(),
+                            it.jwkSetURI.toString(),
+                        )
+                    }
             }
 
         fun from(
@@ -50,7 +51,8 @@ interface IssuerConfig {
                     val ttl = 180.minutes
                     val refreshTimeout = 60.minutes
                     val outageTTL = 60.minutes
-                    JWKSourceBuilder.create<SecurityContext>(wellKnown.jwksUrl.toUrl(), ProxyAwareResourceRetriever())
+                    JWKSourceBuilder
+                        .create<SecurityContext>(wellKnown.jwksUrl.toUrl(), ProxyAwareResourceRetriever())
                         .cache(true)
                         .rateLimited(false)
                         .outageTolerant(outageTTL.inWholeMilliseconds)
@@ -71,7 +73,11 @@ interface IssuerConfig {
 
         private fun String.toJWKSelector(): JWKSelector =
             JWKSelector(
-                JWKMatcher.Builder().keyType(KeyType.RSA).keyID(this).build(),
+                JWKMatcher
+                    .Builder()
+                    .keyType(KeyType.RSA)
+                    .keyID(this)
+                    .build(),
             )
 
         private fun String.toUrl(): URL = ResourceUtils.toURL(this)

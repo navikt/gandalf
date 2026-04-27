@@ -38,13 +38,14 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
     // GET Path: /token
     @Test
     fun `Get OIDC Token`() {
-        mvc.perform(
-            MockMvcRequestBuilders.get(TOKEN)
-                .param(GRANT_TYPE, "client_credentials")
-                .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(TOKEN)
+                    .param(GRANT_TYPE, "client_credentials")
+                    .param(SCOPE, "openid")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
             .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
@@ -57,43 +58,47 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
     fun `Get OIDC Token - Not Known Params`() {
         val unknownGrantType = "client_credential"
         val scope = "openid"
-        mvc.perform(
-            MockMvcRequestBuilders.get(TOKEN)
-                .param(GRANT_TYPE, unknownGrantType)
-                .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(TOKEN)
+                    .param(GRANT_TYPE, unknownGrantType)
+                    .param(SCOPE, "openid")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(jsonPath("$.error").value(INVALID_REQUEST))
             .andExpect(jsonPath("$.error_description").value("grant_type = $unknownGrantType, scope = $scope"))
     }
 
     @Test
     fun `Get OIDC Token - Missing Params`() {
-        mvc.perform(
-            MockMvcRequestBuilders.get(TOKEN)
-                .param(GRANT_TYPE, "client_credentials")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(TOKEN)
+                    .param(GRANT_TYPE, "client_credentials")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
 
-        mvc.perform(
-            MockMvcRequestBuilders.get(TOKEN)
-                .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(TOKEN)
+                    .param(SCOPE, "openid")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
 
     @Test
     fun `Get OIDC Token - UnAuthorized`() {
-        mvc.perform(
-            MockMvcRequestBuilders.get(TOKEN)
-                .param(GRANT_TYPE, "client_credentials")
-                .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPD", "passwor")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(TOKEN)
+                    .param(GRANT_TYPE, "client_credentials")
+                    .param(SCOPE, "openid")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPD", "passwor")),
+            ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
             .andExpect(
                 jsonPath(
@@ -108,13 +113,14 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
     // Should have the same result as for get
     @Test
     fun `POST OIDC Token`() {
-        mvc.perform(
-            MockMvcRequestBuilders.post(TOKEN)
-                .param(GRANT_TYPE, "client_credentials")
-                .param(SCOPE, "openid")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(TOKEN)
+                    .param(GRANT_TYPE, "client_credentials")
+                    .param(SCOPE, "openid")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
             .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
@@ -125,18 +131,18 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
 
     @Test
     fun `POST OIDC Token with Form-Params`() {
-        mvc.perform(
-            MockMvcRequestBuilders.post(TOKEN)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .formPostBody(
-                    listOf(
-                        BasicNameValuePair(GRANT_TYPE, "client_credentials"),
-                        BasicNameValuePair(SCOPE, "openid"),
-                    ),
-                )
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(TOKEN)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .formPostBody(
+                        listOf(
+                            BasicNameValuePair(GRANT_TYPE, "client_credentials"),
+                            BasicNameValuePair(SCOPE, "openid"),
+                        ),
+                    ).with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(MockMvcResultMatchers.header().stringValues("Cache-Control", "no-store"))
             .andExpect(MockMvcResultMatchers.header().stringValues("Pragma", "no-cache"))
@@ -148,12 +154,13 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
     // Path: /token2
     @Test
     fun `Get OIDC Token2`() {
-        mvc.perform(
-            MockMvcRequestBuilders.get(TOKEN2)
-                .header("username", "srvPDP")
-                .header("password", "password"),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(TOKEN2)
+                    .header("username", "srvPDP")
+                    .header("password", "password"),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.accessToken").isString)
             .andExpect(jsonPath("$.tokenType").value(TOKEN_TYPE))
@@ -164,33 +171,36 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
 
     @Test
     fun `UnAuthorized Request OIDC Token2`() {
-        mvc.perform(
-            MockMvcRequestBuilders.get(TOKEN2)
-                .header("username", "srvPD")
-                .header("password", "passwor"),
-        )
-            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(TOKEN2)
+                    .header("username", "srvPD")
+                    .header("password", "passwor"),
+            ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
     }
 
     @Test
     fun `Get OIDC Token2 Missing headers`() {
-        mvc.perform(
-            MockMvcRequestBuilders.get(TOKEN2)
-                .header("username", "srvPDP")
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().is4xxClientError)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(TOKEN2)
+                    .header("username", "srvPDP")
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            ).andExpect(MockMvcResultMatchers.status().is4xxClientError)
     }
 
     // Path: /samltoken
     @Test
     fun `Get SAML Token`() {
-        mvc.perform(
-            MockMvcRequestBuilders.get(SAML_TOKEN)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(SAML_TOKEN)
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "password")),
+            ).andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.access_token").isString)
             .andExpect(jsonPath("$.token_type").value(TOKEN_TYPE))
@@ -200,11 +210,12 @@ class AccessTokenControllerTest : SpringBootWireMockSetup() {
 
     @Test
     fun `UnAuthorized SAML Token`() {
-        mvc.perform(
-            MockMvcRequestBuilders.get(SAML_TOKEN)
-                .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "pasword")),
-        )
-            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get(SAML_TOKEN)
+                    .with(SecurityMockMvcRequestPostProcessors.httpBasic("srvPDP", "pasword")),
+            ).andExpect(MockMvcResultMatchers.status().isUnauthorized)
             .andExpect(jsonPath("$.error").value(INVALID_CLIENT))
             .andExpect(
                 jsonPath(

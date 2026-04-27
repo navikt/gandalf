@@ -130,7 +130,12 @@ class SamlObject : ClockSkew {
         val vList = doc.getElementsByTagName("saml2:AttributeValue")
         var attrName: String
         for (i in 0 until nList.length) {
-            attrName = nList.item(i).attributes.getNamedItem("Name").nodeValue
+            attrName =
+                nList
+                    .item(i)
+                    .attributes
+                    .getNamedItem("Name")
+                    .nodeValue
             when (attrName) {
                 "authenticationLevel" -> {
                     authenticationLevel = vList.item(i).textContent
@@ -230,13 +235,12 @@ class SamlObject : ClockSkew {
         log.info(message)
     }
 
-    fun expiresIn(): Long {
-        return if (notOnOrAfter != null) {
+    fun expiresIn(): Long =
+        if (notOnOrAfter != null) {
             ChronoUnit.SECONDS.between(now, notOnOrAfter)
         } else {
             -1
         }
-    }
 
     private fun setId(id: String) {
         this.id = id
@@ -248,22 +252,19 @@ class SamlObject : ClockSkew {
         notOnOrAfter = issueInstant!!.plusSeconds(duration)
     }
 
-    override fun toString(): String {
-        return "Issuer: " + issuer + " nameID: " + nameID + " notBefore: " + dateNotBefore + " notOnOrAfter: " + notOnOrAfter +
+    override fun toString(): String =
+        "Issuer: " + issuer + " nameID: " + nameID + " notBefore: " + dateNotBefore + " notOnOrAfter: " + notOnOrAfter +
             " ConsumerId: " + consumerId + " IdentType: " + identType + " Authlevel: " + authenticationLevel
-    }
 
-    override fun getMaxClockSkew(): Long {
-        return clockSkew
-    }
+    override fun getMaxClockSkew(): Long = clockSkew
 
     override fun setMaxClockSkew(maxClockSkewSeconds: Long?) {
         if (maxClockSkewSeconds != null) clockSkew = maxClockSkewSeconds
     }
 
     @Throws(Exception::class)
-    fun getSignedSaml(keyStoreReader: KeyStoreReader): String {
-        return try {
+    fun getSignedSaml(keyStoreReader: KeyStoreReader): String =
+        try {
             val samlToken = getUnsignedSaml(this)
             val docFac = DocumentBuilderFactory.newInstance()
             docFac.isNamespaceAware = true
@@ -323,7 +324,6 @@ class SamlObject : ClockSkew {
             log.error("Error: " + e.message, e)
             throw Exception("Error: " + e.message, e)
         }
-    }
 
     companion object {
         private var clockSkew = 60L
