@@ -16,7 +16,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleAllExceptions(
         ex: Exception,
         request: WebRequest?,
-    ): ResponseEntity<Any?> {
+    ): ResponseEntity<Any> {
         val error = ErrorDescriptiveResponse("Server Error", ex.localizedMessage)
         return ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -25,7 +25,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleLdapError(
         ex: LDAPException,
         request: WebRequest?,
-    ): ResponseEntity<Any?> {
+    ): ResponseEntity<Any> {
         val error = ErrorDescriptiveResponse(INVALID_CLIENT, ex.localizedMessage)
         return ResponseEntity(error, HttpStatus.UNAUTHORIZED)
     }

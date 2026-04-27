@@ -1,7 +1,7 @@
 package no.nav.gandalf.keystore
 
 import no.nav.gandalf.config.KeystoreReaderConfig
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.core.io.ClassPathResource

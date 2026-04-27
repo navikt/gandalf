@@ -1,6 +1,6 @@
 package no.nav.gandalf.api
 
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.gandalf.SpringBootWireMockSetup
 import no.nav.gandalf.utils.DATAPOWER_SAML_BASE64_ENCODED
 import no.nav.gandalf.utils.GRANT_TYPE
@@ -12,26 +12,20 @@ import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN_SUBJECT
 import no.nav.gandalf.utils.TOKEN_TYPE
 import no.nav.gandalf.utils.getOpenAmOIDC
-import no.nav.security.mock.oauth2.http.objectMapper
-import org.junit.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
-@AutoConfigureMockMvc
+private val objectMapper = ObjectMapper()
+
 @ActiveProfiles("test")
 @DirtiesContext
 class TokenInfoControllerTest : SpringBootWireMockSetup() {
-    @Autowired
-    private lateinit var mvc: MockMvc
-
     @Test
     fun `Validate Valid SAML Token`() {
         val result =
@@ -48,7 +42,7 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
                 .andExpect(jsonPath("$.expires_in").isNumber)
                 .andReturn()
 
-        val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
+        val mockedToken = objectMapper.readValue(result.response.contentAsString, MockTokenTest::class.java)
 
         mvc
             .perform(
@@ -96,7 +90,7 @@ class TokenInfoControllerTest : SpringBootWireMockSetup() {
                 .andExpect(jsonPath("$.expires_in").value(3600))
                 .andReturn()
 
-        val mockedToken = objectMapper.readValue<MockTokenTest>(result.response.contentAsString)
+        val mockedToken = objectMapper.readValue(result.response.contentAsString, MockTokenTest::class.java)
 
         mvc
             .perform(

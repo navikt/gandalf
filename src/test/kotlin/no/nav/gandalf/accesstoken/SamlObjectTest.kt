@@ -1,28 +1,26 @@
 package no.nav.gandalf.accesstoken
 
 import no.nav.gandalf.TestKeySelector
+import no.nav.gandalf.WireMockInitializer
 import no.nav.gandalf.accesstoken.saml.SamlObject
 import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.utils.getAlteredSamlToken
 import no.nav.gandalf.utils.getSamlToken
 import org.junit.Assert
 import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.ContextConfiguration
 import java.time.ZonedDateTime
 import javax.xml.crypto.KeySelector
 
-@RunWith(SpringRunner::class)
 @SpringBootTest
 @ActiveProfiles("test")
-@AutoConfigureWireMock(port = 0)
+@ContextConfiguration(initializers = [WireMockInitializer::class])
 @DirtiesContext
 class SamlObjectTest {
     @Autowired

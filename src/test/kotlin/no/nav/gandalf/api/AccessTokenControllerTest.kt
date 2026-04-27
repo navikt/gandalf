@@ -9,26 +9,19 @@ import no.nav.gandalf.utils.SCOPE
 import no.nav.gandalf.utils.TOKEN
 import no.nav.gandalf.utils.TOKEN2
 import no.nav.gandalf.utils.TOKEN_TYPE
-import org.junit.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.apache.hc.core5.http.message.BasicNameValuePair
+import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import wiremock.org.apache.hc.core5.http.message.BasicNameValuePair
 
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DirtiesContext
 class AccessTokenControllerTest : SpringBootWireMockSetup() {
-    @Autowired
-    private lateinit var mvc: MockMvc
-
     @PostConstruct
     fun setup() {
         val controllerUtil = ControllerUtil()
