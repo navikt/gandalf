@@ -19,7 +19,8 @@ class LDAPAuthentication(
     fun result(user: User) =
         when {
             !ldap.connectionOk -> {
-                throw LDAPException(ldapException).also { log.error { "Cannot authenticate, connection to ldap is down" } }
+                throw LDAPException(ResultCode.CONNECT_ERROR, "Cannot authenticate, connection to LDAP is down")
+                    .also { log.error { "Cannot authenticate, connection to ldap is down" } }
             }
             else -> {
                 try {
