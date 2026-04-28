@@ -1,21 +1,14 @@
 package no.nav.gandalf.ldap
 
 import com.unboundid.ldap.sdk.LDAPException
-import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.config.LdapConfig
 import no.nav.gandalf.model.User
-import org.junit.After
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 class LdapTest {
-    @After
-    fun clean() {
-        CollectorRegistry.defaultRegistry.clear()
-    }
-
     private val ldapConfig =
         LdapConfig(
             url = "localhost",

@@ -1,7 +1,7 @@
 package no.nav.gandalf.api.controllers
 
 import com.nimbusds.jwt.SignedJWT
-import io.prometheus.client.Histogram
+import io.micrometer.core.instrument.Timer
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -111,20 +111,20 @@ class TokenExchangeController {
         @RequestParam("subject_token_type")
         subTokenType: String?,
     ): ResponseEntity<Any> {
-        val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchange.startTimer()
+        val sample = Timer.start(ApplicationMetric.meterRegistry())
         try {
             log.info("Exchange $subTokenType to $reqTokenType")
             val user =
                 requireNotNull(userDetails()) {
-                    ApplicationMetric.exchangeTokenNotOk.inc()
+                    ApplicationMetric.exchangeTokenNotOk.increment()
                     return unauthorizedResponse(Throwable(), "Unauthorized")
                 }
             if (grantType.isNullOrEmpty() || grantType != "urn:ietf:params:oauth:grant-type:token-exchange") {
-                ApplicationMetric.exchangeTokenNotOk.inc()
+                ApplicationMetric.exchangeTokenNotOk.increment()
                 return badRequestResponse("Unknown grant_type")
             }
             if (subjectToken.isNullOrEmpty()) {
-                ApplicationMetric.exchangeTokenNotOk.inc()
+                ApplicationMetric.exchangeTokenNotOk.increment()
                 return badRequestResponse("Missing subject_token in request")
             }
             when {
@@ -134,13 +134,13 @@ class TokenExchangeController {
                         val decodedSaml = Base64.getDecoder().decode(subjectToken.toByteArray())
                         val oidcToken: SignedJWT =
                             issuer.exchangeSamlToOidcToken(String(decodedSaml, StandardCharsets.UTF_8))
-                        ApplicationMetric.exchangeSAMLTokenOk.labels(user).inc()
+                        ApplicationMetric.exchangeSAMLTokenOk(user).increment()
                         ResponseEntity
                             .status(HttpStatus.OK)
                             .headers(tokenHeaders)
                             .body(ExchangeTokenService().getResponseFrom(oidcToken))
                     } catch (e: Throwable) {
-                        ApplicationMetric.exchangeTokenNotOk.inc()
+                        ApplicationMetric.exchangeTokenNotOk.increment()
                         badRequestResponse(e.message ?: "")
                     }
                 }
@@ -152,7 +152,7 @@ class TokenExchangeController {
                         val samlToken = issuer.exchangeOidcToSamlToken(subjectToken, user)
                         val samlObj = SamlObject()
                         samlObj.read(samlToken)
-                        ApplicationMetric.exchangeOIDCTokenOk.labels(user).inc()
+                        ApplicationMetric.exchangeOIDCTokenOk(user).increment()
                         ResponseEntity
                             .status(HttpStatus.OK)
                             .headers(tokenHeaders)
@@ -166,18 +166,18 @@ class TokenExchangeController {
                                 ),
                             )
                     } catch (e: Throwable) {
-                        ApplicationMetric.exchangeTokenNotOk.inc()
+                        ApplicationMetric.exchangeTokenNotOk.increment()
                         return badRequestResponse(e.message ?: "")
                     }
                 }
 
                 else -> {
-                    ApplicationMetric.exchangeTokenNotOk.inc()
+                    ApplicationMetric.exchangeTokenNotOk.increment()
                     return badRequestResponse("Unsupported token exchange for subject/requested token type")
                 }
             }
         } finally {
-            requestTimer.observeDuration()
+            sample.stop(ApplicationMetric.requestLatencyTokenExchange)
         }
     }
 
@@ -222,34 +222,34 @@ class TokenExchangeController {
         @RequestHeader("token", required = true)
         difiToken: String?,
     ): ResponseEntity<Any> {
-        val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyTokenExchangeDIFI.startTimer()
+        val sample2 = Timer.start(ApplicationMetric.meterRegistry())
         try {
             log.info("Exchange difi token to oidc token")
             try {
                 require(userDetails() == "srvDatapower") { "Client is Unauthorized for this endpoint" }
             } catch (e: Throwable) {
-                ApplicationMetric.exchangeDIFINotOk.inc()
+                ApplicationMetric.exchangeDIFINotOk.increment()
                 return unauthorizedResponse(e, e.message!!)
             }
             if (difiToken.isNullOrEmpty()) {
                 val errorMessage = "Exchange difi token called with null or empty difi token"
                 log.error(errorMessage)
-                ApplicationMetric.exchangeDIFINotOk.inc()
+                ApplicationMetric.exchangeDIFINotOk.increment()
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse(errorMessage))
             }
             return try {
                 val oidcToken = issuer.exchangeDifiTokenToOidc(difiToken)
-                ApplicationMetric.exchangeDIFIOk.inc()
+                ApplicationMetric.exchangeDIFIOk.increment()
                 ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(tokenHeaders)
                     .body(AccessTokenResponse(oidcToken))
             } catch (e: Throwable) {
-                ApplicationMetric.exchangeDIFINotOk.inc()
+                ApplicationMetric.exchangeDIFINotOk.increment()
                 badRequestResponse("Failed to exchange difi token to oidc token: " + e.message)
             }
         } finally {
-            requestTimer.observeDuration()
+            sample2.stop(ApplicationMetric.requestLatencyTokenExchangeDIFI)
         }
     }
 }

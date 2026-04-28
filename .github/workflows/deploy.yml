@@ -95,7 +95,7 @@ jobs:
       - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-fss
-          RESOURCE: .nais/nais.yml
+          RESOURCE: .nais/nais.yml,.nais/alerts.yml
           VARS: .nais/default-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
           TIMEOUT: 15m
@@ -113,7 +113,7 @@ jobs:
       - uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-fss
-          RESOURCE: .nais/nais.yml
+          RESOURCE: .nais/nais.yml,.nais/alerts.yml
           VARS: .nais/prod-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
           TIMEOUT: 15m

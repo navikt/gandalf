@@ -1,6 +1,6 @@
 package no.nav.gandalf.api.controllers
 
-import io.prometheus.client.Histogram
+import io.micrometer.core.instrument.Timer
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -57,11 +57,11 @@ class IdentityProviderController {
     )
     @GetMapping("/jwks", "/jwks/")
     fun getKeys(): ResponseEntity<Any> {
-        val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyJwks.startTimer()
+        val sample = Timer.start(ApplicationMetric.meterRegistry())
         try {
             return ResponseEntity.status(HttpStatus.OK).headers(tokenHeaders).body(accessTokenIssuer.getPublicJWKSet()!!.toJSONObject())
         } finally {
-            requestTimer.observeDuration()
+            sample.stop(ApplicationMetric.requestLatencyJwks)
         }
     }
 

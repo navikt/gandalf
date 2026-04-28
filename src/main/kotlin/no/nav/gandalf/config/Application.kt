@@ -1,11 +1,9 @@
 package no.nav.gandalf.config
 
-import io.prometheus.client.CollectorRegistry
 import org.springdoc.core.utils.SpringDocUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import org.springframework.data.domain.Pageable
 import javax.xml.crypto.KeySelector
 
@@ -25,8 +23,4 @@ class Application {
 
     @Bean
     fun keySelector(): KeySelector? = keySelector
-
-    @Bean
-    @Profile("remote")
-    fun prometheusCollector(): CollectorRegistry? = CollectorRegistry.defaultRegistry
 }

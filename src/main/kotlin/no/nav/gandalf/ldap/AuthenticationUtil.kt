@@ -1,6 +1,6 @@
 package no.nav.gandalf.ldap
 
-import io.prometheus.client.Histogram
+import io.micrometer.core.instrument.Timer
 import no.nav.gandalf.metric.ApplicationMetric
 import no.nav.gandalf.model.User
 import org.slf4j.MDC
@@ -9,11 +9,11 @@ internal fun authenticate(
     ldapConnectionSetup: LDAPConnectionSetup,
     user: User,
 ): Boolean {
-    val requestTimer: Histogram.Timer = ApplicationMetric.ldapDuration.startTimer()
+    val sample = Timer.start(ApplicationMetric.meterRegistry())
     return try {
         LDAPAuthentication(ldapConnectionSetup).result(user = user)
     } finally {
-        requestTimer.observeDuration()
+        sample.stop(ApplicationMetric.ldapDuration)
     }
 }
 

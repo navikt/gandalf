@@ -28,9 +28,12 @@ class LDAPConnectionSetup(
             connectOptions,
         )
 
+    final var ldapConnectionPool: LDAPConnectionPool? = null
+
     init {
         try {
             with(ldapConnection) { connect(ldapConfig.url, ldapConfig.port) }
+            ldapConnectionPool = LDAPConnectionPool(ldapConnection, NUM_CONNECTIONS)
             log.info { "Successfully connected to $ldapConfig" }
         } catch (e: LDAPException) {
             log.error { "LDAP operations against $ldapConfig will fail - $e" }
@@ -44,16 +47,14 @@ class LDAPConnectionSetup(
         }
     }
 
-    final var ldapConnectionPool = LDAPConnectionPool(ldapConnection, NUM_CONNECTIONS)
-
     override fun close() {
         log.debug { "Closing ldap connection $ldapConfig" }
         ldapConnection.close()
     }
 
-    val connectionOk = ldapConnection.isConnected
+    val connectionOk get() = ldapConnection.isConnected
 
-    val pool = ldapConnectionPool
+    val pool get() = ldapConnectionPool ?: throw IllegalStateException("LDAP connection not established")
 
     val testUsername = ldapConfig.srvTestUsername
 
