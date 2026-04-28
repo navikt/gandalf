@@ -1,24 +1,31 @@
 ![PROD- Build, push, and deploy](https://github.com/navikt/gandalf/workflows/PROD-%20Build,%20push,%20and%20deploy/badge.svg)
 
-# Gandalf
-Is a Security Token Service (STS) a standard component in security architectures to realize operations such as authentication, identity mapping, token validation and conversion.
-The concept of an STS comes from the OASIS specification WS-Trust which describes a secure model for establishing, managing and evaluating "trust" relationships between applications.
-The security model is mainly based on 3 players: consumer, provider and a Security Token Service (STS) where the STS is the most central player as it issues tokens that all providers can trust.
+# Gandalf — Security Token Service (STS)
 
-# About
-`This` STS is available in FSS, users are authenticated to on-prem Active Directory.  
-`This` STS does not perform any additional access control or role checks.  
-The service definitions are based on specifications in these references:  
-[The OAuth 2.0 Authorization Framework](https://tools.ietf.org/html/rfc6749)  
-[Starting point for .well-known endpoint](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
+A Security Token Service (STS) is a standard component in security architectures for authentication, identity mapping, token validation and conversion.
+The concept comes from the OASIS WS-Trust specification which describes a secure model for establishing and evaluating trust relationships between applications.
+The security model is based on 3 players: consumer, provider, and a Security Token Service — the STS is the central player that issues tokens all providers can trust.
 
-### Ingress
-**Test:** `https://security-token-service-t4.nais.preprod.local`  
-**Development:** `https://security-token-service.nais.preprod.local`  
-**Prod:** `https://security-token-service.nais.adeo.no`
+## About
 
-### Developers
-For local Development `https://security-token-service.dev.adeo.no` is exposed in [naisdevice](https://doc.nais.io/device)
+This STS runs in FSS and authenticates users against on-prem Active Directory.
+It does not perform additional access control or role checks.
+
+Service definitions are based on:
+- [The OAuth 2.0 Authorization Framework (RFC 6749)](https://tools.ietf.org/html/rfc6749)
+- [OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
+
+### Ingresses
+
+| Environment | URL |
+|---|---|
+| Test (T4) | `https://security-token-service-t4.nais.preprod.local` |
+| Development | `https://security-token-service.nais.preprod.local` |
+| Production | `https://security-token-service.nais.adeo.no` |
+
+### Local development
+
+`https://security-token-service.dev.adeo.no` is exposed via [naisdevice](https://doc.nais.io/device)
 
 ### Openapi
 `/api`
@@ -188,28 +195,54 @@ Content-Type: application/json
 }
 ```
 
-## To Run
-Run _GandalfApplicationLocal_ in `test/kotlin/no/nav/gandalf`  
-Runnable endpoints:  
-`/rest/v1/sts/token`  
-`/rest/v1/sts/token2`  
-`/rest/v1/sts/token/exchange`  
-`/rest/v1/sts/samltoken`  
-`/.well-known/openid-configuration`  
-`/jwks`
+## Running locally
 
-## Tools n stuff
-* Kotlin
-* Nimbus
-* Snyk
-* Spring Boot
+```bash
+./gradlew bootRun -Dspring.profiles.active=local
+```
 
-## Contact
-Plattformsikkerhet: `youssef.bel.mekki@nav.no` ++  
-Slack: `#pig_sikkerhet`
+This starts the app with an embedded H2 database and an in-memory LDAP server on port `11389`.
 
-## TODO
-- [x] Add more endpoints to be run local testing
-- [x] Expose `dev.adeo.no` for local development
-- [ ] Describe the Swagger Objects and values
-- [ ] Refactoring of code for better readability
+Available endpoints when running locally:
+
+| Endpoint | Description |
+|---|---|
+| `/rest/v1/sts/token` | Issue system OIDC token |
+| `/rest/v1/sts/token2` | Issue system OIDC token (Stormaskin) |
+| `/rest/v1/sts/token/exchange` | Exchange SAML ↔ OIDC |
+| `/rest/v1/sts/samltoken` | Issue SAML token |
+| `/.well-known/openid-configuration` | OpenID Connect discovery |
+| `/jwks` | Public keys |
+| `/actuator/prometheus` | Prometheus metrics |
+| `/api` | OpenAPI / Swagger UI |
+
+## Metrics
+
+Metrics are exposed at `/actuator/prometheus` using [Micrometer](https://micrometer.io/) with the Prometheus registry.
+
+Key metrics:
+
+| Metric | Type | Description |
+|---|---|---|
+| `securitytokenservice_saml_token_ok_total` | Counter | Successful SAML token issuances |
+| `securitytokenservice_oidc_token_ok_total` | Counter | Successful OIDC token issuances |
+| `securitytokenservice_exchange_token_ok_total` | Counter | Successful token exchanges |
+| `requests_latency_ldap_seconds_*` | Timer | LDAP request latency |
+| `requests_latency_oidc_seconds_*` | Timer | OIDC request latency |
+| `keystore_cert_days_remaining` | Gauge | Days until keystore certificate expires |
+
+The Grafana dashboard is defined in `.nais/grafana-dashboard.json`.
+
+## Tech stack
+
+- Kotlin
+- Spring Boot
+- Micrometer (Prometheus)
+- Nimbus JOSE+JWT
+- H2 (local), Oracle (remote)
+- Embedded LDAP (local), Active Directory (remote)
+
+## Alerts
+
+Alerts are defined in `.nais/alerts.yml` and deployed to dev and prod environments.
+An alert fires when a keystore certificate has fewer than 30 days remaining.

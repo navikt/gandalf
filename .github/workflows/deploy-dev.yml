@@ -36,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       "image": ${{ steps.docker-build-push.outputs.image }}
+      "telemetry": ${{ steps.docker-build-push.outputs.telemetry }}
     permissions:
       packages: "write"
       contents: "read"
@@ -51,7 +52,7 @@ jobs:
         run: ./gradlew bootJar -x test
 
       - name: Push docker image to GAR and sign image
-        uses: nais/docker-build-push@cd5ec5663feb0e05c3fa374d1fb442605b046c6b # ratchet:nais/docker-build-push@v0
+        uses: nais/docker-build-push@be85229e81c0293c265c646c084f05317fb6e0d2 # ratchet:nais/docker-build-push@v0
         id: docker-build-push
         with:
           team: aura
@@ -72,4 +73,4 @@ jobs:
           RESOURCE: .nais/nais.yml
           VARS: .nais/t4-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
-          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
+          TELEMETRY: ${{ needs.build.outputs.telemetry }}

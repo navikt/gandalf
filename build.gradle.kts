@@ -17,7 +17,7 @@ val unboundid = "7.0.4"
 val wiremockCloud = "3.13.2"
 val h2 = "2.4.240"
 val conscrypt = "2.5.2"
-val prometheus = "1.12.5"
+val prometheus = "1.16.5"
 val commonsLang = "3.20.0"
 
 java {
@@ -77,6 +77,7 @@ dependencies {
     runtimeOnly("com.oracle.database.jdbc:ojdbc8")
 
     // test
+    runtimeOnly("com.h2database:h2:$h2")
     testImplementation("com.h2database:h2:$h2")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOAuth2Server")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
@@ -107,6 +108,9 @@ tasks {
     }
     bootJar {
         mainClass.set("no.nav.gandalf.GandalfApplication")
+    }
+    bootRun {
+        systemProperties(System.getProperties().mapKeys { it.key.toString() })
     }
     withType<Wrapper> {
         gradleVersion = gradleVersion

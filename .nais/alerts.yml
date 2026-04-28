@@ -27,13 +27,9 @@ spec:
       expr: selftests_aggregate_result_status{app="security-token-service"} > 0
       for: 1m
       action: "Sjekk app {{ $labels.app }} i namespace {{ $labels.kubernetes_namespace }} sine selftest for å se hva som er galt"
-    - alert: Høy andel HTTP serverfeil (5xx responser)
-      severity: danger
-      expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^5\\d\\d", backend=~"mydomain.nais.*/mycontextpath/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"mydomain.nais.*/mycontextpath/*"}[3m])))) > 1
-      for: 3m
-      action: "Sjekk loggene for å se hvorfor {{ $labels.backend }} returnerer HTTP feilresponser"
-    - alert: Høy andel HTTP klientfeil (4xx responser)
+    - alert: Sertifikat utløper snart
       severity: warning
-      expr: (100 * (sum by (backend) (rate(traefik_backend_requests_total{code=~"^4\\d\\d", backend=~"mydomain.nais.*/mycontextpath/*"}[3m])) / sum by (backend) (rate(traefik_backend_requests_total{backend=~"mydomain.nais.*/mycontextpath/*"}[3m])))) > 10
-      for: 3m
-      action: "Sjekk loggene for å se hvorfor {{ $labels.backend }} returnerer HTTP feilresponser"
+      expr: keystore_cert_days_remaining < 30
+      for: 1h
+      description: "Sertifikat {{ $labels.key_alias }} utløper om {{ $value }} dager"
+      action: "Forny sertifikatet med alias {{ $labels.key_alias }} før det utløper"

@@ -19,8 +19,7 @@ spring:
       maximum-pool-size: 15
   jpa:
     open-in-view: false
-  profiles:
-    active: remote
+
   main:
     banner-mode: 'off'
   # Ldap
@@ -71,8 +70,6 @@ management:
   endpoint.prometheus.enabled: true
   endpoints.web:
     exposure.include: prometheus
-    path-mapping.prometheus: /prometheus
-    base-path: /
 # Logging
 logging.config: classpath:logback-remote.xml
 # Swagger

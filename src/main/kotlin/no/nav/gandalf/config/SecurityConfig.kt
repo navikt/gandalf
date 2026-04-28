@@ -55,7 +55,7 @@ class SecurityConfig(
                         "/isAlive",
                         "/isReady",
                         "/ping",
-                        "/prometheus",
+                        "/actuator/prometheus",
                         // Swagger
                         "/api/**",
                         "/swagger-ui/**",

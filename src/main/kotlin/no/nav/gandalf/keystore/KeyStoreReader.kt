@@ -2,7 +2,7 @@ package no.nav.gandalf.keystore
 
 import mu.KotlinLogging
 import no.nav.gandalf.config.KeystoreReaderConfig
-import no.nav.gandalf.metric.ApplicationMetric.Companion.certCount
+import no.nav.gandalf.metric.ApplicationMetric
 import org.springframework.stereotype.Component
 import java.io.FileInputStream
 import java.io.IOException
@@ -88,7 +88,7 @@ class KeyStoreReader(
                 cert =
                     keyStore!!.getCertificate(keyAlias) as X509Certificate // eller keyStore.getCertificateChain(keyAlias)[0];
                 val keyUsage = cert!!.keyUsage
-                certCount.labels(keyAlias).inc(numberOfDaysUtilCertificateExpire())
+                ApplicationMetric.certDaysRemaining(keyAlias) { numberOfDaysUtilCertificateExpire() }
                 privateKey =
                     keyStore!!.getKey(keyAlias, keystoreReaderConfig.keystorePassword.toCharArray()) as PrivateKey
                 if (privateKey != null && (keyUsage == null || keyUsage[0] || keyUsage[1])) { // if keyUsage is not specified or is digitalSignature or nonRepudation

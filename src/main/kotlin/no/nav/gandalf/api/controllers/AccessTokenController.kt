@@ -1,6 +1,6 @@
 package no.nav.gandalf.api.controllers
 
-import io.prometheus.client.Histogram
+import io.micrometer.core.instrument.Timer
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.headers.Header
@@ -23,16 +23,14 @@ import no.nav.gandalf.api.Util.unauthorizedResponse
 import no.nav.gandalf.api.Util.userDetails
 import no.nav.gandalf.ldap.CustomAuthenticationProvider
 import no.nav.gandalf.ldap.authenticate
-import no.nav.gandalf.metric.ApplicationMetric.Companion.issuedTokenCounterUnique
+import no.nav.gandalf.metric.ApplicationMetric
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencySAMLToken
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencyToken
 import no.nav.gandalf.metric.ApplicationMetric.Companion.requestLatencyToken2
 import no.nav.gandalf.metric.ApplicationMetric.Companion.samlTokenError
 import no.nav.gandalf.metric.ApplicationMetric.Companion.samlTokenNotOk
-import no.nav.gandalf.metric.ApplicationMetric.Companion.samlTokenOk
 import no.nav.gandalf.metric.ApplicationMetric.Companion.token2Error
 import no.nav.gandalf.metric.ApplicationMetric.Companion.token2NotOk
-import no.nav.gandalf.metric.ApplicationMetric.Companion.token2Ok
 import no.nav.gandalf.metric.ApplicationMetric.Companion.tokenError
 import no.nav.gandalf.metric.ApplicationMetric.Companion.tokenNotOk
 import no.nav.gandalf.metric.ApplicationMetric.Companion.tokenOK
@@ -112,35 +110,35 @@ class AccessTokenController(
         @RequestParam("scope", required = true)
         scope: String,
     ): ResponseEntity<Any> {
-        val requestTimer: Histogram.Timer = requestLatencyToken.startTimer()
+        val sample = Timer.start(ApplicationMetric.meterRegistry())
         try {
             when {
                 grantType != "client_credentials" || scope != "openid" -> {
-                    tokenNotOk.inc()
+                    tokenNotOk.increment()
                     return badRequestResponse("grant_type = $grantType, scope = $scope")
                 }
                 else -> {
                     val user =
                         requireNotNull(userDetails()) {
-                            tokenNotOk.inc()
+                            tokenNotOk.increment()
                             return unauthorizedResponse(Throwable(), "Unauthorized")
                         }
                     return try {
                         val oidcToken = issuer.issueToken(user)
-                        tokenOK.inc()
-                        issuedTokenCounterUnique.labels(user).inc()
+                        tokenOK.increment()
+                        ApplicationMetric.issuedTokenCounterUnique(user).increment()
                         ResponseEntity
                             .status(HttpStatus.OK)
                             .headers(tokenHeaders)
                             .body(AccessTokenResponse(oidcToken))
                     } catch (e: Throwable) {
-                        tokenError.inc()
+                        tokenError.increment()
                         serverErrorResponse(e)
                     }
                 }
             }
         } finally {
-            requestTimer.observeDuration()
+            sample.stop(requestLatencyToken)
         }
     }
 
@@ -230,27 +228,27 @@ class AccessTokenController(
         @RequestHeader("username") username: String?,
         @RequestHeader("password") password: String?,
     ): ResponseEntity<Any> {
-        val requestTimer: Histogram.Timer = requestLatencyToken2.startTimer()
+        val sample2 = Timer.start(ApplicationMetric.meterRegistry())
         try {
             try {
                 authenticationProvider.authenticate(username, password)
             } catch (e: Throwable) {
-                token2NotOk.inc()
+                token2NotOk.increment()
                 return unauthorizedResponse(e, e.message ?: "")
             }
             log.info("Issue OIDC token2 for user: $username")
             return try {
                 val oidcToken = issuer.issueToken(username)
-                token2Ok.labels(username).inc()
+                ApplicationMetric.token2Ok(username ?: "unknown").increment()
                 return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(AccessToken2Response(oidcToken))
             } catch (e: Throwable) {
-                token2Error.inc()
+                token2Error.increment()
                 serverErrorResponse(e)
             }
         } finally {
-            requestTimer.observeDuration()
+            sample2.stop(requestLatencyToken2)
         }
     }
 
@@ -288,11 +286,11 @@ class AccessTokenController(
     )
     @GetMapping("/samltoken", "/samltoken/")
     fun getSAMLToken(): ResponseEntity<Any> {
-        val requestTimer: Histogram.Timer = requestLatencySAMLToken.startTimer()
+        val sample3 = Timer.start(ApplicationMetric.meterRegistry())
         try {
             val user =
                 requireNotNull(userDetails()) {
-                    samlTokenNotOk.inc()
+                    samlTokenNotOk.increment()
                     return unauthorizedResponse(Throwable(), "Unauthorized")
                 }
             log.info("Issue SAML token for: $user")
@@ -302,7 +300,7 @@ class AccessTokenController(
                     SamlObject().apply {
                         this.read(samlToken)
                     }
-                samlTokenOk.labels(user).inc()
+                ApplicationMetric.samlTokenOk(user).increment()
                 return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(tokenHeaders)
@@ -316,11 +314,11 @@ class AccessTokenController(
                         ),
                     )
             } catch (e: Throwable) {
-                samlTokenError.inc()
+                samlTokenError.increment()
                 serverErrorResponse(e)
             }
         } finally {
-            requestTimer.observeDuration()
+            sample3.stop(requestLatencySAMLToken)
         }
     }
 }

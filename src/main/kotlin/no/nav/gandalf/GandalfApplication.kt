@@ -1,5 +1,6 @@
 package no.nav.gandalf
 
+import no.nav.gandalf.config.LocalLdapConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 
@@ -9,9 +10,12 @@ class GandalfApplication {
         @JvmStatic
         fun main(args: Array<String>) {
             System.setProperty("oracle.jdbc.fanEnabled", "false")
-            SpringApplicationBuilder(GandalfApplication::class.java)
-                .profiles("remote")
-                .run(*args)
+            val activeProfiles = System.getProperty("spring.profiles.active", "")
+            val builder = SpringApplicationBuilder(GandalfApplication::class.java)
+            if (activeProfiles.contains("local")) {
+                builder.initializers(LocalLdapConfig())
+            }
+            builder.run(*args)
         }
     }
 }

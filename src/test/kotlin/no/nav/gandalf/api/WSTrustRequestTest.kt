@@ -1,7 +1,6 @@
 package no.nav.gandalf.api
 
 import com.nimbusds.jwt.SignedJWT
-import io.prometheus.client.CollectorRegistry
 import no.nav.gandalf.TestKeySelector
 import no.nav.gandalf.WireMockInitializer
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
@@ -9,7 +8,6 @@ import no.nav.gandalf.accesstoken.saml.SamlObject
 import no.nav.gandalf.utils.getOidcToSamlRequest
 import no.nav.gandalf.utils.getSamlRequest
 import no.nav.gandalf.utils.getValidateSamlRequest
-import org.junit.After
 import org.junit.Assert
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
@@ -34,11 +32,6 @@ class WSTrustRequestTest {
 
     private val username = "srvsecurity-token-"
     private val password = "tull"
-
-    @After
-    fun clear() {
-        CollectorRegistry.defaultRegistry.clear()
-    }
 
     @Test
     fun `WS FROM UNT to SAML Request`() {

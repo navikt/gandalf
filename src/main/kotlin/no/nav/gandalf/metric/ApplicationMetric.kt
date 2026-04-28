@@ -1,235 +1,149 @@
 package no.nav.gandalf.metric
 
-import io.prometheus.client.CollectorRegistry
-import io.prometheus.client.Counter
-import io.prometheus.client.Histogram
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Gauge
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Timer
 import org.springframework.stereotype.Component
 
 private const val METRIC_PREFIX = "securitytokenservice"
 private const val LATENCY_METRIC_PREFIX = "requests_latency"
 
 @Component
-class ApplicationMetric {
-    // path: **/token
+class ApplicationMetric(
+    registry: MeterRegistry,
+) {
     companion object {
-        private val default = CollectorRegistry.defaultRegistry
-        internal val tokenOK =
-            Counter
-                .build()
-                .help("Issued OIDC tokens OK.")
-                .namespace(METRIC_PREFIX)
-                .name("oidctokenOk")
-                .register(default)
-        internal val issuedTokenCounterUnique =
-            Counter
-                .build()
-                .namespace(METRIC_PREFIX)
-                .name("tokens_issued")
-                .help("Number of tokens we have issued")
-                .labelNames("srvbruker")
-                .register(default)
-        internal val tokenNotOk =
-            Counter
-                .build()
-                .help("Issued OIDC tokens failed pga bad request or unauthorized.")
-                .namespace(METRIC_PREFIX)
-                .name("oidctokenNotOk")
-                .register(default)
-        internal val tokenError =
-            Counter
-                .build()
-                .help("Issued OIDC tokens failed pga internal server error.")
-                .namespace(METRIC_PREFIX)
-                .name("oidctokenError")
-                .register(default)
-        internal val requestLatencyToken =
-            Histogram
-                .build()
-                .help("Request latency in seconds /token.")
-                .namespace(LATENCY_METRIC_PREFIX)
-                .name("seconds_token")
-                .register(default)
+        private lateinit var reg: MeterRegistry
+
+        // path: **/token
+        lateinit var tokenOK: Counter
+        lateinit var tokenNotOk: Counter
+        lateinit var tokenError: Counter
+        lateinit var requestLatencyToken: Timer
 
         // path: **/token2
-        internal val token2Ok =
-            Counter
-                .build()
-                .help("Issued OIDC tokens (grensesnitt for stormaskin) OK.")
-                .namespace(METRIC_PREFIX)
-                .labelNames("srvbruker")
-                .name("oidctoken2Ok")
-                .register(default)
-        internal val token2NotOk =
-            Counter
-                .build()
-                .help("Issued OIDC tokens (grensesnitt for stormaskin) failed pga bad request or unauthorized.")
-                .namespace(METRIC_PREFIX)
-                .name("oidctoken2NotOk")
-                .register(default)
-        internal val token2Error =
-            Counter
-                .build()
-                .help("Issued OIDC tokens (grensesnitt for stormaskin) failed pga internal server error.")
-                .namespace(METRIC_PREFIX)
-                .name("oidctoken2Error")
-                .register(default)
-        internal val requestLatencyToken2 =
-            Histogram
-                .build()
-                .help("Request latency in seconds /token2.")
-                .namespace(LATENCY_METRIC_PREFIX)
-                .name("seconds_token_2")
-                .register(default)
+        lateinit var token2NotOk: Counter
+        lateinit var token2Error: Counter
+        lateinit var requestLatencyToken2: Timer
 
         // path: **/samltoken
-        internal val samlTokenOk =
-            Counter
-                .build()
-                .help("Issued saml token OK.")
-                .labelNames("srvbruker")
-                .namespace(METRIC_PREFIX)
-                .name("samlTokenOk")
-                .register(default)
-        internal val samlTokenNotOk =
-            Counter
-                .build()
-                .help("Issue saml token failed pga unauthorized eller bad request error.")
-                .namespace(METRIC_PREFIX)
-                .name("samlTokenNotOk")
-                .register(default)
-        internal val samlTokenError =
-            Counter
-                .build()
-                .help("Issued Saml tokens failed pga internal server error.")
-                .namespace(METRIC_PREFIX)
-                .name("samlTokenError")
-                .register(default)
-        internal val requestLatencySAMLToken =
-            Histogram
-                .build()
-                .help("Request latency in seconds /samltoken.")
-                .namespace(LATENCY_METRIC_PREFIX)
-                .name("seconds_samltoken")
-                .register(default)
+        lateinit var samlTokenNotOk: Counter
+        lateinit var samlTokenError: Counter
+        lateinit var requestLatencySAMLToken: Timer
 
         // path: **/jwks
-        internal val requestLatencyJwks =
-            Histogram
-                .build()
-                .help("Request latency in seconds /jwks.")
-                .namespace(LATENCY_METRIC_PREFIX)
-                .name("seconds_jwks")
-                .register(default)
+        lateinit var requestLatencyJwks: Timer
 
         // path: **/token/exchangedifi
-        internal val exchangeDIFIOk =
-            Counter
-                .build()
-                .help("Exchange difi token OK.")
-                .namespace(METRIC_PREFIX)
-                .name("exchangeDifiTokenOk")
-                .register(default)
-        internal val exchangeDIFINotOk =
-            Counter
-                .build()
-                .help("Exchange difi token failed pga unauthorized eller internal server error.")
-                .namespace(METRIC_PREFIX)
-                .name("exchangeDifiTokenNotOk")
-                .register(default)
-        internal val requestLatencyTokenExchangeDIFI =
-            Histogram
-                .build()
-                .help("Request latency in seconds /token/exchangedifi.")
-                .namespace(LATENCY_METRIC_PREFIX)
-                .name("token_exchangedifi")
-                .register(default)
+        lateinit var exchangeDIFIOk: Counter
+        lateinit var exchangeDIFINotOk: Counter
+        lateinit var requestLatencyTokenExchangeDIFI: Timer
 
         // path: **/token/exchange
-        internal val exchangeSAMLTokenOk =
-            Counter
-                .build()
-                .namespace(METRIC_PREFIX)
-                .labelNames("srvbruker")
-                .name("exchangeSamlTokenOk")
-                .help("Exchange Saml to Oidc token OK.")
-                .register(default)
-        internal val exchangeOIDCTokenOk =
-            Counter
-                .build()
-                .namespace(METRIC_PREFIX)
-                .labelNames("srvbruker")
-                .name("exchangeOidcTokenOk")
-                .help("Exchange Oidc token to Saml OK.")
-                .register(default)
-        internal val exchangeTokenNotOk =
-            Counter
-                .build()
-                .namespace(METRIC_PREFIX)
-                .name("exchangeTokenNotOk")
-                .help("Exchange token failed pga bad_request, unauthorized, invalid input token eller internal server error.")
-                .register(default)
-        internal val requestLatencyTokenExchange =
-            Histogram
-                .build()
-                .help("Request latency in seconds /token/exchange.")
-                .namespace(LATENCY_METRIC_PREFIX)
-                .name("seconds_token_exchange")
-                .register(default)
+        lateinit var exchangeTokenNotOk: Counter
+        lateinit var requestLatencyTokenExchange: Timer
 
         // path: **/ws/samltoken
-        internal val wsSAMLTokenOk =
-            Counter
-                .build()
-                .namespace(METRIC_PREFIX)
-                .name("wsSamlTokenOk")
-                .help("WS issue saml token OK.")
-                .register(default)
-        internal val wsSAMLTokenNotOk =
-            Counter
-                .build()
-                .namespace(METRIC_PREFIX)
-                .name("wsSamlTokenNotOk")
-                .help("WS issue saml token failed pga unauthorized eller internal server error.")
-                .register(default)
-        internal val wsExchangeOIDCTokenNotOk =
-            Counter
-                .build()
-                .namespace(METRIC_PREFIX)
-                .name("wsExchangeOidcTokenNotOk")
-                .help("WS exchange oidc token failed pga unauthorized eller internal server error.")
-                .register(default)
-        internal val wsExchangeOIDCTokenOk =
-            Counter
-                .build()
-                .namespace(METRIC_PREFIX)
-                .name("wsExchangeOidcTokenOk")
-                .help("WS exchange oidc token OK.")
-                .register(default)
-        internal val requestLatencyWSSAMLToken =
-            Histogram
-                .build()
-                .help("Request latency in seconds /ws/samltoken.")
-                .namespace(LATENCY_METRIC_PREFIX)
-                .name("seconds_ws_samltoken")
-                .register(default)
-
-        // Cert
-        internal val certCount: Counter =
-            Counter
-                .build()
-                .help("Count days until expiry.")
-                .namespace("keystore")
-                .labelNames("key_alias")
-                .name("cert_count")
-                .register(default)
+        lateinit var wsSAMLTokenOk: Counter
+        lateinit var wsSAMLTokenNotOk: Counter
+        lateinit var wsExchangeOIDCTokenNotOk: Counter
+        lateinit var wsExchangeOIDCTokenOk: Counter
+        lateinit var requestLatencyWSSAMLToken: Timer
 
         // Ldap
-        internal val ldapDuration: Histogram =
-            Histogram
-                .build()
-                .help("AD - time for checking.")
-                .namespace(LATENCY_METRIC_PREFIX)
-                .name("ldap")
-                .register(default)
+        lateinit var ldapDuration: Timer
+
+        /** Use for labeled (tagged) counters and cert metrics. */
+        fun meterRegistry(): MeterRegistry = reg
+
+        // Convenience for labeled counters
+        fun issuedTokenCounterUnique(srvbruker: String): Counter =
+            Counter
+                .builder("${METRIC_PREFIX}_tokens_issued")
+                .description("Number of tokens we have issued")
+                .tag("srvbruker", srvbruker)
+                .register(reg)
+
+        fun token2Ok(srvbruker: String): Counter =
+            Counter
+                .builder("${METRIC_PREFIX}_oidctoken2Ok")
+                .description("Issued OIDC tokens (grensesnitt for stormaskin) OK.")
+                .tag("srvbruker", srvbruker)
+                .register(reg)
+
+        fun samlTokenOk(srvbruker: String): Counter =
+            Counter
+                .builder("${METRIC_PREFIX}_samlTokenOk")
+                .description("Issued saml token OK.")
+                .tag("srvbruker", srvbruker)
+                .register(reg)
+
+        fun exchangeSAMLTokenOk(srvbruker: String): Counter =
+            Counter
+                .builder("${METRIC_PREFIX}_exchangeSamlTokenOk")
+                .description("Exchange Saml to Oidc token OK.")
+                .tag("srvbruker", srvbruker)
+                .register(reg)
+
+        fun exchangeOIDCTokenOk(srvbruker: String): Counter =
+            Counter
+                .builder("${METRIC_PREFIX}_exchangeOidcTokenOk")
+                .description("Exchange Oidc token to Saml OK.")
+                .tag("srvbruker", srvbruker)
+                .register(reg)
+
+        fun certDaysRemaining(
+            keyAlias: String,
+            daysSupplier: () -> Double,
+        ) {
+            Gauge
+                .builder("keystore_cert_days_remaining", daysSupplier)
+                .description("Days until certificate expires.")
+                .tag("key_alias", keyAlias)
+                .register(reg)
+        }
+    }
+
+    init {
+        reg = registry
+
+        // path: **/token
+        tokenOK = Counter.builder("${METRIC_PREFIX}_oidctokenOk").description("Issued OIDC tokens OK.").register(registry)
+        tokenNotOk = Counter.builder("${METRIC_PREFIX}_oidctokenNotOk").description("Issued OIDC tokens failed pga bad request or unauthorized.").register(registry)
+        tokenError = Counter.builder("${METRIC_PREFIX}_oidctokenError").description("Issued OIDC tokens failed pga internal server error.").register(registry)
+        requestLatencyToken = Timer.builder("${LATENCY_METRIC_PREFIX}_seconds_token").description("Request latency in seconds /token.").register(registry)
+
+        // path: **/token2
+        token2NotOk = Counter.builder("${METRIC_PREFIX}_oidctoken2NotOk").description("Issued OIDC tokens (grensesnitt for stormaskin) failed pga bad request or unauthorized.").register(registry)
+        token2Error = Counter.builder("${METRIC_PREFIX}_oidctoken2Error").description("Issued OIDC tokens (grensesnitt for stormaskin) failed pga internal server error.").register(registry)
+        requestLatencyToken2 = Timer.builder("${LATENCY_METRIC_PREFIX}_seconds_token_2").description("Request latency in seconds /token2.").register(registry)
+
+        // path: **/samltoken
+        samlTokenNotOk = Counter.builder("${METRIC_PREFIX}_samlTokenNotOk").description("Issue saml token failed pga unauthorized eller bad request error.").register(registry)
+        samlTokenError = Counter.builder("${METRIC_PREFIX}_samlTokenError").description("Issued Saml tokens failed pga internal server error.").register(registry)
+        requestLatencySAMLToken = Timer.builder("${LATENCY_METRIC_PREFIX}_seconds_samltoken").description("Request latency in seconds /samltoken.").register(registry)
+
+        // path: **/jwks
+        requestLatencyJwks = Timer.builder("${LATENCY_METRIC_PREFIX}_seconds_jwks").description("Request latency in seconds /jwks.").register(registry)
+
+        // path: **/token/exchangedifi
+        exchangeDIFIOk = Counter.builder("${METRIC_PREFIX}_exchangeDifiTokenOk").description("Exchange difi token OK.").register(registry)
+        exchangeDIFINotOk = Counter.builder("${METRIC_PREFIX}_exchangeDifiTokenNotOk").description("Exchange difi token failed.").register(registry)
+        requestLatencyTokenExchangeDIFI = Timer.builder("${LATENCY_METRIC_PREFIX}_token_exchangedifi").description("Request latency in seconds /token/exchangedifi.").register(registry)
+
+        // path: **/token/exchange
+        exchangeTokenNotOk = Counter.builder("${METRIC_PREFIX}_exchangeTokenNotOk").description("Exchange token failed.").register(registry)
+        requestLatencyTokenExchange = Timer.builder("${LATENCY_METRIC_PREFIX}_seconds_token_exchange").description("Request latency in seconds /token/exchange.").register(registry)
+
+        // path: **/ws/samltoken
+        wsSAMLTokenOk = Counter.builder("${METRIC_PREFIX}_wsSamlTokenOk").description("WS issue saml token OK.").register(registry)
+        wsSAMLTokenNotOk = Counter.builder("${METRIC_PREFIX}_wsSamlTokenNotOk").description("WS issue saml token failed.").register(registry)
+        wsExchangeOIDCTokenNotOk = Counter.builder("${METRIC_PREFIX}_wsExchangeOidcTokenNotOk").description("WS exchange oidc token failed.").register(registry)
+        wsExchangeOIDCTokenOk = Counter.builder("${METRIC_PREFIX}_wsExchangeOidcTokenOk").description("WS exchange oidc token OK.").register(registry)
+        requestLatencyWSSAMLToken = Timer.builder("${LATENCY_METRIC_PREFIX}_seconds_ws_samltoken").description("Request latency in seconds /ws/samltoken.").register(registry)
+
+        // Ldap
+        ldapDuration = Timer.builder("${LATENCY_METRIC_PREFIX}_ldap").description("AD - time for checking.").register(registry)
     }
 }

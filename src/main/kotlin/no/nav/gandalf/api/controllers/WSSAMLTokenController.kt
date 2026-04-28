@@ -1,6 +1,6 @@
 package no.nav.gandalf.api.controllers
 
-import io.prometheus.client.Histogram
+import io.micrometer.core.instrument.Timer
 import io.swagger.v3.oas.annotations.Operation
 import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.api.WSTrustRequest
@@ -25,10 +25,10 @@ class WSSAMLTokenController(
     fun getSAMLTokenWS(
         @RequestBody xmlRequest: String?,
     ): ResponseEntity<Any> {
-        val requestTimer: Histogram.Timer = ApplicationMetric.requestLatencyWSSAMLToken.startTimer()
+        val sample = Timer.start(ApplicationMetric.meterRegistry())
         try {
             if (xmlRequest == null) {
-                ApplicationMetric.wsSAMLTokenNotOk.inc()
+                ApplicationMetric.wsSAMLTokenNotOk.increment()
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Body is empty")
             }
             // parse xml
@@ -36,7 +36,7 @@ class WSSAMLTokenController(
             try {
                 wsReq.read(xmlRequest!!)
             } catch (e: Throwable) {
-                ApplicationMetric.wsSAMLTokenNotOk.inc()
+                ApplicationMetric.wsSAMLTokenNotOk.increment()
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: ${e.message}")
             }
             // check authorization
@@ -44,7 +44,7 @@ class WSSAMLTokenController(
                 // Bind to ldap
                 provider.authenticate(wsReq.username, wsReq.password)
             } catch (e: Throwable) {
-                ApplicationMetric.wsSAMLTokenNotOk.inc()
+                ApplicationMetric.wsSAMLTokenNotOk.increment()
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized user: ${e.message}")
             }
             when {
@@ -53,10 +53,10 @@ class WSSAMLTokenController(
                     return try {
                         val samlToken: String? = wsReq.validateTarget
                         issuer.validateSamlToken(samlToken)
-                        ApplicationMetric.wsSAMLTokenOk.inc()
+                        ApplicationMetric.wsSAMLTokenOk.increment()
                         ResponseEntity.status(HttpStatus.OK).body(wsReq.getResponse(samlToken!!))
                     } catch (e: Throwable) {
-                        ApplicationMetric.wsSAMLTokenNotOk.inc()
+                        ApplicationMetric.wsSAMLTokenNotOk.increment()
                         ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validation failed" + e.message)
                     }
                 }
@@ -69,10 +69,10 @@ class WSSAMLTokenController(
                                 wsReq.username,
                                 AccessTokenIssuer.DEFAULT_SAML_AUTHLEVEL,
                             )
-                        ApplicationMetric.wsSAMLTokenOk.inc()
+                        ApplicationMetric.wsSAMLTokenOk.increment()
                         ResponseEntity.status(HttpStatus.OK).body(wsReq.getResponse(samlToken))
                     } catch (e: Throwable) {
-                        ApplicationMetric.wsSAMLTokenNotOk.inc()
+                        ApplicationMetric.wsSAMLTokenNotOk.increment()
                         ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: ${e.message}")
                     }
                 }
@@ -80,20 +80,20 @@ class WSSAMLTokenController(
                     println("isExchangeOidcToSaml")
                     return try {
                         val samlToken: String = issuer.exchangeOidcToSamlToken(wsReq.decodedOidcToken!!, wsReq.username)
-                        ApplicationMetric.wsSAMLTokenOk.inc()
+                        ApplicationMetric.wsSAMLTokenOk.increment()
                         ResponseEntity.status(HttpStatus.OK).body(wsReq.getResponse(samlToken))
                     } catch (e: Throwable) {
-                        ApplicationMetric.wsExchangeOIDCTokenNotOk.inc()
+                        ApplicationMetric.wsExchangeOIDCTokenNotOk.increment()
                         ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.message)
                     }
                 }
                 else -> {
-                    ApplicationMetric.wsSAMLTokenNotOk.inc()
+                    ApplicationMetric.wsSAMLTokenNotOk.increment()
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Request is unsupported")
                 }
             }
         } finally {
-            requestTimer.observeDuration()
+            sample.stop(ApplicationMetric.requestLatencyWSSAMLToken)
         }
     }
 }
