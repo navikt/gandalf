@@ -52,7 +52,7 @@ class LDAPConnectionSetup(
         ldapConnection.close()
     }
 
-    val connectionOk get() = ldapConnection.isConnected
+    val connectionOk = ldapConnectionPool != null
 
     val pool get() = ldapConnectionPool ?: throw IllegalStateException("LDAP connection not established")
 
