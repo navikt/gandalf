@@ -26,8 +26,8 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class X509KeySelector(
-    @Value("\${nav.truststore.path}") private val truststoreFile: String?,
-    @Value("\${nav.truststore.password}") private val truststorePassword: String?,
+    @param:Value("\${nav.truststore.path}") private val truststoreFile: String?,
+    @param:Value("\${nav.truststore.password}") private val truststorePassword: String?,
 ) : KeySelector() {
     private var trustManager: X509TrustManager? = null
 

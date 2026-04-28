@@ -18,7 +18,6 @@ import no.nav.gandalf.keystore.KeyStoreReader
 import no.nav.gandalf.model.Consumer
 import no.nav.gandalf.model.IdentType
 import no.nav.gandalf.service.RsaKeysProvider
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.xml.sax.SAXException
 import java.io.IOException
@@ -34,11 +33,11 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class AccessTokenIssuer(
-    @Autowired private val keyStore: RsaKeysProvider,
-    @Autowired private val keySelector: KeySelector,
-    @Autowired private val keyStoreReader: KeyStoreReader,
-    @Autowired private val externalIssuersConfig: ExternalIssuer,
-    @Autowired private val localIssuerConfig: LocalIssuer,
+    private val keyStore: RsaKeysProvider,
+    private val keySelector: KeySelector,
+    private val keyStoreReader: KeyStoreReader,
+    private val externalIssuersConfig: ExternalIssuer,
+    private val localIssuerConfig: LocalIssuer,
     private val gsonBuilder: GsonBuilder,
 ) : IssuerConfig {
     final override val issuer = localIssuerConfig.issuer

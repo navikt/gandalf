@@ -4,23 +4,23 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-data class ExternalIssuer(
-    @Value("\${application.external.issuer.openam}")
+class ExternalIssuer(
+    @param:Value("\${application.external.issuer.openam}")
     val issuerOpenAm: String,
-    @Value("\${application.jwks.endpoint.openam}")
+    @param:Value("\${application.jwks.endpoint.openam}")
     val jwksEndpointOpenAm: String,
-    @Value("\${application.external.issuer.azureb2c}")
+    @param:Value("\${application.external.issuer.azureb2c}")
     val issuerAzureB2C: String,
-    @Value("\${application.jwks.endpoint.azureb2c}")
+    @param:Value("\${application.jwks.endpoint.azureb2c}")
     val jwksEndpointAzureB2C: String,
-    @Value("\${application.external.issuer.azuread}")
+    @param:Value("\${application.external.issuer.azuread}")
     val issuerAzureAd: String,
-    @Value("\${application.jwks.endpoint.azuread}")
+    @param:Value("\${application.jwks.endpoint.azuread}")
     val jwksEndpointAzuread: String,
-    @Value("\${application.external.configuration.difi.oidc}")
+    @param:Value("\${application.external.configuration.difi.oidc}")
     val configurationDIFIOIDCUrl: String,
-    @Value("\${application.external.configuration.difi.maskinporten}")
+    @param:Value("\${application.external.configuration.difi.maskinporten}")
     val configurationDIFIMaskinportenUrl: String,
-    @Value("\${token.x.well.known.url}")
+    @param:Value("\${token.x.well.known.url}")
     val configurationTokenX: String,
 )

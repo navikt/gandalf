@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-data class LocalIssuer(
-    @Value("\${application.oidc.issuer}")
+class LocalIssuer(
+    @param:Value("\${application.oidc.issuer}")
     val issuer: String,
-    @Value("\${application.service.username}")
+    @param:Value("\${application.service.username}")
     val issuerUsername: String,
-    @Value("\${application.clock.skew.saml}")
+    @param:Value("\${application.clock.skew.saml}")
     val clockSkewSaml: Long,
-    @Value("\${application.clock.skew.oidc}")
+    @param:Value("\${application.clock.skew.oidc}")
     val clockSkewOidc: Long,
 )

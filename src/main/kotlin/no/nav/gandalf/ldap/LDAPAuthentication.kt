@@ -4,7 +4,6 @@ import com.unboundid.ldap.sdk.LDAPException
 import com.unboundid.ldap.sdk.ResultCode
 import mu.KotlinLogging
 import no.nav.gandalf.model.User
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 private val log = KotlinLogging.logger { }
@@ -13,7 +12,7 @@ private const val ATTRIBUTE_NAME = "cn"
 
 @Component
 class LDAPAuthentication(
-    @Autowired val ldap: LDAPConnectionSetup,
+    val ldap: LDAPConnectionSetup,
 ) {
     var ldapException: LDAPException? = null
 

@@ -9,14 +9,13 @@ import com.unboundid.util.ssl.SSLUtil
 import com.unboundid.util.ssl.TrustAllTrustManager
 import mu.KotlinLogging
 import no.nav.gandalf.config.LdapConfig
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 private val log = KotlinLogging.logger { }
 
 @Component
 class LDAPConnectionSetup(
-    @Autowired val ldapConfig: LdapConfig,
+    val ldapConfig: LdapConfig,
 ) : AutoCloseable {
     private val connectOptions =
         LDAPConnectionOptions().apply {

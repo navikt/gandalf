@@ -3,7 +3,6 @@ package no.nav.gandalf.keystore
 import mu.KotlinLogging
 import no.nav.gandalf.config.KeystoreReaderConfig
 import no.nav.gandalf.metric.ApplicationMetric.Companion.certCount
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.FileInputStream
 import java.io.IOException
@@ -23,7 +22,7 @@ private val log = KotlinLogging.logger { }
 
 @Component
 class KeyStoreReader(
-    @Autowired val keystoreReaderConfig: KeystoreReaderConfig,
+    val keystoreReaderConfig: KeystoreReaderConfig,
 ) {
     private var keyStore: KeyStore? = null
     private var privateKey: PrivateKey? = null

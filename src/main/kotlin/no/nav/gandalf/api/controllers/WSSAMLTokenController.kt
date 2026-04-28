@@ -7,7 +7,6 @@ import no.nav.gandalf.api.WSTrustRequest
 import no.nav.gandalf.ldap.CustomAuthenticationProvider
 import no.nav.gandalf.ldap.authenticate
 import no.nav.gandalf.metric.ApplicationMetric
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -18,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("rest/v1/sts", consumes = ["text/xml"], produces = ["text/xml"])
 class WSSAMLTokenController(
-    @Autowired val provider: CustomAuthenticationProvider,
-    @Autowired val issuer: AccessTokenIssuer,
+    val provider: CustomAuthenticationProvider,
+    val issuer: AccessTokenIssuer,
 ) {
     @Operation(hidden = true)
     @PostMapping("/ws/samltoken", "/ws/samltoken/")

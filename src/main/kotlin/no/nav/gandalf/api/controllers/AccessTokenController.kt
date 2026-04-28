@@ -57,7 +57,7 @@ private val log = KotlinLogging.logger { }
 @RequestMapping("rest/v1/sts", produces = ["application/json"])
 @Tag(name = "System OIDC Token", description = "System User to OIDC & SAML Token")
 class AccessTokenController(
-    @Autowired val authenticationProvider: CustomAuthenticationProvider,
+    val authenticationProvider: CustomAuthenticationProvider,
 ) {
     @Autowired
     private lateinit var issuer: AccessTokenIssuer
