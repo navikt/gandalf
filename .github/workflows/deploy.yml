@@ -52,7 +52,7 @@ jobs:
         run: ./gradlew bootJar -x test
 
       - name: Push docker image to GAR and sign image
-        uses: nais/docker-build-push@cd5ec5663feb0e05c3fa374d1fb442605b046c6b # ratchet:nais/docker-build-push@v0
+        uses: nais/docker-build-push@be85229e81c0293c265c646c084f05317fb6e0d2 # ratchet:nais/docker-build-push@v0
         id: docker-build-push
         with:
           team: aura
@@ -60,7 +60,7 @@ jobs:
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # Provided as Organization Variable
 
       - name: Upload salsa
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # ratchet:actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # ratchet:actions/upload-artifact@v7
         with:
           name: salsa
           path: ${{ steps.docker-build-push.outputs.salsa }}
