@@ -1,35 +1,58 @@
-apiVersion: "nais.io/v1"
-kind: "Alert"
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
 metadata:
   name: security-token-service-alerts
-  namespace: default
+  namespace: aura
   labels:
     team: plattformsikkerhet
 spec:
-  receivers:
-    slack:
-      channel: '#security-token-service-alerts'
-      prependText: '<!here> STS-Alert | '
-  email:
-    to: 'youssef.bel.mekki@nav.no'
-    send_resolved: false
-  alerts:
-    - alert: applikasjon nede
-      expr: up{app="security-token-service", job="kubernetes-pods"} == 0
-      for: 2m
-      description: "App {{ $labels.app }} er nede i namespace {{ $labels.kubernetes_namespace }}"
-      action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for logger"
-    - alert: høy feilrate i logger
-      expr: (100 * sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="security-token-service",log_level=~"Warning|Error"}[3m])) / sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="security-token-service"}[3m]))) > 10
-      for: 3m
-      action: "Sjekk loggene til app {{ $labels.log_app }} i namespace {{ $labels.log_namespace }}, for å se hvorfor det er så mye feil"
-    - alert: feil i selftest
-      expr: selftests_aggregate_result_status{app="security-token-service"} > 0
-      for: 1m
-      action: "Sjekk app {{ $labels.app }} i namespace {{ $labels.kubernetes_namespace }} sine selftest for å se hva som er galt"
-    - alert: Sertifikat utløper snart
-      severity: warning
-      expr: keystore_cert_days_remaining < 30
-      for: 1h
-      description: "Sertifikat {{ $labels.key_alias }} utløper om {{ $value }} dager"
-      action: "Forny sertifikatet med alias {{ $labels.key_alias }} før det utløper"
+  groups:
+    - name: security-token-service
+      rules:
+        - alert: ApplicationDown
+          expr: up{app="security-token-service", job="kubernetes-pods"} == 0
+          for: 2m
+          annotations:
+            summary: "STS is down"
+            consequence: "No services can retrieve tokens from STS"
+            action: "Check `kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` and `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}`"
+          labels:
+            severity: critical
+            namespace: aura
+
+        - alert: HighErrorRateInLogs
+          expr: >
+            (100 * sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="security-token-service",log_level=~"Warning|Error"}[3m]))
+            / sum by (log_app, log_namespace) (rate(logd_messages_total{log_app="security-token-service"}[3m]))) > 10
+          for: 3m
+          annotations:
+            summary: "High error rate in logs"
+            consequence: "May indicate authentication failures or other errors in STS"
+            action: "Check logs for app {{ $labels.log_app }} in namespace {{ $labels.log_namespace }}"
+          labels:
+            severity: warning
+            namespace: aura
+
+        - alert: NewCriticalVulnerability
+          expr: increase(v13s_workload_vulnerabilities{workload_name="security-token-service", severity="CRITICAL"}[1h]) > 0
+          for: 0m
+          annotations:
+            summary: "New critical vulnerability detected in STS"
+            consequence: "A new critical vulnerability has been registered in security-token-service"
+            action: "Check the v13s dashboard for details and consider patching or mitigating"
+            message: "Number of critical vulnerabilities increased by {{ $value }} in the last hour"
+          labels:
+            severity: critical
+            namespace: aura
+
+        - alert: CertificateExpiringSoon
+          expr: keystore_cert_days_remaining < 30
+          for: 1h
+          annotations:
+            summary: "Certificate expiring soon"
+            consequence: "Token signing will fail when the certificate expires"
+            action: "Renew the certificate with alias {{ $labels.key_alias }} before it expires"
+            message: "Certificate {{ $labels.key_alias }} expires in {{ $value }} days"
+          labels:
+            severity: warning
+            namespace: aura
