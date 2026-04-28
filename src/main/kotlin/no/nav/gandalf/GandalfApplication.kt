@@ -10,7 +10,7 @@ class GandalfApplication {
         @JvmStatic
         fun main(args: Array<String>) {
             System.setProperty("oracle.jdbc.fanEnabled", "false")
-            val activeProfiles = System.getProperty("spring.profiles.active", "")
+            val activeProfiles = System.getProperty("spring.profiles.active", "") + " " + (System.getenv("SPRING_PROFILES_ACTIVE") ?: "")
             val builder = SpringApplicationBuilder(GandalfApplication::class.java)
             if (activeProfiles.contains("local")) {
                 builder.initializers(LocalLdapConfig())
