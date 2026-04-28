@@ -2,10 +2,10 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val springSecurity = "7.0.3"
+val springSecurity = "7.0.5"
 val snakeYaml = "2.6"
 val mockk = "1.14.9"
-val kotest = "6.0.7"
+val kotest = "6.1.11"
 val json = "20251224"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "9.0"
@@ -28,7 +28,7 @@ java {
 plugins {
     application
     java
-    val kotlinVersion = "2.3.10"
+    val kotlinVersion = "2.3.21"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.ben-manes.versions") version "0.54.0"
@@ -85,7 +85,7 @@ dependencies {
     }
     testImplementation("org.springframework.security:spring-security-test:$springSecurity")
     testImplementation("org.wiremock:wiremock-jetty12:$wiremockCloud")
-    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.4.4")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("io.kotest:kotest-assertions-core:$kotest")
     testImplementation("io.mockk:mockk:$mockk")
