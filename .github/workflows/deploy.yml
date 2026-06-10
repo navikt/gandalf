@@ -74,7 +74,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
-      - uses: nais/deploy/actions/deploy@d57354b433c8d6847ab092467d9fe976a3d008aa # ratchet:nais/deploy/actions/deploy@v2
+      - uses: nais/deploy/actions/deploy@8a6fb62e73f837af6287d5db84a46ea96aa6c30d # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml
@@ -92,7 +92,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
-      - uses: nais/deploy/actions/deploy@d57354b433c8d6847ab092467d9fe976a3d008aa # ratchet:nais/deploy/actions/deploy@v2
+      - uses: nais/deploy/actions/deploy@8a6fb62e73f837af6287d5db84a46ea96aa6c30d # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais.yml,.nais/alerts.yml
@@ -110,7 +110,7 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
-      - uses: nais/deploy/actions/deploy@d57354b433c8d6847ab092467d9fe976a3d008aa # ratchet:nais/deploy/actions/deploy@v2
+      - uses: nais/deploy/actions/deploy@8a6fb62e73f837af6287d5db84a46ea96aa6c30d # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-fss
           RESOURCE: .nais/nais.yml,.nais/alerts.yml
