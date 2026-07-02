@@ -86,7 +86,7 @@ dependencies {
     }
     testImplementation("org.springframework.security:spring-security-test:$springSecurity")
     testImplementation("org.wiremock:wiremock-jetty12:$wiremockCloud")
-    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.1")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("io.kotest:kotest-assertions-core:$kotest")
     testImplementation("io.mockk:mockk:$mockk")
