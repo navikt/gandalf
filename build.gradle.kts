@@ -9,8 +9,8 @@ val kotest = "6.2.1"
 val json = "20260522"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "9.0"
-val logbackClassic = "1.5.34"
-val mockOAuth2Server = "4.0.1"
+val logbackClassic = "1.5.37"
+val mockOAuth2Server = "5.0.2"
 val nimbus = "11.37.2"
 val openapi = "3.0.3"
 val unboundid = "7.0.5"
@@ -86,7 +86,7 @@ dependencies {
     }
     testImplementation("org.springframework.security:spring-security-test:$springSecurity")
     testImplementation("org.wiremock:wiremock-jetty12:$wiremockCloud")
-    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.1")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("io.kotest:kotest-assertions-core:$kotest")
     testImplementation("io.mockk:mockk:$mockk")
