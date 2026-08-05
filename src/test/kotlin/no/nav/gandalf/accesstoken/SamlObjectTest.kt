@@ -61,9 +61,12 @@ class SamlObjectTest {
         val samlObject = SamlObject(ZonedDateTime.parse("2019-05-14T08:47:04.255Z"))
         samlObject.read(externalReference)
 
-        assertThrows<Exception> {
-            samlObject.validate(keySelector)
-        }
+        val exception =
+            assertThrows<OAuthException> {
+                samlObject.validate(keySelector)
+            }
+
+        assertTrue(exception.message!!.contains("non-local reference"))
     }
 
     @Test

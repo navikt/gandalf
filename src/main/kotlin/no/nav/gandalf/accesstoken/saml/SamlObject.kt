@@ -211,6 +211,10 @@ class SamlObject : ClockSkew {
         valContext.setIdAttributeNS(signatureNode!!.parentNode as Element, null, "ID")
         val factory = XMLSignatureFactory.getInstance("DOM")
         val signature = factory.unmarshalXMLSignature(valContext)
+        if (signature.signedInfo.references.any { !(it as Reference).uri.startsWith("#") }) {
+            message = "Invalid SAML token: Signature contains a non-local reference"
+            throw OAuthException(OAuth2Error.INVALID_REQUEST.setDescription(message)).also { log.warn(message) }
+        }
         if (!signature.validate(valContext)) {
             if (!signature.signatureValue.validate(valContext)) {
                 message = "Invalid SAML token: Signature validation failed"
