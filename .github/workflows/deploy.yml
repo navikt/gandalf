@@ -20,6 +20,8 @@ jobs:
           java-version: 21
           cache: 'gradle'
           distribution: temurin
+      - name: Check Kotlin formatting
+        run: ./gradlew ktlintCheck
       - name: Run tests
         run: ./gradlew clean test
       - name: Unit tests results
