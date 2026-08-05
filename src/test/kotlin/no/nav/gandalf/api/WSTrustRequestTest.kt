@@ -44,8 +44,10 @@ class WSTrustRequestTest {
 
     @Test
     fun `rejects WS-Trust request containing a doctype`() {
+        val xmlRequest = "<!DOCTYPE soapenv:Envelope>" + getSamlRequest(username, password)
+
         assertThrows<IllegalArgumentException> {
-            WSTrustRequest().read("<!DOCTYPE Envelope><Envelope/>")
+            WSTrustRequest().read(xmlRequest)
         }
     }
 
