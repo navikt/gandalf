@@ -74,3 +74,20 @@ jobs:
           VARS: .nais/t4-vars.yml
           VAR: image=${{ needs.build.outputs.image }}
           TELEMETRY: ${{ needs.build.outputs.telemetry }}
+
+  deploy-dev:
+    name: Deploy to NAIS dev
+    needs: [build, deploy-dev-dev]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # ratchet:actions/checkout@v7.0.0
+      - uses: nais/deploy/actions/deploy@2d18f050f07b6a007864c6a57070ed915d571beb # ratchet:nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-fss
+          RESOURCE: .nais/nais.yml,.nais/alerts.yml
+          VARS: .nais/default-vars.yml
+          VAR: image=${{ needs.build.outputs.image }}
+          TIMEOUT: 15m
+          TELEMETRY: ${{ needs.build.outputs.telemetry }}
