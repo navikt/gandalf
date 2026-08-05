@@ -10,6 +10,7 @@ import no.nav.gandalf.utils.getSamlRequest
 import no.nav.gandalf.utils.getValidateSamlRequest
 import org.junit.Assert
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -39,6 +40,15 @@ class WSTrustRequestTest {
         val wsReq = WSTrustRequest()
         wsReq.read(xmlReq)
         Assert.assertTrue(wsReq.isIssueSamlFromUNT)
+    }
+
+    @Test
+    fun `rejects WS-Trust request containing a doctype`() {
+        val xmlRequest = "<!DOCTYPE soapenv:Envelope>" + getSamlRequest(username, password)
+
+        assertThrows<IllegalArgumentException> {
+            WSTrustRequest().read(xmlRequest)
+        }
     }
 
     @Test

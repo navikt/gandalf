@@ -8,6 +8,7 @@ import no.nav.gandalf.accesstoken.AccessTokenIssuer
 import no.nav.gandalf.utils.WS_SAMLTOKEN
 import no.nav.gandalf.utils.getOidcToSamlRequest
 import no.nav.gandalf.utils.getSamlRequest
+import no.nav.gandalf.utils.getSamlToken
 import no.nav.gandalf.utils.getValidateSamlRequest
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -59,6 +60,21 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
     }
 
     @Test
+    fun `SAML - WS - rejects request containing a doctype`() {
+        val xmlRequest = "<!DOCTYPE soap:Envelope>" + getSamlRequest("srvPDP", "password")
+
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(WS_SAMLTOKEN)
+                    .with(SecurityMockMvcRequestPostProcessors.anonymous())
+                    .contentType(MediaType.TEXT_XML)
+                    .content(xmlRequest),
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().string("Invalid XML request"))
+    }
+
+    @Test
     fun `SAML - WS - isExchangeOidcToSaml`() {
         val xmlReq = setupOIDCtoSAMLRequest("srvPDP", "password", issuer)
         mvc
@@ -88,6 +104,21 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
             .andExpect(MockMvcResultMatchers.content().contentType("text/xml;charset=UTF-8"))
         // TODO Validate response
         // .andExpect(MockMvcResultMatchers.xpath("/*/soapenv:Body/").exists())
+    }
+
+    @Test
+    fun `SAML - WS - hides SAML validation errors`() {
+        val xmlReq = getValidateSamlRequest("srvPDP", "password", getSamlToken())
+
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(WS_SAMLTOKEN)
+                    .with(SecurityMockMvcRequestPostProcessors.anonymous())
+                    .contentType(MediaType.TEXT_XML)
+                    .content(xmlReq),
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().string("SAML validation failed"))
     }
 
     @Disabled("MockkStatic is disabled on newer java versions")

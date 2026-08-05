@@ -10,11 +10,13 @@ import org.junit.Assert
 import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.xml.sax.SAXException
 import java.time.ZonedDateTime
 import javax.xml.crypto.KeySelector
 
@@ -44,7 +46,46 @@ class SamlObjectTest {
     }
 
     @Test
-    fun `Read And Validate SAML Token`() {
+    fun `rejects SAML containing a doctype`() {
+        assertThrows<SAXException> {
+            SamlObject().read("<!DOCTYPE Assertion><Assertion/>")
+        }
+    }
+
+    @Test
+    fun `rejects non-fragment signature reference during validation`() {
+        val externalReference =
+            getSamlToken().replace(
+                "URI=\"#SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae\"",
+                "URI=\"https://example.invalid/reference.xml\"",
+            )
+        val samlObject = SamlObject(ZonedDateTime.parse("2019-05-14T08:47:04.255Z"))
+        samlObject.read(externalReference)
+
+        val exception =
+            assertThrows<OAuthException> {
+                samlObject.validate(keySelector)
+            }
+
+        assertTrue(exception.message!!.contains("non-local reference"))
+    }
+
+    @Test
+    fun `rejects signature reference without URI during validation`() {
+        val missingReferenceUri = getSamlToken().replace("URI=\"#SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae\"", "")
+        val samlObject = SamlObject(ZonedDateTime.parse("2019-05-14T08:47:04.255Z"))
+        samlObject.read(missingReferenceUri)
+
+        val exception =
+            assertThrows<OAuthException> {
+                samlObject.validate(keySelector)
+            }
+
+        assertTrue(exception.message!!.contains("non-local reference"))
+    }
+
+    @Test
+    fun `validates SAML token with same-document signature reference`() {
         val notOnOrAfter = ZonedDateTime.parse("2019-05-14T08:47:06.255Z")
         val now = notOnOrAfter.minusSeconds(2)
         assertDoesNotThrow {

@@ -4,6 +4,7 @@ import com.nimbusds.oauth2.sdk.OAuth2Error
 import no.nav.gandalf.accesstoken.ClockSkew
 import no.nav.gandalf.accesstoken.OAuthException
 import no.nav.gandalf.keystore.KeyStoreReader
+import no.nav.gandalf.xml.SecureXml
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -33,9 +34,7 @@ import javax.xml.crypto.dsig.dom.DOMSignContext
 import javax.xml.crypto.dsig.dom.DOMValidateContext
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec
 import javax.xml.crypto.dsig.spec.TransformParameterSpec
-import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
-import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
@@ -72,9 +71,7 @@ class SamlObject : ClockSkew {
     fun read(samlToken: String?) {
         log.info("Reading SAML token from String")
         // get document elements
-        val dbFact = DocumentBuilderFactory.newInstance()
-        dbFact.isNamespaceAware = true
-        val docBuilder = dbFact.newDocumentBuilder()
+        val docBuilder = SecureXml.documentBuilder()
         val doc = docBuilder.parse(InputSource(StringReader(samlToken!!)))
         doc.documentElement.normalize()
         // read Id
@@ -206,6 +203,7 @@ class SamlObject : ClockSkew {
             ).also { log.warn(message) }
         }
         val valContext = DOMValidateContext(keySelector, signatureNode)
+        valContext.uriDereferencer = SecureXml.sameDocumentUriDereferencer()
         if (SUPPORT_RSA_SHA1) {
             valContext.setProperty("org.jcp.xml.dsig.secureValidation", false)
         }
@@ -213,6 +211,10 @@ class SamlObject : ClockSkew {
         valContext.setIdAttributeNS(signatureNode!!.parentNode as Element, null, "ID")
         val factory = XMLSignatureFactory.getInstance("DOM")
         val signature = factory.unmarshalXMLSignature(valContext)
+        if (signature.signedInfo.references.any { (it as Reference).uri?.startsWith("#") != true }) {
+            message = "Invalid SAML token: Signature contains a non-local reference"
+            throw OAuthException(OAuth2Error.INVALID_REQUEST.setDescription(message)).also { log.warn(message) }
+        }
         if (!signature.validate(valContext)) {
             if (!signature.signatureValue.validate(valContext)) {
                 message = "Invalid SAML token: Signature validation failed"
@@ -266,9 +268,7 @@ class SamlObject : ClockSkew {
     fun getSignedSaml(keyStoreReader: KeyStoreReader): String =
         try {
             val samlToken = getUnsignedSaml(this)
-            val docFac = DocumentBuilderFactory.newInstance()
-            docFac.isNamespaceAware = true
-            val docBuilder = docFac.newDocumentBuilder()
+            val docBuilder = SecureXml.documentBuilder()
             val doc = docBuilder.parse(InputSource(StringReader(samlToken)))
             doc.documentElement.normalize()
             val assertionNode = doc.firstChild
@@ -313,8 +313,7 @@ class SamlObject : ClockSkew {
             signature.sign(context)
 
             // Transform to XML
-            val transformerFactory = TransformerFactory.newInstance()
-            val transformer = transformerFactory.newTransformer()
+            val transformer = SecureXml.transformerFactory().newTransformer()
             transformer.setOutputProperty("omit-xml-declaration", "yes")
             val source = DOMSource(doc)
             val result = StreamResult(StringWriter())

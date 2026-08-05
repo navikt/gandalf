@@ -1,0 +1,9 @@
+services:
+  gandalf:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    volumes:
+      - ./src/test/resources:/app/src/test/resources:ro

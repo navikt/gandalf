@@ -20,6 +20,8 @@ jobs:
           java-version: 21
           cache: 'gradle'
           distribution: temurin
+      - name: Check Kotlin formatting
+        run: ./gradlew ktlintCheck
       - name: Run tests
         run: ./gradlew clean test
       - name: Unit tests results
@@ -106,6 +108,8 @@ jobs:
     needs: [build, deploy-dev, deploy-dev-t4]
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-latest
+    environment:
+      name: production
     permissions:
       id-token: write
     steps:
