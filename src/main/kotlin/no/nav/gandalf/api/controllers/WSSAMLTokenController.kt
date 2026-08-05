@@ -29,7 +29,7 @@ class WSSAMLTokenController(
         try {
             if (xmlRequest == null) {
                 ApplicationMetric.wsSAMLTokenNotOk.increment()
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Body is empty")
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid XML request")
             }
             // parse xml
             val wsReq = WSTrustRequest()
@@ -37,7 +37,7 @@ class WSSAMLTokenController(
                 wsReq.read(xmlRequest!!)
             } catch (e: Throwable) {
                 ApplicationMetric.wsSAMLTokenNotOk.increment()
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: ${e.message}")
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid XML request")
             }
             // check authorization
             try {

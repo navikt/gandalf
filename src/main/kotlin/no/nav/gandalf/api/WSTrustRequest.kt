@@ -1,6 +1,7 @@
 package no.nav.gandalf.api
 
 import no.nav.gandalf.accesstoken.saml.SamlObject
+import no.nav.gandalf.xml.SecureXml
 import org.w3c.dom.Document
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
@@ -13,12 +14,9 @@ import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 import java.time.ZonedDateTime
 import java.util.Base64
-import javax.xml.parsers.DocumentBuilder
-import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
 import javax.xml.transform.Transformer
 import javax.xml.transform.TransformerException
-import javax.xml.transform.TransformerFactory
 import javax.xml.transform.TransformerFactoryConfigurationError
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
@@ -82,9 +80,7 @@ class WSTrustRequest(
 
     fun read(xmlReq: String) {
         try {
-            val dbFact: DocumentBuilderFactory = DocumentBuilderFactory.newInstance()
-            dbFact.isNamespaceAware = true
-            val docBuilder: DocumentBuilder = dbFact.newDocumentBuilder()
+            val docBuilder = SecureXml.documentBuilder()
             val doc: Document = docBuilder.parse(InputSource(StringReader(xmlReq)))
             doc.documentElement.normalize()
 
@@ -181,7 +177,7 @@ class WSTrustRequest(
     @Throws(TransformerFactoryConfigurationError::class, TransformerException::class)
     private fun nodeToString(n: Node?): String {
         val writer = StringWriter()
-        val transformer: Transformer = TransformerFactory.newInstance().newTransformer()
+        val transformer: Transformer = SecureXml.transformerFactory().newTransformer()
         transformer.setOutputProperty("omit-xml-declaration", "yes")
         transformer.transform(DOMSource(n), StreamResult(writer))
         return writer.toString()

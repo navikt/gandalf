@@ -10,6 +10,7 @@ import org.junit.Assert
 import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
@@ -41,6 +42,28 @@ class SamlObjectTest {
         assertTrue(samlObj.consumerId != null && samlObj.consumerId.equals("srvsecurity-token-"))
         assertTrue(samlObj.identType != null && samlObj.identType.equals("Systemressurs"))
         assertTrue(samlObj.authenticationLevel != null && samlObj.authenticationLevel.equals("0"))
+    }
+
+    @Test
+    fun `rejects SAML containing a doctype`() {
+        assertThrows<Exception> {
+            SamlObject().read("<!DOCTYPE Assertion><Assertion/>")
+        }
+    }
+
+    @Test
+    fun `rejects non-fragment signature reference during validation`() {
+        val externalReference =
+            getSamlToken().replace(
+                "URI=\"#SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae\"",
+                "URI=\"https://example.invalid/reference.xml\"",
+            )
+        val samlObject = SamlObject(ZonedDateTime.parse("2019-05-14T08:47:04.255Z"))
+        samlObject.read(externalReference)
+
+        assertThrows<Exception> {
+            samlObject.validate(keySelector)
+        }
     }
 
     @Test

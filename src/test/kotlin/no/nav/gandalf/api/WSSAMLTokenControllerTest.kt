@@ -59,6 +59,19 @@ class WSSAMLTokenControllerTest : SpringBootWireMockSetup() {
     }
 
     @Test
+    fun `SAML - WS - rejects request containing a doctype`() {
+        mvc
+            .perform(
+                MockMvcRequestBuilders
+                    .post(WS_SAMLTOKEN)
+                    .with(SecurityMockMvcRequestPostProcessors.anonymous())
+                    .contentType(MediaType.TEXT_XML)
+                    .content("<!DOCTYPE Envelope><Envelope/>"),
+            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.content().string("Invalid XML request"))
+    }
+
+    @Test
     fun `SAML - WS - isExchangeOidcToSaml`() {
         val xmlReq = setupOIDCtoSAMLRequest("srvPDP", "password", issuer)
         mvc
