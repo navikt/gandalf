@@ -26,6 +26,8 @@ internal object SecureXml {
     fun documentBuilderFactory(): DocumentBuilderFactory =
         DocumentBuilderFactory.newInstance().apply {
             isNamespaceAware = true
+            isXIncludeAware = false
+            isExpandEntityReferences = false
             setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true)
             setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
             setFeature("http://xml.org/sax/features/external-general-entities", false)

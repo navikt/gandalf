@@ -12,6 +12,14 @@ import javax.xml.transform.stream.StreamSource
 
 class SecureXmlSecurityTest {
     @Test
+    fun `disables XInclude and entity expansion`() {
+        val factory = SecureXml.documentBuilderFactory()
+
+        assertFalse(factory.isXIncludeAware)
+        assertFalse(factory.isExpandEntityReferences)
+    }
+
+    @Test
     fun `rejects XML containing a doctype`() {
         val xmlWithDoctype = """<!DOCTYPE root><root/>"""
 
