@@ -57,7 +57,7 @@ class WSSAMLTokenController(
                         ResponseEntity.status(HttpStatus.OK).body(wsReq.getResponse(samlToken!!))
                     } catch (e: Throwable) {
                         ApplicationMetric.wsSAMLTokenNotOk.increment()
-                        ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validation failed" + e.message)
+                        ResponseEntity.status(HttpStatus.BAD_REQUEST).body("SAML validation failed")
                     }
                 }
                 wsReq.isIssueSamlFromUNT -> {
