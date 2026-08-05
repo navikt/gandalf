@@ -1,6 +1,7 @@
 package no.nav.gandalf.xml
 
 import org.xml.sax.EntityResolver
+import org.xml.sax.SAXException
 import javax.xml.XMLConstants
 import javax.xml.crypto.URIDereferencer
 import javax.xml.crypto.URIReference
@@ -54,6 +55,6 @@ internal object SecureXml {
 
     fun rejectingEntityResolver(): EntityResolver =
         EntityResolver { _, _ ->
-            throw IllegalArgumentException("External XML entities are not allowed")
+            throw SAXException("External XML entities are not allowed")
         }
 }
