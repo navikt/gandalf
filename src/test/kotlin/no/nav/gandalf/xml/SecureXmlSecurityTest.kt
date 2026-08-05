@@ -30,36 +30,21 @@ class SecureXmlSecurityTest {
 
     @Test
     fun `rejects a doctype before resolving its external entity`() {
-        val resolverCalled = AtomicBoolean(false)
-        val builder = SecureXml.documentBuilderFactory().newDocumentBuilder()
-        builder.setEntityResolver { _, _ ->
-            resolverCalled.set(true)
-            null
-        }
-
-        assertThrows<SAXException> {
-            builder.parse("<!DOCTYPE root SYSTEM \"https://example.invalid/test.dtd\"><root/>".byteInputStream())
-        }
-
-        assertFalse(resolverCalled.get(), "External entity resolver must not be called")
+        assertRejectedWithoutResolving("<!DOCTYPE root SYSTEM \"https://example.invalid/test.dtd\"><root/>")
     }
 
     @Test
     fun `rejects external general entities`() {
-        assertThrows<Exception> {
-            SecureXml.documentBuilder().parse(
-                "<!DOCTYPE root [<!ENTITY entity SYSTEM \"https://example.invalid/entity\">]><root>&entity;</root>".byteInputStream(),
-            )
-        }
+        assertRejectedWithoutResolving(
+            "<!DOCTYPE root [<!ENTITY entity SYSTEM \"https://example.invalid/entity\">]><root>&entity;</root>",
+        )
     }
 
     @Test
     fun `rejects external parameter entities`() {
-        assertThrows<Exception> {
-            SecureXml.documentBuilder().parse(
-                "<!DOCTYPE root [<!ENTITY % entity SYSTEM \"https://example.invalid/entity\">%entity;]><root/>".byteInputStream(),
-            )
-        }
+        assertRejectedWithoutResolving(
+            "<!DOCTYPE root [<!ENTITY % entity SYSTEM \"https://example.invalid/entity\">%entity;]><root/>",
+        )
     }
 
     @Test
@@ -88,5 +73,20 @@ class SecureXmlSecurityTest {
         assertThrows<URIReferenceException> {
             SecureXml.sameDocumentUriDereferencer().dereference(reference, object : DOMCryptoContext() {})
         }
+    }
+
+    private fun assertRejectedWithoutResolving(xml: String) {
+        val resolverCalled = AtomicBoolean(false)
+        val builder = SecureXml.documentBuilderFactory().newDocumentBuilder()
+        builder.setEntityResolver { _, _ ->
+            resolverCalled.set(true)
+            null
+        }
+
+        assertThrows<SAXException> {
+            builder.parse(xml.byteInputStream())
+        }
+
+        assertFalse(resolverCalled.get(), "External entity resolver must not be called")
     }
 }
