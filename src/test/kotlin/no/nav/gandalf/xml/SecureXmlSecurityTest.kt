@@ -2,6 +2,7 @@ package no.nav.gandalf.xml
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.xml.sax.SAXException
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.xml.crypto.URIReference
 import javax.xml.crypto.URIReferenceException
@@ -13,7 +14,7 @@ class SecureXmlSecurityTest {
     fun `rejects XML containing a doctype`() {
         val xmlWithDoctype = """<!DOCTYPE root><root/>"""
 
-        assertThrows<Exception> {
+        assertThrows<SAXException> {
             SecureXml.documentBuilderFactory().newDocumentBuilder().parse(xmlWithDoctype.byteInputStream())
         }
     }
@@ -27,7 +28,7 @@ class SecureXmlSecurityTest {
             null
         }
 
-        assertThrows<Exception> {
+        assertThrows<SAXException> {
             builder.parse("<!DOCTYPE root SYSTEM \"https://example.invalid/test.dtd\"><root/>".byteInputStream())
         }
 
