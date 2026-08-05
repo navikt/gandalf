@@ -1,5 +1,6 @@
 package no.nav.gandalf.xml
 
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.xml.sax.SAXException
@@ -32,7 +33,7 @@ class SecureXmlSecurityTest {
             builder.parse("<!DOCTYPE root SYSTEM \"https://example.invalid/test.dtd\"><root/>".byteInputStream())
         }
 
-        check(!resolverCalled.get())
+        assertFalse(resolverCalled.get(), "External entity resolver must not be called")
     }
 
     @Test
