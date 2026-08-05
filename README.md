@@ -27,6 +27,15 @@ Service definitions are based on:
 
 `https://security-token-service.dev.adeo.no` is exposed via [naisdevice](https://doc.nais.io/device)
 
+To run the application in Docker with the local embedded LDAP setup:
+
+```bash
+./gradlew bootJar
+docker compose up --build
+```
+
+The Compose configuration mounts the local LDAP and keystore test resources read by the `local` profile.
+
 ### Openapi
 `/api`
 
