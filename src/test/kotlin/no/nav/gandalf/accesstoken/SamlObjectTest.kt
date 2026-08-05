@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.xml.sax.SAXException
 import java.time.ZonedDateTime
 import javax.xml.crypto.KeySelector
 
@@ -46,7 +47,7 @@ class SamlObjectTest {
 
     @Test
     fun `rejects SAML containing a doctype`() {
-        assertThrows<Exception> {
+        assertThrows<SAXException> {
             SamlObject().read("<!DOCTYPE Assertion><Assertion/>")
         }
     }
