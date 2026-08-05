@@ -20,12 +20,16 @@ Den detaljerte beslutningshistorikken ligger i [XXE-remediation-kartet](https://
 
 ## Verifikasjon etter deploy
 
+- Merge til `master`; bare master-workflowen deployer til T4 og standard dev.
 - Følg `400`-rate og latenstid for WS-SAML-endepunktet.
 - Sjekk at vellykkede WS-SAML-utstedelser og valideringer holder normalt nivå.
+- Test en gyldig WS-Trust-request med forventet `200`, og en ellers gyldig request med ufarlig `DOCTYPE` med forventet `400 Invalid XML request`.
+- Godkjenn `production`-environmentet i GitHub Actions først etter verifikasjon i dev; prod-deployen er blokkert av denne gaten.
 - Varsle sikkerhetsteamet om rettet versjon og testbevis; ikke inkluder payload eller miljødata i saken.
 
 ## Release handoff
 
-- Før deploy: kjør `./gradlew ktlintCheck test` og lagre CI-lenken som testbevis.
+- Før deploy: kjør `./gradlew ktlintCheck test` og lagre CI-lenken som testbevis. CI kjører `ktlintCheck` før testene.
+- Lokal verifikasjon: `./gradlew bootJar && docker compose up --build`; Compose mount-er embedded LDAP-fixtures som lokalprofilen trenger.
 - Etter deploy: følg WS-SAML `400`-rate, latenstid og vellykkede utstedelser/valideringer i den vanlige observasjonsperioden.
 - Meld rettet versjon, CI-lenke og observasjonsresultat til sikkerhetsteamet uten å inkludere payload, callback-adresser eller miljødata.
