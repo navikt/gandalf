@@ -108,6 +108,8 @@ jobs:
     needs: [build, deploy-dev, deploy-dev-t4]
     if: "github.ref == 'refs/heads/master'"
     runs-on: ubuntu-latest
+    environment:
+      name: production
     permissions:
       id-token: write
     steps:
