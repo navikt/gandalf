@@ -14,7 +14,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # ratchet:actions/checkout@v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7.0.1
       - uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # ratchet:actions/setup-java@v5
         with:
           java-version: 21
@@ -44,7 +44,7 @@ jobs:
       contents: "read"
       id-token: "write"
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # ratchet:actions/checkout@v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7.0.1
       - uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # ratchet:actions/setup-java@v5
         with:
           java-version: 21
@@ -75,7 +75,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # ratchet:actions/checkout@v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7.0.1
       - uses: nais/deploy/actions/deploy@2d18f050f07b6a007864c6a57070ed915d571beb # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-fss
@@ -93,7 +93,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # ratchet:actions/checkout@v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7.0.1
       - uses: nais/deploy/actions/deploy@2d18f050f07b6a007864c6a57070ed915d571beb # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-fss
@@ -113,7 +113,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # ratchet:actions/checkout@v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7.0.1
       - uses: nais/deploy/actions/deploy@2d18f050f07b6a007864c6a57070ed915d571beb # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-fss
