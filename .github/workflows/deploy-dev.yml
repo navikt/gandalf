@@ -1,6 +1,7 @@
 name: DEV - Build, push, and deploy
 
 on:
+  workflow_dispatch:
   push:
     paths-ignore:
       - "README.md"
