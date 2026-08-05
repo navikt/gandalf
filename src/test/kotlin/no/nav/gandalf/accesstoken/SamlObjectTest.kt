@@ -71,6 +71,20 @@ class SamlObjectTest {
     }
 
     @Test
+    fun `rejects signature reference without URI during validation`() {
+        val missingReferenceUri = getSamlToken().replace("URI=\"#SAML-4161a46a-ebc3-403f-9d3d-4eff65a070ae\"", "")
+        val samlObject = SamlObject(ZonedDateTime.parse("2019-05-14T08:47:04.255Z"))
+        samlObject.read(missingReferenceUri)
+
+        val exception =
+            assertThrows<OAuthException> {
+                samlObject.validate(keySelector)
+            }
+
+        assertTrue(exception.message!!.contains("non-local reference"))
+    }
+
+    @Test
     fun `validates SAML token with same-document signature reference`() {
         val notOnOrAfter = ZonedDateTime.parse("2019-05-14T08:47:06.255Z")
         val now = notOnOrAfter.minusSeconds(2)
