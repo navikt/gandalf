@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val springSecurity = "7.1.0"
 val snakeYaml = "2.6"
 val mockk = "1.14.11"
-val kotest = "6.2.1"
+val kotest = "6.2.3"
 val json = "20260719"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "9.0"
