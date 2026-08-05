@@ -13,9 +13,10 @@ Den detaljerte beslutningshistorikken ligger i [XXE-remediation-kartet](https://
 
 1. `DOCTYPE` avvises i `WSTrustRequest.read()` og `SamlObject.read()`.
 2. `/rest/v1/sts/ws/samltoken` svarer `400` uten interne parserdetaljer.
-3. Ingen ekstern resolver kalles under test.
-4. Eksisterende SOAP/SAML-utstedelse, veksling, signering og validering passerer.
-5. Ikke-fragmenterte XMLDSig-referanser avvises.
+3. `DOCTYPE`, ekstern generell entitet og ekstern parameterentitet avvises uten at resolveren kalles under test.
+4. `TransformerFactory` avviser ekstern XSLT-import.
+5. Eksisterende SOAP/SAML-utstedelse, veksling, signering og validering passerer, inkludert same-document XMLDSig-referanse.
+6. Ikke-fragmenterte XMLDSig-referanser avvises.
 
 ## Verifikasjon etter deploy
 

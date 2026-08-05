@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.xml.crypto.URIReference
 import javax.xml.crypto.URIReferenceException
 import javax.xml.crypto.dom.DOMCryptoContext
+import javax.xml.transform.stream.StreamSource
 
 class SecureXmlSecurityTest {
     @Test
@@ -31,6 +32,38 @@ class SecureXmlSecurityTest {
         }
 
         check(!resolverCalled.get())
+    }
+
+    @Test
+    fun `rejects external general entities`() {
+        assertThrows<Exception> {
+            SecureXml.documentBuilder().parse(
+                "<!DOCTYPE root [<!ENTITY entity SYSTEM \"https://example.invalid/entity\">]><root>&entity;</root>".byteInputStream(),
+            )
+        }
+    }
+
+    @Test
+    fun `rejects external parameter entities`() {
+        assertThrows<Exception> {
+            SecureXml.documentBuilder().parse(
+                "<!DOCTYPE root [<!ENTITY % entity SYSTEM \"https://example.invalid/entity\">%entity;]><root/>".byteInputStream(),
+            )
+        }
+    }
+
+    @Test
+    fun `rejects external XSLT imports`() {
+        val stylesheet =
+            """
+            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                <xsl:import href="https://example.invalid/stylesheet.xsl"/>
+            </xsl:stylesheet>
+            """.trimIndent()
+
+        assertThrows<Exception> {
+            SecureXml.transformerFactory().newTransformer(StreamSource(stylesheet.reader()))
+        }
     }
 
     @Test

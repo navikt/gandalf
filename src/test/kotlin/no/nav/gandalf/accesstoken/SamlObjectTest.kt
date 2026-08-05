@@ -67,7 +67,7 @@ class SamlObjectTest {
     }
 
     @Test
-    fun `Read And Validate SAML Token`() {
+    fun `validates SAML token with same-document signature reference`() {
         val notOnOrAfter = ZonedDateTime.parse("2019-05-14T08:47:06.255Z")
         val now = notOnOrAfter.minusSeconds(2)
         assertDoesNotThrow {
