@@ -5,13 +5,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val springSecurity = "7.1.0"
 val snakeYaml = "2.6"
 val mockk = "1.14.11"
-val kotest = "6.2.1"
-val json = "20260522"
+val kotest = "6.2.3"
+val json = "20260719"
 val kotlinLoggin = "3.0.5"
 val logbackStash = "9.0"
-val logbackClassic = "1.5.37"
+val logbackClassic = "1.6.1"
 val mockOAuth2Server = "5.0.2"
-val nimbus = "11.37.2"
+val nimbus = "11.38.2"
 val openapi = "3.0.3"
 val unboundid = "7.0.5"
 val wiremockCloud = "3.13.2"
@@ -28,10 +28,10 @@ java {
 plugins {
     application
     java
-    val kotlinVersion = "2.4.0"
+    val kotlinVersion = "2.4.10"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("com.github.ben-manes.versions") version "0.54.0"
+    id("com.github.ben-manes.versions") version "0.58.0"
     id("org.springframework.boot") version "4.1.0"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
@@ -86,7 +86,7 @@ dependencies {
     }
     testImplementation("org.springframework.security:spring-security-test:$springSecurity")
     testImplementation("org.wiremock:wiremock-jetty12:$wiremockCloud")
-    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.2")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.3")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("io.kotest:kotest-assertions-core:$kotest")
     testImplementation("io.mockk:mockk:$mockk")
