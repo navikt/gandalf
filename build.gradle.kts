@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val springSecurity = "7.1.1"
-val snakeYaml = "2.6"
+val snakeYaml = "2.7"
 val mockk = "1.14.11"
 val kotest = "6.2.4"
 val json = "20260814"
