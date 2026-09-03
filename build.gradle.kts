@@ -17,7 +17,7 @@ val unboundid = "7.0.5"
 val wiremockCloud = "3.13.2"
 val h2 = "2.4.240"
 val conscrypt = "2.6.2"
-val prometheus = "1.17.0"
+val prometheus = "1.17.1"
 val commonsLang = "3.20.0"
 
 java {
