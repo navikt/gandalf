@@ -117,7 +117,7 @@ configurations.all {
 configurations.matching { it.name.startsWith("ktlint") }.configureEach {
     resolutionStrategy.eachDependency {
         if (requested.group == "org.jetbrains.kotlin") {
-            useVersion(requested.version)
+            requested.version?.let { useVersion(it) }
         }
     }
 }
