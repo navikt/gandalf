@@ -2,6 +2,16 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildscript {
+    configurations.named("classpath") {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "tools.jackson.core") {
+                useVersion("3.1.7")
+            }
+        }
+    }
+}
+
 val springSecurity = "7.1.1"
 val snakeYaml = "2.7"
 val mockk = "1.14.11"
