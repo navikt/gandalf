@@ -28,7 +28,7 @@ java {
 plugins {
     application
     java
-    val kotlinVersion = "2.4.10"
+    val kotlinVersion = "2.4.21"
     kotlin("plugin.allopen") version kotlinVersion
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.ben-manes.versions") version "0.64.0"
@@ -36,6 +36,18 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version "1.1.7"
+}
+
+extra["tomcat.version"] = "11.0.25"
+extra["freemarker.version"] = "2.3.35"
+extra["jackson-2-bom.version"] = "2.21.7"
+extra["jackson-bom.version"] = "3.1.7"
+
+dependencyManagement {
+    dependencies {
+        dependency("com.google.guava:guava:33.7.2-jre")
+        dependency("com.github.jknack:handlebars:4.5.2")
+    }
 }
 
 application {
@@ -96,7 +108,7 @@ dependencies {
 configurations.all {
     resolutionStrategy.eachDependency {
         if (requested.group.startsWith("org.eclipse.jetty")) {
-            useVersion("12.1.8")
+            useVersion("12.1.12")
             because("Align all Jetty modules to Spring Boot 4 managed version")
         }
     }
