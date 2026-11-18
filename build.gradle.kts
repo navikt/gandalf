@@ -32,10 +32,10 @@ val commonsLang = "3.20.0"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(27))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
-    sourceCompatibility = JavaVersion.VERSION_27
-    targetCompatibility = JavaVersion.VERSION_27
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 plugins {
@@ -152,9 +152,7 @@ tasks {
     withType<KotlinCompile> {
         compilerOptions {
             freeCompilerArgs.add("-Xjsr305=strict")
-            // See https://youtrack.jetbrains.com/issue/KT-73255
-            freeCompilerArgs.add("-Xannotation-default-target=param-property")
-            jvmTarget.set(JvmTarget.JVM_27)
+            jvmTarget.set(JvmTarget.JVM_25)
         }
     }
     withType<Test> {
