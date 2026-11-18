@@ -34,7 +34,7 @@ class WSSAMLTokenController(
             // parse xml
             val wsReq = WSTrustRequest()
             try {
-                wsReq.read(xmlRequest!!)
+                wsReq.read(xmlRequest)
             } catch (e: Throwable) {
                 ApplicationMetric.wsSAMLTokenNotOk.increment()
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid XML request")
