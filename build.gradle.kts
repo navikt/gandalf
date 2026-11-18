@@ -31,8 +31,11 @@ val prometheus = "1.17.1"
 val commonsLang = "3.20.0"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(27))
+    }
+    sourceCompatibility = JavaVersion.VERSION_27
+    targetCompatibility = JavaVersion.VERSION_27
 }
 
 plugins {
@@ -151,7 +154,7 @@ tasks {
             freeCompilerArgs.add("-Xjsr305=strict")
             // See https://youtrack.jetbrains.com/issue/KT-73255
             freeCompilerArgs.add("-Xannotation-default-target=param-property")
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_27)
         }
     }
     withType<Test> {
