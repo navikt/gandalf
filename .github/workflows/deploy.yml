@@ -54,7 +54,7 @@ jobs:
         run: ./gradlew bootJar -x test
 
       - name: Push docker image to GAR and sign image
-        uses: nais/docker-build-push@dd7421d5068057a020ca46ead966c26190c516b1 # ratchet:nais/docker-build-push@v0
+        uses: nais/docker-build-push@6394144a53cad0332745f24a8302f5efaf81719a # ratchet:nais/docker-build-push@v1
         id: docker-build-push
         with:
           team: aura
